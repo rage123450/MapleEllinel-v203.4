@@ -21,3 +21,5 @@ resourcesMob
 resourcesNpc
 resourcesSkill.txt
 *.iml
+src/main/java/net/swordie/ms/Test.java
+src/main/java/net/swordie/ms/ServerConstants.java
