@@ -9,10 +9,9 @@ import net.swordie.ms.client.friend.Friend;
 import net.swordie.ms.client.trunk.Trunk;
 import net.swordie.ms.connection.db.FileTimeConverter;
 import net.swordie.ms.constants.ItemConstants;
-import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.constants.SkillConstants;
-import net.swordie.ms.enums.AccountType;
 import net.swordie.ms.enums.PicStatus;
+import net.swordie.ms.enums.PrivateStatusIDFlag;
 import net.swordie.ms.loaders.StringData;
 import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.util.FileTime;
@@ -38,7 +37,7 @@ public class Account {
     private String name;
     private String password;
     @Enumerated(EnumType.ORDINAL)
-    private AccountType accountType;
+    private PrivateStatusIDFlag privateStatusIDFlag = PrivateStatusIDFlag.NONE;
     private int age;
     private int vipGrade;
     private int nBlockReason;
@@ -86,14 +85,14 @@ public class Account {
     @JoinColumn(name = "offensemanager")
     private OffenseManager offenseManager;
 
-    public Account(String name, String password, int accountId, String pic, AccountType accountType, int age, int vipGrade, int nBlockReason, byte gender, byte msg2,
+    public Account(String name, String password, int accountId, String pic, PrivateStatusIDFlag privateStatusIDFlag, int age, int vipGrade, int nBlockReason, byte gender, byte msg2,
                    byte purchaseExp, byte pBlockReason, long chatUnblockDate, boolean hasCensoredNxLoginID,
                    byte gradeCode, String censoredNxLoginID, int characterSlots, FileTime creationDate) {
         this.name = name;
         this.password = password;
         this.id = accountId;
         this.pic = pic;
-        this.accountType = accountType;
+        this.privateStatusIDFlag = privateStatusIDFlag;
         this.age = age;
         this.vipGrade = vipGrade;
         this.gender = gender;
@@ -113,7 +112,7 @@ public class Account {
     }
 
     public Account(String id, int accountId) {
-        this(id, null, accountId, null, AccountType.Player, 0, 0, 0,
+        this(id, null, accountId, null, PrivateStatusIDFlag.NONE, 0, 0, 0,
                 (byte) 0, (byte) 0, (byte) 0, (byte) 3, 0, false, (byte) 0,
                 "", 16, FileTime.currentTime());
     }
@@ -137,8 +136,8 @@ public class Account {
         return id;
     }
 
-    public AccountType getAccountType() {
-        return accountType;
+    public PrivateStatusIDFlag getPrivateStatusIDFlag() {
+        return privateStatusIDFlag;
     }
 
     public int getAge() {
@@ -193,8 +192,8 @@ public class Account {
         return nBlockReason;
     }
 
-    public void setAccountType(AccountType accountType) {
-        this.accountType = accountType;
+    public void setPrivateStatusIDFlag(PrivateStatusIDFlag privateStatusIDFlag) {
+        this.privateStatusIDFlag = privateStatusIDFlag;
     }
 
     public int getCharacterSlots() {
@@ -512,5 +511,9 @@ public class Account {
 
     public void setOffenseManager(OffenseManager offenseManager) {
         this.offenseManager = offenseManager;
+    }
+
+    public boolean isManagerAccount() {
+        return privateStatusIDFlag.hasFlag(PrivateStatusIDFlag.MANAGER_ACCOUNT);
     }
 }

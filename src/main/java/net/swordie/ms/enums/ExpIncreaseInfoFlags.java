@@ -28,15 +28,21 @@ public enum ExpIncreaseInfoFlags {
     UserHPRateBonusExp(0x800000),
     FieldValueBonusExp(0x1000000),
     MobKillBonusExp(0x2000000),
-    LiveEventBonusExp(0x4000000);
+    LiveEventBonusExp(0x4000000),
+    Unk8000000(0x8000000),
+    Unk10000000(0x10000000),
+    Unk20000000(0x20000000),
+    Unk40000000(0x40000000),
+    Unk80000000(0x80000000),
+    Unk1000000000(0x1000000000L);
 
-    private int val;
+    private long val;
 
-    ExpIncreaseInfoFlags(int val) {
+    ExpIncreaseInfoFlags(long val) {
         this.val = val;
     }
 
-    public int getVal() {
+    public long getVal() {
         return val;
     }
 }

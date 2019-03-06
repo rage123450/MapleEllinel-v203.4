@@ -28,7 +28,9 @@ public class InGameDirectionEvent implements Encodable {
         switch (type) {
             case ForcedAction:
                 outPacket.encodeInt(arg1); // nAction
-                outPacket.encodeInt(arg2); // nDuration
+                if (arg1 <= 1895) {
+                    outPacket.encodeInt(arg2); // nDuration
+                }
                 break;
             case Delay:
                 outPacket.encodeInt(arg1); // nDelay
@@ -44,9 +46,9 @@ public class InGameDirectionEvent implements Encodable {
                 outPacket.encodeByte(arg3 >= -1);
                 if (arg3 >= -1) {
                     outPacket.encodeInt(arg3); // dwNpcID (for CNpcPool::GetNpcForExtend)
+                    outPacket.encodeByte(arg4);
+                    outPacket.encodeByte(arg5);
                 }
-                outPacket.encodeByte(arg4);
-                outPacket.encodeByte(arg5);
                 break;
             case ForcedInput:
                 outPacket.encodeInt(arg1); // nForcedInput

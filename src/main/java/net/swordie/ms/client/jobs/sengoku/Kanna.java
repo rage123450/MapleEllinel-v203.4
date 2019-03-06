@@ -80,7 +80,6 @@ public class Kanna extends Job {
 
     public Kanna(Char chr) {
         super(chr);
-
     }
 
     @Override

@@ -2,7 +2,7 @@ package net.swordie.ms.enums;
 
 
 public enum TextEffectType {
-
+    KinesisIntro(0),
     BlackFadedBrush(1),
     BurningField(2),
     TextNoBackground(3),

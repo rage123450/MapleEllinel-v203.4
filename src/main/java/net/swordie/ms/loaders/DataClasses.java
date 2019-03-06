@@ -14,7 +14,8 @@ public class DataClasses {
         dataClasses.addAll(Arrays.asList(
                 ItemData.class,
                 SkillData.class,
-                FieldData.class
+                FieldData.class,
+                VCore.class
                 )
         );
         datCreators.addAll(Arrays.asList(

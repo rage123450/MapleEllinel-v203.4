@@ -1,4 +1,5 @@
-options = ["I want to go somewhere","I want to buy something","Vote for the server"]
+from net.swordie.ms.enums import UIType
+options = ["I want to go somewhere","I want to buy something","Vote for the server", "I want to upgrade my #eV Matrix skills#k#b.#k"]
 
 options2 = ["Town Maps","Monster Maps","Boss Entrances"]
 
@@ -55,7 +56,8 @@ if option == 0: # I want to go somewhere (maps)
         sm.warp(maps[ans1][ans2][0], 1)
     else:
         sm.warp(maps[ans1][ans2], 1)
-
+elif option == 3:
+    sm.openUI(UIType.UI_MATRIX_UPGRADE)
 else:
     sm.sendSayOkay("This option currently is uncoded.")
 

@@ -59,6 +59,7 @@ public class DropPool {
         outPacket.encodeByte(ownType); // 3 = high drop
         outPacket.encodePosition(dropPos);
         outPacket.encodeInt(sourceID);
+        outPacket.encodeArr(new byte[38]);
         byte enterType = dropEnterType.getVal();
         if(enterType != 2) {
             outPacket.encodePosition(tempPos);
@@ -76,11 +77,11 @@ public class DropPool {
         outPacket.encodeByte(drop.canBePickedUpByPet() && canBePickedUpByPet); // former = general case, latter = specific to a single chr
         outPacket.encodeByte(unkBool);
         outPacket.encodeShort(fallingVY);
-        outPacket.encodeByte(fadeInEffect);
+        outPacket.encodeByte(fadeInEffect);// or short
         outPacket.encodeByte(makeType);
         outPacket.encodeInt(collisionPickup); // decode4, but is bCollisionPickUp?
         outPacket.encodeByte(ItemGrade.getHiddenGradeByVal(drop.getItemGrade()).getVal());
-        outPacket.encodeByte(prepareCollisionPickUp);
+        //outPacket.encodeByte(prepareCollisionPickUp);
 
         return outPacket;
     }

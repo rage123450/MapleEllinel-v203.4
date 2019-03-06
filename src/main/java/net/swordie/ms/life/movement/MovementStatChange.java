@@ -3,6 +3,7 @@ package net.swordie.ms.life.movement;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.OutPacket;
+import net.swordie.ms.life.Dragon;
 import net.swordie.ms.life.Life;
 import net.swordie.ms.util.Position;
 
@@ -31,6 +32,11 @@ public class MovementStatChange extends MovementBase {
 
     @Override
     public void applyTo(Life life) {
+
+    }
+
+    @Override
+    public void applyTo(Dragon dragon) {
 
     }
 }

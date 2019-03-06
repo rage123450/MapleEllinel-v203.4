@@ -3,6 +3,7 @@ package net.swordie.ms.connection.packet;
 import net.swordie.ms.client.character.avatar.AvatarLook;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.CharacterStat;
+import net.swordie.ms.enums.DelayEffect;
 import net.swordie.ms.life.pet.Pet;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
@@ -23,7 +24,7 @@ public class UserPool {
         OutPacket outPacket = new OutPacket(OutHeader.USER_ENTER_FIELD);
 
         outPacket.encodeInt(chr.getId());
-        outPacket.encodeByte(chr.getLevel());
+        outPacket.encodeInt(chr.getLevel());
         outPacket.encodeString(chr.getName());
         outPacket.encodeString(""); // parent name, deprecated
         if(chr.getGuild() != null) {
@@ -35,10 +36,12 @@ public class UserPool {
         outPacket.encodeInt(cs.getPop());
         outPacket.encodeInt(10); // nFarmLevel
         outPacket.encodeInt(0); // nNameTagMark
+        outPacket.encodeInt(0);// Unknown
         tsm.encodeForRemote(outPacket, tsm.getCurrentStats());
         outPacket.encodeShort(chr.getJob());
         outPacket.encodeShort(cs.getSubJob());
         outPacket.encodeInt(chr.getTotalChuc());
+        outPacket.encodeInt(0);
         al.encode(outPacket);
         if(JobConstants.isZero(chr.getJob())) {
             chr.getAvatarData().getZeroAvatarLook().encode(outPacket);
@@ -59,6 +62,11 @@ public class UserPool {
         outPacket.encodeInt(chr.getActiveEffectItemID());
         outPacket.encodeInt(chr.getMonkeyEffectItemID());
         outPacket.encodeInt(chr.getActiveNickItemID());
+        boolean hasString = false;
+        outPacket.encodeByte(hasString);
+        if (hasString) {
+            outPacket.encodeString("");
+        }
         outPacket.encodeInt(chr.getDamageSkin().getDamageSkinID());
         outPacket.encodeInt(0); // ptPos.x?
         outPacket.encodeInt(al.getDemonWingID());
@@ -68,10 +76,11 @@ public class UserPool {
         outPacket.encodeShort(chr.getFieldSeatID());
         outPacket.encodeInt(chr.getPortableChairID());
         boolean hasPortableChairMsg = chr.getPortableChairMsg() != null;
-        outPacket.encodeInt(hasPortableChairMsg ? 1 : 0); // why is this an int
+        outPacket.encodeByte(hasPortableChairMsg);
         if(hasPortableChairMsg) {
             outPacket.encodeString(chr.getPortableChairMsg());
         }
+        outPacket.encodeByte(0);// boolean => long
         int towerIDSize = 0;
         outPacket.encodeInt(towerIDSize);
         for (int i = 0; i < towerIDSize; i++) {
@@ -79,10 +88,13 @@ public class UserPool {
         }
         outPacket.encodeInt(0); // some other position? new
         outPacket.encodeInt(0); // some other position? new
+        outPacket.encodeByte(0);
+        outPacket.encodeByte(0);
         outPacket.encodePosition(chr.getPosition());
         outPacket.encodeByte(chr.getMoveAction());
         outPacket.encodeShort(chr.getFoothold());
         outPacket.encodeByte(0); // ? new
+        outPacket.encodeByte(0);
         for(Pet pet : chr.getPets()) {
             if(pet.getId() == 0) {
                 continue;
@@ -99,28 +111,45 @@ public class UserPool {
         outPacket.encodeInt(chr.getTamingMobLevel());
         outPacket.encodeInt(chr.getTamingMobExp());
         outPacket.encodeInt(chr.getTamingMobFatigue());
+
+        outPacket.encodeByte(0);//unknown
+
         byte miniRoomType = chr.getMiniRoom() != null ? chr.getMiniRoom().getType() : 0;
         outPacket.encodeByte(miniRoomType);
         if(miniRoomType > 0) {
             chr.getMiniRoom().encode(outPacket);
         }
+
         outPacket.encodeByte(chr.getADBoardRemoteMsg() != null);
         if (chr.getADBoardRemoteMsg() != null) {
             outPacket.encodeString(chr.getADBoardRemoteMsg());
         }
+
         outPacket.encodeByte(chr.isInCouple());
         if(chr.isInCouple()) {
             chr.getCouple().encodeForRemote(outPacket);
         }
+
         outPacket.encodeByte(chr.hasFriendshipItem());
         if(chr.hasFriendshipItem()) {
             chr.getFriendshipRingRecord().encode(outPacket);
         }
+
         outPacket.encodeByte(chr.isMarried());
         if(chr.isMarried()) {
             chr.getMarriageRecord().encodeForRemote(outPacket);
         }
-        outPacket.encodeByte(0); // some flag that shows uninteresting things for now
+
+        DelayEffect delayEffect = chr.getDelayEffect();
+        outPacket.encodeByte(delayEffect.getVal());
+        switch (delayEffect) {
+            case PVP_RAGE:
+            case PVP_CHAMPION:
+            case UNK_20:
+                int delayedTime = 0;
+                outPacket.encodeInt(delayedTime);
+                break;
+        }
         outPacket.encodeInt(chr.getEvanDragonGlide());
         if(JobConstants.isKaiser(chr.getJob())) {
             outPacket.encodeInt(chr.getKaiserMorphRotateHueExtern());
@@ -164,14 +193,19 @@ public class UserPool {
         outPacket.encodeInt(0);
         outPacket.encodeInt(0);
         // ~CUser::DecodeStarPlanetTrendShopLook
-        outPacket.encodeInt(0); // CUser::DecodeTextEquipInfo
+        //outPacket.encodeInt(0); // CUser::DecodeTextEquipInfo
         chr.getFreezeHotEventInfo().encode(outPacket);
         outPacket.encodeInt(chr.getEventBestFriendAID());
         outPacket.encodeByte(tsm.hasStat(CharacterTemporaryStat.KinesisPsychicEnergeShield));
+        outPacket.encodeByte(1);
+        outPacket.encodeByte(1);
+        outPacket.encodeByte(0);
         outPacket.encodeByte(chr.isBeastFormWingOn());
         outPacket.encodeInt(chr.getMesoChairCount());
         // end kmst
-        outPacket.encodeInt(0);
+        outPacket.encodeInt(1051291);
+        outPacket.encodeByte(0);
+        outPacket.encodeInt(1);
         outPacket.encodeInt(0);
         outPacket.encodeString("");
         outPacket.encodeInt(0);

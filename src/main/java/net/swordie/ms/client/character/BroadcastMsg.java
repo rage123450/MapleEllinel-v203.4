@@ -25,19 +25,19 @@ public class BroadcastMsg {
         outPacket.encodeString(getString());
 
         switch (getBroadcastMsgType()) {
-            case Notice:
-            case PopUpMessage:
-            case DarkBlueOnLightBlue:
-            case PartyChat:
-            case WhiteYellow:
-            case SwedishFlag:
+            case NOTICE:
+            case ALERT:
+            case SPEAKER_CHANNEL:
+            case EVENT:
+            case MONSTER_LIFE_WORLD_MSG:
+            case MIRACLE_TIME:
                 break;
-            case Megaphone:
-            case MegaphoneNoMessage:
+            case SPEAKER_WORLD:
+            case SPEAKER_WORLD_GUILD_SKILL:
                 outPacket.encodeByte(getArg1()); // Channel
                 outPacket.encodeByte(getArg2()); // Mega Ear
                 break;
-            case ItemMegaphone:
+            case ITEM_SPEAKER:
                 outPacket.encodeByte(getArg1()); // Channel
                 outPacket.encodeByte(getArg2()); // Mega Ear
                 outPacket.encodeByte(getArg3()); // Boolean  Item: Yes/No
@@ -45,7 +45,7 @@ public class BroadcastMsg {
                     getItem().encode(outPacket); // Item encode
                 }
                 break;
-            case TripleMegaphone:
+            case ART_SPEAKER_WORLD:
                 outPacket.encodeByte(getArg1()); // StringList size
                 if(getArg1() > 1) {
                     outPacket.encodeString(getString2()); // String 2
@@ -56,47 +56,47 @@ public class BroadcastMsg {
                 outPacket.encodeByte(getArg2()); // Channel
                 outPacket.encodeByte(getArg3()); // Mega Ear
                 break;
-            case BlueChat_ItemInfo:
-            case BlueChat_ItemInfo_2:
+            case NOTICE_WITH_OUT_PREFIX:
+            case LOTTERY_ITEM_SPEAKER_WORLD:
                 outPacket.encodeInt(getArg1()); // item Id
                 if(getArg1() != 0) {
                     getItem().encode(outPacket); // item encode
                 }
                 break;
-            case GM_ErrorMessage:
+            case UTIL_DLG_EX:
                 outPacket.encodeInt(getArg1()); // npc Id
                 break;
-            case RedWithChannelInfo:
+            case EVENT_MSG_WITH_CHANNEL:
                 outPacket.encodeInt(getArg1()); //  chr Id
                 // "#channel" will grab  Chr's  Channel
                 break;
-            case WhiteYellow_ItemInfo:
+            case LOTTERY_ITEM_SPEAKER:
                 outPacket.encodeByte(getArg1()); // Boolean  Item: Yes/No
                 if(getArg1() != 0) {
                     getItem().encode(outPacket); // Item encode
                 }
                 break;
-            case YellowChatFiled_ItemInfo:
+            case GACHAPON_MSG:
                 outPacket.encodeInt(getArg1()); // item Id
                 outPacket.encodeByte(getArg2()); // boolean: show item
                 getItem().encode(outPacket);
                 break;
-            case PopUpNotice:
+            case NOTICE_WINDOW:
                 outPacket.encodeInt(getArg1()); // width
                 outPacket.encodeInt(getArg2()); // height
                 break;
-            case Yellow:
-            case Yellow_2:
+            case PICKUP_ITEM_WORLD:
+            case MAKING_SKILL_MEISTER_ITEM:
                 getItem().encode(outPacket); // Item encode
                 break;
-            case TryRegisterAutoStartQuest:
+            case ANNOUNCED_QUEST_OPEN:
                 outPacket.encodeInt(getArg1()); // Quest Id
                 outPacket.encodeInt(getArg2()); // Time Out
                 break;
-            case TryRegisterAutoStartQuest_NoAnnouncement:
+            case ANNOUNCED_QUEST_CLOSED:
                 outPacket.encodeInt(getArg1()); // Quest Id
                 break;
-            case SlideNotice:
+            case SLIDE:
                 outPacket.encodeByte(getArg1());
                 break;
         }
@@ -104,7 +104,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg itemMegaphone(String string, byte channel, boolean whisperEar, boolean containsItem, Item item) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.ItemMegaphone);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.ITEM_SPEAKER);
 
         broadcastMsg.setString(string);
         broadcastMsg.setArg1((byte) (channel - 1));
@@ -117,7 +117,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg tripleMegaphone(List<String> stringList, byte channel, boolean whisperEar) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.TripleMegaphone);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.ART_SPEAKER_WORLD);
 
         broadcastMsg.setArg1((byte) stringList.size());
         broadcastMsg.setString(stringList.get(0));
@@ -135,7 +135,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg megaphone(String string, byte channel, boolean whisperEar) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.Megaphone);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.SPEAKER_WORLD);
 
         broadcastMsg.setString(string);
         broadcastMsg.setArg1((byte) (channel - 1));
@@ -146,7 +146,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg notice(String string) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.Notice);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.NOTICE);
 
         broadcastMsg.setString(string);
 
@@ -155,7 +155,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg popUpMessage(String string) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.PopUpMessage);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.ALERT);
 
         broadcastMsg.setString(string);
 
@@ -164,7 +164,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg popUpNotice(String string, int width, int height) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.PopUpNotice);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.NOTICE_WINDOW);
 
         broadcastMsg.setString(string);
         broadcastMsg.setArg1(width);
@@ -175,7 +175,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg blueChatWithItemInfo(String string, Item item) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.BlueChat_ItemInfo);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.NOTICE_WITH_OUT_PREFIX);
 
         broadcastMsg.setString(string);
         broadcastMsg.setArg1(item.getItemId());
@@ -186,7 +186,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg errorMessage(String string, int npcId) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.GM_ErrorMessage);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.UTIL_DLG_EX);
 
         broadcastMsg.setString(string);
         broadcastMsg.setArg1(npcId);
@@ -196,7 +196,7 @@ public class BroadcastMsg {
 
     public static BroadcastMsg yellowFilled(String string, Item item, boolean show) {
         BroadcastMsg broadcastMsg = new BroadcastMsg();
-        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.YellowChatFiled_ItemInfo);
+        broadcastMsg.setBroadcastMsgType(BroadcastMsgType.GACHAPON_MSG);
 
         broadcastMsg.setString(string);
         broadcastMsg.setItem(item);

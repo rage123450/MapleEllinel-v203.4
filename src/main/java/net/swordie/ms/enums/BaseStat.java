@@ -245,11 +245,11 @@ public enum BaseStat {
             case EnrageCr:
                 stats.put(cr, o.nOption);
                 break;
-            case EnrageCrDamMin:
+            case EnrageCrDam:
                 stats.put(minCd, o.nOption);
                 break;
-            case IndieCrMax:
-            case IndieCrMaxR:
+            case IndieCrDam:
+            case IndieCrDamR:
                 stats.put(maxCd, o.nValue);
                 break;
             case IndieEXP:
@@ -331,7 +331,10 @@ public enum BaseStat {
                 stats.put(mesoR, o.nOption);
                 break;
             case BasicStatUp:
-                // TODO what exactly does this give?
+                stats.put(strR, o.nValue);
+                stats.put(dexR, o.nValue);
+                stats.put(intR, o.nValue);
+                stats.put(lukR, o.nValue);
                 break;
             case Stance:
                 stats.put(stance, o.nOption);

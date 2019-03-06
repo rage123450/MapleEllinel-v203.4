@@ -590,6 +590,10 @@ public class Field {
         for (Char c : getChars()) {
             if (!c.equals(chr)) {
                 chr.write(UserPool.userEnterField(c));
+                Dragon dragon = c.getDragon();
+                if (dragon != null) {
+                    chr.write(CField.createDragon(dragon));
+                }
             }
         }
     }

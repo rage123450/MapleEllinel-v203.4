@@ -11,17 +11,30 @@ public class FieldEffect {
 
     private FieldEffectType fieldEffectType;
     private String string;
+    private String string2;
     private int arg1;
     private int arg2;
     private int arg3;
     private int arg4;
     private int arg5;
     private int arg6;
+    private int arg7;
+    private int arg8;
+    private int arg9;
 
     public void encode(OutPacket outPacket) {
         outPacket.encodeByte(getFieldEffectType().getVal());
         switch (getFieldEffectType()) {
-
+            case FromString:
+                outPacket.encodeByte(getArg1());
+                outPacket.encodeInt(getArg2());
+                outPacket.encodeInt(getArg3());
+                break;
+            case Tremble:
+                outPacket.encodeByte(getArg1());
+                outPacket.encodeInt(getArg2());
+                outPacket.encodeShort(getArg3());
+                break;
             case ObjectStateByString:
                 outPacket.encodeString(getString());// String
                 break;
@@ -29,12 +42,31 @@ public class FieldEffect {
                 outPacket.encodeString(getString());// String
                 outPacket.encodeByte(getArg1());    // boolean: ON/OFF
                 break;
+            case Screen:
+                outPacket.encodeString(getString());// String
+                break;
+            case PlaySound:
+                outPacket.encodeString(getString());// Sound
+                outPacket.encodeInt(getArg1());// Volume
+                break;
             case MobHPTag:
                 outPacket.encodeInt(getArg1());     // Mob Template ID
-                outPacket.encodeInt(getArg2());     // Mob HP
-                outPacket.encodeInt(getArg3());     // Mob max HP
+                outPacket.encodeLong(getArg2());     // Mob HP
+                outPacket.encodeLong(getArg3());     // Mob max HP
                 outPacket.encodeByte(getArg4());    // HP Tag Colour
                 outPacket.encodeByte(getArg5());    // HP Tab BG Colour
+                break;
+            case ChangeBGM:
+                outPacket.encodeString(getString());// sound
+                outPacket.encodeInt(getArg1());// start time
+                outPacket.encodeInt(getArg2());// unk
+                break;
+            case BGMVolumeOnly:
+                outPacket.encodeByte(getArg1());
+                break;
+            case SetBGMVolume:
+                outPacket.encodeInt(getArg1());
+                outPacket.encodeInt(getArg2());
                 break;
             case RewardRoulette:
                 outPacket.encodeInt(getArg1());     // Reward Job ID
@@ -44,6 +76,10 @@ public class FieldEffect {
             case TopScreen:
                 outPacket.encodeString(getString());// Directory to the Effect
                 break;
+            case BackScreen:
+                outPacket.encodeString(getString());// Directory to the Effect
+                outPacket.encodeInt(getArg1());     // Delay in ms
+                break;
             case TopScreenEffect:                   // Goes over other effects
                 outPacket.encodeString(getString());// Directory to the Effect
                 outPacket.encodeInt(getArg1());     // Delay in ms
@@ -52,9 +88,10 @@ public class FieldEffect {
                 outPacket.encodeString(getString());// Path to the Effect
                 outPacket.encodeInt(getArg1());     // Delay in ms
                 break;
-            case BackScreen:
-                outPacket.encodeString(getString());// Directory to the Effect
-                outPacket.encodeInt(getArg1());     // Delay in ms
+            case ScreenFloatingEffect:
+                outPacket.encodeString(getString());
+                outPacket.encodeByte(getArg1());
+                outPacket.encodeByte(getArg2());
                 break;
             case Blind:
                 outPacket.encodeByte(getArg1());
@@ -63,18 +100,31 @@ public class FieldEffect {
                 outPacket.encodeShort(getArg4());
                 outPacket.encodeShort(getArg5());
                 outPacket.encodeInt(getArg6());
+                outPacket.encodeInt(getArg7());
                 break;
             case SetGrey:
                 outPacket.encodeShort(getArg1());   // GreyField Type
                 outPacket.encodeByte(getArg2());    // boolean: ON/OFF
                 break;
-            case ChangeColor:
-                outPacket.encodeShort(getArg1());   // GreyField Type (but doesn't contain Reactor
-                outPacket.encodeShort(getArg2());   // red      (250 is normal value)
-                outPacket.encodeShort(getArg3());   // green    (250 is normal value)
-                outPacket.encodeShort(getArg4());   // blue     (250 is normal value)
-                outPacket.encodeInt(getArg5());     // time in ms, that it takes to transition from old colours to the new colours
-                outPacket.encodeInt(0);          // is in queue
+            case OnOffLayer:
+                outPacket.encodeByte(getArg1());// type
+                outPacket.encodeInt(getArg2());
+                outPacket.encodeString(getString());
+                if (getArg1() == 0) {
+                    outPacket.encodeInt(getArg3());
+                    outPacket.encodeInt(getArg4());
+                    outPacket.encodeInt(getArg5());
+                    outPacket.encodeString(getString2());
+                    outPacket.encodeInt(getArg6());
+                    outPacket.encodeByte(getArg7());
+                    outPacket.encodeInt(getArg8());
+                    outPacket.encodeByte(getArg9());
+                } else if (getArg1() == 1) {
+                    outPacket.encodeInt(getArg3());
+                    outPacket.encodeInt(getArg4());
+                } else if (getArg1() == 2) {
+                    outPacket.encodeByte(getArg3());
+                }
                 break;
             case OverlapScreen:                    // Takes a Snapshot of the Client and slowly fades away
                 outPacket.encodeInt(getArg1());     // Duration of the overlap (ms)
@@ -87,12 +137,20 @@ public class FieldEffect {
                 break;
             case RemoveOverlapScreen:
                 outPacket.encodeInt(getArg1());     // Fade Out duration
+                break;
+            case ChangeColor:
+                outPacket.encodeShort(getArg1());   // GreyField Type (but doesn't contain Reactor
+                outPacket.encodeShort(getArg2());   // red      (250 is normal value)
+                outPacket.encodeShort(getArg3());   // green    (250 is normal value)
+                outPacket.encodeShort(getArg4());   // blue     (250 is normal value)
+                outPacket.encodeInt(getArg5());     // time in ms, that it takes to transition from old colours to the new colours
+                outPacket.encodeInt(0);          // is in queue
+                if (getArg1() == 4) {
+                    outPacket.encodeInt(0);
+                }
+                break;
             case StageClearExpOnly:
                 outPacket.encodeInt(getArg1());     // Exp Number given
-                break;
-            case PlaySound:
-                outPacket.encodeString(getString());// Sound
-                outPacket.encodeInt(getArg1());// Volume
                 break;
         }
     }
@@ -195,6 +253,15 @@ public class FieldEffect {
         return fieldEffect;
     }
 
+    public static FieldEffect removeOverlapScreen(int fadeOutDuration) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.RemoveOverlapScreen);
+
+        fieldEffect.setArg1(fadeOutDuration);
+
+        return fieldEffect;
+    }
+
     public static FieldEffect playSound(String sound, int vol) {
         FieldEffect fieldEffect = new FieldEffect();
         fieldEffect.setFieldEffectType(FieldEffectType.PlaySound);
@@ -205,7 +272,7 @@ public class FieldEffect {
         return fieldEffect;
     }
 
-    public static FieldEffect blind(int enable, int x, int color, int unk1, int unk2, int time) {
+    public static FieldEffect blind(int enable, int x, int color, int unk1, int unk2, int time, int unk3) {
         FieldEffect fieldEffect = new FieldEffect();
         fieldEffect.setFieldEffectType(FieldEffectType.Blind);
 
@@ -215,6 +282,61 @@ public class FieldEffect {
         fieldEffect.setArg4(unk1);
         fieldEffect.setArg5(unk2);
         fieldEffect.setArg6(time);
+        fieldEffect.setArg7(unk3);
+        return fieldEffect;
+    }
+
+    public static FieldEffect OnOffLayer_On(int term, String key, int unk1, int unk2, int z, String path, int origin, int unk5, int unk6, int unk7) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.OnOffLayer);
+
+        fieldEffect.setArg1(0);// type0
+        fieldEffect.setArg2(term);
+        fieldEffect.setArg3(unk1);
+        fieldEffect.setArg4(unk2);
+        fieldEffect.setArg5(z);
+        fieldEffect.setArg6(origin);
+        fieldEffect.setArg7(unk5);
+        fieldEffect.setArg8(unk6);
+        fieldEffect.setArg9(unk7);
+        fieldEffect.setString(key);
+        fieldEffect.setString2(path);
+
+        return fieldEffect;
+    }
+
+    public static FieldEffect OnOffLayer_Move(int term, String key, int dx, int dy) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.OnOffLayer);
+
+        fieldEffect.setArg1(1);
+        fieldEffect.setArg2(term);
+        fieldEffect.setArg3(dx);
+        fieldEffect.setArg4(dy);
+        fieldEffect.setString(key);
+
+        return fieldEffect;
+    }
+
+    public static FieldEffect OnOffLayer_Off(int term, String key, int unk) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.OnOffLayer);
+
+        fieldEffect.setArg1(2);// type0
+        fieldEffect.setArg2(term);
+        fieldEffect.setArg3(unk);
+        fieldEffect.setString(key);
+
+        return fieldEffect;
+    }
+
+    public static FieldEffect changeBGM(String sound, int startTime, int unk) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.ChangeBGM);
+
+        fieldEffect.setString(sound);
+        fieldEffect.setArg1(startTime);// type0
+        fieldEffect.setArg2(unk);
 
         return fieldEffect;
     }
@@ -233,6 +355,14 @@ public class FieldEffect {
 
     public void setString(String string) {
         this.string = string;
+    }
+
+    public String getString2() {
+        return string2;
+    }
+
+    public void setString2(String string2) {
+        this.string2 = string2;
     }
 
     public int getArg1() {
@@ -283,4 +413,27 @@ public class FieldEffect {
         this.arg6 = arg6;
     }
 
+    public int getArg7() {
+        return arg7;
+    }
+
+    public void setArg7(int arg7) {
+        this.arg7 = arg7;
+    }
+
+    public int getArg8() {
+        return arg8;
+    }
+
+    public void setArg8(int arg8) {
+        this.arg8 = arg8;
+    }
+
+    public int getArg9() {
+        return arg9;
+    }
+
+    public void setArg9(int arg9) {
+        this.arg9 = arg9;
+    }
 }

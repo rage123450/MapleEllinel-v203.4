@@ -21,11 +21,12 @@ import net.swordie.ms.client.character.potential.CharacterPotential;
 import net.swordie.ms.client.character.quest.Quest;
 import net.swordie.ms.client.character.quest.QuestManager;
 import net.swordie.ms.client.character.quest.progress.*;
-import net.swordie.ms.client.character.skills.ChosenSkill;
-import net.swordie.ms.client.character.skills.Skill;
-import net.swordie.ms.client.character.skills.StolenSkill;
+import net.swordie.ms.client.character.skills.*;
 import net.swordie.ms.client.friend.Friend;
-import net.swordie.ms.client.guild.*;
+import net.swordie.ms.client.guild.Guild;
+import net.swordie.ms.client.guild.GuildMember;
+import net.swordie.ms.client.guild.GuildRequestor;
+import net.swordie.ms.client.guild.GuildSkill;
 import net.swordie.ms.client.guild.bbs.BBSRecord;
 import net.swordie.ms.client.guild.bbs.BBSReply;
 import net.swordie.ms.client.trunk.Trunk;
@@ -77,6 +78,9 @@ public class DatabaseManager {
                 Equip.class,
                 Inventory.class,
                 Skill.class,
+                MatrixInventory.class,
+                MatrixSkill.class,
+                MatrixSlot.class,
                 FuncKeyMap.class,
                 Keymapping.class,
                 SPSet.class,
@@ -204,6 +208,7 @@ public class DatabaseManager {
             // String.format for query, just to fill in the class
             // Can't set the FROM clause with a parameter it seems
             javax.persistence.Query query = session.createQuery(String.format("FROM %s WHERE %s = :val", clazz.getName(), columnName));
+            System.out.println(((Query) query).getQueryString());
             query.setParameter("val", value);
             List l = ((org.hibernate.query.Query) query).list();
             if (l != null && l.size() > 0) {
@@ -230,12 +235,14 @@ public class DatabaseManager {
     }
 
     public static Object getObjListFromDB(Class clazz, String columnName, Object value) {
+        log.info(String.format("%s: Trying to get obj %s with value %s.", LocalDateTime.now(), clazz, value));
         List list;
         try (Session session = getSession()) {
             Transaction transaction = session.beginTransaction();
             // String.format for query, just to fill in the class
             // Can't set the FROM clause with a parameter it seems
             javax.persistence.Query query = session.createQuery(String.format("FROM %s WHERE %s = :val", clazz.getName(), columnName));
+            System.out.println(((Query) query).getQueryString());
             query.setParameter("val", value);
             list = ((org.hibernate.query.Query) query).list();
             transaction.commit();

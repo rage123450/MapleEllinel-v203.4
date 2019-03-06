@@ -1,6 +1,7 @@
 package net.swordie.ms.client.character.quest.reward;
 
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.connection.packet.WvsContext;
 import net.swordie.ms.loaders.DatSerializable;
 
 import java.io.DataInputStream;
@@ -33,6 +34,7 @@ public class QuestMoneyReward implements QuestReward {
     @Override
     public void giveReward(Char chr) {
         chr.addMoney(money);
+        chr.write(WvsContext.incMoneyMessage((int) money));
     }
 
     @Override

@@ -53,11 +53,9 @@ public class NpcPool {
 		outPacket.encodeByte(oneTimeAction);
 		outPacket.encodeByte(chatIdx);
 		outPacket.encodeInt(duration);
-
 		if (move) {
 			outPacket.encode(movementInfo);
 		}
-
 		return outPacket;
 	}
 
@@ -101,4 +99,13 @@ public class NpcPool {
 
 		return outPacket;
 	}
+
+	public static OutPacket npcResetSpecialAction(int npcObjId) {
+		OutPacket outPacket = new OutPacket(OutHeader.NPC_RESET_SPECIAL_ACTION);
+
+		outPacket.encodeInt(npcObjId);
+
+		return outPacket;
+	}
+
 }

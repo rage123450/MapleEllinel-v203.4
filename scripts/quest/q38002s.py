@@ -35,9 +35,7 @@ else:
     sm.dispose()
 
 sm.setJob(2500)
-sm.setSTR(35)
-sm.setDEX(4)
-sm.setAP(23)
+sm.resetStats()
 sm.addSP(5, True)
 sm.addMaxHP(150)
 sm.addMaxMP(50)

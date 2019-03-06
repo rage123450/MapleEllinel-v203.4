@@ -22,8 +22,8 @@ import java.util.List;
  * Created on 1/23/2018.
  */
 public class GameConstants {
-    public static final int CHANNELS_PER_WORLD = 10;
-    public static final int BUFFED_CHANNELS = 7;
+    public static final int CHANNELS_PER_WORLD = 2;
+    public static final int BUFFED_CHANNELS = 0;
     public static final int MOB_EXP_RATE = 10;
     public static final long MAX_MONEY = 9_999_999_999L;
     public static final short DAMAGE_SKIN_MAX_SIZE = 100;
@@ -159,11 +159,6 @@ public class GameConstants {
     public static final int EASY_HORNTAIL_QUEST = 99996; // Quest where the Spawn state of horntail's heads is stored
     public static final int EASY_HILLA_QUEST = 99995; //Quest where the state of hilla portals is stored
     public static final int ARKARIUM_QUEST = 99994; //Quest wehre difficulty of arkarium is stored
-
-    // Custom Quest QR Values
-    public static final int EVAN_INTRO = 99992; // Used for portal script "evanRoom1" so script doesn't loop
-    public static final int EVAN_INTRO2 = 99993; // Used for portal script "DragonEggNotice" so script doesn't loop
-
     // Trading
     public static final int MAX_TRADE_ITEMS = 9;
 
@@ -185,7 +180,7 @@ public class GameConstants {
     public static final int MOBS_PER_PAGE = 25;
     public static final int MOBS_PER_GROUP = 5;
 
-    public static long[] charExp = new long[251];
+    public static long[] charExp = new long[276];
     private static int[][] enchantSuccessRates = new int[25][2];
     private static int[][] enchantSuccessRatesSuperior = new int[15][2];
     private static int[] guildExp = new int[MAX_GUILD_LV];
@@ -268,7 +263,7 @@ public class GameConstants {
     private static void initCharExp() {
         // NEXTLEVEL::NEXTLEVEL
         charExp[1] = 15;
-        charExp[2] = 32;
+        charExp[2] = 34;
         charExp[3] = 57;
         charExp[4] = 92;
         charExp[5] = 135;
@@ -295,38 +290,71 @@ public class GameConstants {
             charExp[i] = charExp[i-1];
         }
         for(int i = 65; i <= 74; i++) {
-            charExp[i] = (long) (charExp[i-1] * 1.08);
+            charExp[i] = (long) (charExp[i-1] * 1.075);
         }
-        for(int i = 75; i <= 99; i++) {
+        for(int i = 75; i <= 89; i++) {
             charExp[i] = (long) (charExp[i-1] * 1.07);
+        }
+        for(int i = 90; i <= 99; i++) {
+            charExp[i] = (long) (charExp[i-1] * 1.065);
         }
         for(int i = 100; i <= 104; i++) {
             charExp[i] = charExp[i-1];
         }
-        for(int i = 105; i <= 159; i++) {
-            charExp[i] = (long) (charExp[i-1] * 1.07);
+        for(int i = 105; i <= 139; i++) {
+            charExp[i] = (long) (charExp[i-1] * 1.065);
         }
-        for(int i = 160; i <= 199; i++) {
+        for(int i = 140; i <= 179; i++) {
+            charExp[i] = (long) (charExp[i-1] * 1.0625);
+        }
+        for(int i = 180; i <= 199; i++) {
             charExp[i] = (long) (charExp[i-1] * 1.06);
         }
-        charExp[200] = charExp[199] * 2;
+        // level 200
+        charExp[200] = 2207026470L;
         for(int i = 201; i <= 209; i++) {
-            charExp[i] = (long) (charExp[i-1] * 1.2);
+            charExp[i] = (long) (charExp[i-1] * 1.12);
         }
-        charExp[210] = (long) (charExp[209] * 1.06 * 2);
+
+        // level 210
+        charExp[210] = (long) (charExp[209] * 1.375 * 2);
         for(int i = 211; i <= 219; i++) {
-            charExp[i] = (long) (charExp[i-1] * 1.06);
+            charExp[i] = (long) (charExp[i-1] * 1.08);
         }
-        charExp[220] = (long) (charExp[219] * 1.04 * 2);
+
+        // level 220
+        charExp[220] = 84838062013L;
         for(int i = 221; i <= 229; i++) {
             charExp[i] = (long) (charExp[i-1] * 1.04);
         }
+
+        // level 230
         charExp[230] = (long) (charExp[229] * 1.02 * 2);
         for(int i = 231; i <= 239; i++) {
             charExp[i] = (long) (charExp[i-1] * 1.02);
         }
+
+        // level 240
         charExp[240] = (long) (charExp[239] * 1.01 * 2);
         for(int i = 241; i <= 249; i++) {
+            charExp[i] = (long) (charExp[i-1] * 1.01);
+        }
+
+        // level 250
+        charExp[250] = (long) (charExp[249] * 1.01 * 2);
+        for(int i = 251; i <= 259; i++) {
+            charExp[i] = (long) (charExp[i-1] * 1.01);
+        }
+
+        // level 260
+        charExp[260] = (long) (charExp[259] * 1.01 * 2);
+        for(int i = 261; i <= 269; i++) {
+            charExp[i] = (long) (charExp[i-1] * 1.01);
+        }
+
+        // level 260
+        charExp[270] = (long) (charExp[269] * 1.01 * 2);
+        for(int i = 271; i <= 274; i++) {
             charExp[i] = (long) (charExp[i-1] * 1.01);
         }
     }

@@ -1,2 +1,1 @@
-#todo effects
-sm.warp(900010200, 0)
+sm.warp(900010200, 2)

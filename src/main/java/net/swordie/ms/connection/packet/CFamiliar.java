@@ -58,8 +58,8 @@ public class CFamiliar {
             outPacket.encodeInt(mai.mobId);
             outPacket.encodeByte(mai.byteIdk1);
             outPacket.encodeByte(mai.damages.length);
-            for (int dmg : mai.damages) {
-                outPacket.encodeInt(dmg);
+            for (long dmg : mai.damages) {
+                outPacket.encodeLong(dmg);
             }
         }
 

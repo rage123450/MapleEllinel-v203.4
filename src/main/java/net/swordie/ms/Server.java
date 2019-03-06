@@ -4,13 +4,13 @@ import net.swordie.ms.client.Account;
 import net.swordie.ms.client.Client;
 import net.swordie.ms.constants.GameConstants;
 import net.swordie.ms.loaders.*;
-import net.swordie.ms.connection.crypto.MapleCrypto;
 import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.connection.netty.ChannelAcceptor;
 import net.swordie.ms.connection.netty.ChatAcceptor;
 import net.swordie.ms.connection.netty.LoginAcceptor;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.util.Util;
+import net.swordie.ms.util.XMLApi;
 import net.swordie.ms.world.Channel;
 import net.swordie.ms.world.World;
 import net.swordie.ms.world.shop.cashshop.CashShop;
@@ -23,6 +23,7 @@ import net.swordie.ms.util.Loader;
 import net.swordie.ms.util.container.Tuple;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.w3c.dom.Node;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -71,7 +72,7 @@ public class Server extends Properties {
 		StringData.load();
 		FieldData.loadWorldMap();
 
-		MapleCrypto.initialize(ServerConstants.VERSION);
+		//MapleCrypto.initialize(ServerConstants.VERSION);
 		new Thread(new LoginAcceptor()).start();
 		new Thread(new ChatAcceptor()).start();
 		worldList.add(new World(ServerConfig.WORLD_ID, ServerConfig.SERVER_NAME, GameConstants.CHANNELS_PER_WORLD, ServerConfig.EVENT_MSG));
@@ -93,7 +94,6 @@ public class Server extends Properties {
 			// inits the script engine
 			log.info(String.format("Starting script engine for %s", ScriptManagerImpl.SCRIPT_ENGINE_NAME));
 		}).start();
-
 	}
 
 	private void checkAndCreateDat() {
@@ -110,6 +110,21 @@ public class Server extends Properties {
 				}
 			}
 		}
+	}
+
+	private static List<String> backgrounds = new ArrayList<>();
+
+	private void loadBackgrounds() {
+		Node node = XMLApi.getNodeByPath("login.img", "WorldSelect");
+		for (Node bg : XMLApi.getAllChildren(node)) {
+			if (!XMLApi.getAttributes(bg).get("name").equals("default")) {
+				backgrounds.add(XMLApi.getAttributes(bg).get("name"));
+			}
+		}
+	}
+
+	public String getBackground() {
+		return Util.getRandomFromCollection(backgrounds);
 	}
 
 	public void loadWzData() throws IllegalAccessException, InvocationTargetException {
@@ -133,6 +148,7 @@ public class Server extends Properties {
 				}
 			}
 		}
+		loadBackgrounds();
 	}
 
 	public static void main(String[] args) {

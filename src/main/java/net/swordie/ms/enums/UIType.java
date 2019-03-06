@@ -1,7 +1,5 @@
 package net.swordie.ms.enums;
 
-import java.util.Arrays;
-
 /**
  * Created on 5/31/2018.
  */
@@ -324,7 +322,10 @@ public enum UIType {
     UI_DEMIAN_FIELD_DEBUFF(1115),
     UI_DISGUISE(1116),
     UI_WND_NO(1117),
-    UI_NOT_DEFINED(-1);
+    UI_MATRIX_MAIN(1130),
+    UI_MATRIX_UPGRADE(1131),
+    UI_NOT_DEFINED(-1),
+    ;
     
     private int val;
     
@@ -334,9 +335,5 @@ public enum UIType {
 
     public int getVal() {
         return val;
-    }
-
-    public static UIType getByVal(int val) {
-        return Arrays.stream(values()).filter(uit -> uit.getVal() == val).findAny().orElse(null);
     }
 }

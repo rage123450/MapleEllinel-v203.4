@@ -27,8 +27,8 @@ public class PsychicLockBall {
         outPacket.encodeInt(psychicLockKey);
         outPacket.encodeInt(hasMob ? mob.getObjectId() : 0);
         outPacket.encodeShort(stuffID);
-        outPacket.encodeInt(hasMob ? Util.maxInt(mob.getMaxHp()) : 0);
-        outPacket.encodeInt(hasMob ? Util.maxInt(mob.getHp()) : 0);
+        outPacket.encodeLong(hasMob ? mob.getMaxHp() : 0);
+        outPacket.encodeLong(hasMob ? mob.getHp() : 0);
         outPacket.encodeByte(posRelID);
         outPacket.encodePositionInt(start);
         outPacket.encodePositionInt(rel);

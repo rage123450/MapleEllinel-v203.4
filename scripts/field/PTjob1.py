@@ -5,11 +5,7 @@ if (sm.getChr().getJob() == 2003):
 
     sm.setJob(2400)
     sm.addSP(5)
-    sm.setSTR(4)
-    sm.setINT(4)
-    sm.setDEX(4)
-    sm.setLUK(35)
-    sm.setAP(23)
+    sm.resetStats()
     sm.addMaxHP(150)
     sm.addMaxMP(50)
     sm.giveAndEquip(1362001)

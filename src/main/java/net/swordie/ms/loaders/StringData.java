@@ -54,8 +54,10 @@ public class StringData {
                         !fileDir.equalsIgnoreCase("etc")) {
                     for (Node mainNode : XMLApi.getAllChildren(topNode)) {
                         int id = Integer.parseInt(XMLApi.getNamedAttribute(mainNode, "name"));
-                        String name = XMLApi.getNamedAttribute(XMLApi.getFirstChildByNameBF(mainNode, "name"), "value");
-                        itemStrings.put(id, name);
+                        if(XMLApi.getFirstChildByNameBF(mainNode, "name") != null) {
+                            String name = XMLApi.getNamedAttribute(XMLApi.getFirstChildByNameBF(mainNode, "name"), "value");
+                            itemStrings.put(id, name);
+                        }
                     }
                 } else if(fileDir.equalsIgnoreCase("etc")) {
                     for (Node category : XMLApi.getAllChildren(topNode)) {
@@ -72,8 +74,10 @@ public class StringData {
                         for (Node category : XMLApi.getAllChildren(n)) {
                             for (Node mainNode : XMLApi.getAllChildren(category)) {
                                 int id = Integer.parseInt(XMLApi.getNamedAttribute(mainNode, "name"));
-                                String name = XMLApi.getNamedAttribute(XMLApi.getFirstChildByNameBF(mainNode, "name"), "value");
-                                itemStrings.put(id, name);
+                                if(XMLApi.getFirstChildByNameBF(mainNode, "name") != null) {
+                                    String name = XMLApi.getNamedAttribute(XMLApi.getFirstChildByNameBF(mainNode, "name"), "value");
+                                    itemStrings.put(id, name);
+                                }
                             }
                         }
                     }

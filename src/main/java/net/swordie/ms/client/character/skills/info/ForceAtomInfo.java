@@ -46,6 +46,7 @@ public class ForceAtomInfo {
         outPacket.encodeInt(getCreateTime());
         outPacket.encodeInt(getMaxHitCount());
         outPacket.encodeInt(getEffectIdx());
+        outPacket.encodeInt(0);
     }
 
     public int getKey() {

@@ -9,7 +9,7 @@ if sm.sendAskYesNo("#b(Are you certain that you were the hero that wielded the #
     sm.removeSkill(20000297)
     sm.setJob(2100)
     sm.addSP(5, True)
-    # 444
+    sm.resetStats()
     sm.removeSkill(20001296)
     sm.giveSkill(20001296)
     sm.chatScript("You learned the Back to Rien skill.")

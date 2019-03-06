@@ -1,6 +1,8 @@
 package net.swordie.ms.client.character.quest.reward;
 
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.connection.packet.WvsContext;
+import net.swordie.ms.enums.MessageType;
 import net.swordie.ms.enums.Stat;
 import net.swordie.ms.loaders.DatSerializable;
 
@@ -34,6 +36,7 @@ public class QuestPopReward implements QuestReward {
     @Override
     public void giveReward(Char chr) {
         chr.addStat(Stat.pop, getPop());
+        chr.write(WvsContext.message(MessageType.INC_POP_MESSAGE, getPop(), null, (byte) 0));
     }
 
     @Override

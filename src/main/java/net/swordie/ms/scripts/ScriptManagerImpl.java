@@ -10,6 +10,7 @@ import net.swordie.ms.client.character.MonsterPark;
 import net.swordie.ms.client.character.avatar.AvatarLook;
 import net.swordie.ms.client.character.damage.DamageSkinSaveData;
 import net.swordie.ms.client.character.damage.DamageSkinType;
+import net.swordie.ms.client.character.info.ExpIncreaseInfo;
 import net.swordie.ms.client.character.items.Inventory;
 import net.swordie.ms.client.character.items.Item;
 import net.swordie.ms.client.character.items.ItemBuffs;
@@ -17,6 +18,7 @@ import net.swordie.ms.client.character.quest.Quest;
 import net.swordie.ms.client.character.quest.QuestManager;
 import net.swordie.ms.client.character.scene.Scene;
 import net.swordie.ms.client.character.skills.Option;
+import net.swordie.ms.client.character.skills.MatrixSkill;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatBase;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
@@ -29,10 +31,7 @@ import net.swordie.ms.client.party.PartyMember;
 import net.swordie.ms.client.trunk.TrunkOpen;
 import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.connection.packet.*;
-import net.swordie.ms.constants.GameConstants;
-import net.swordie.ms.constants.ItemConstants;
-import net.swordie.ms.constants.JobConstants;
-import net.swordie.ms.constants.SkillConstants;
+import net.swordie.ms.constants.*;
 import net.swordie.ms.enums.*;
 import net.swordie.ms.handlers.EventManager;
 import net.swordie.ms.life.DeathType;
@@ -49,6 +48,7 @@ import net.swordie.ms.util.FileTime;
 import net.swordie.ms.util.Position;
 import net.swordie.ms.util.Rect;
 import net.swordie.ms.util.Util;
+import net.swordie.ms.util.container.Tuple;
 import net.swordie.ms.world.World;
 import net.swordie.ms.world.field.*;
 import net.swordie.ms.world.field.fieldeffect.FieldEffect;
@@ -106,6 +106,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	private ScriptMemory memory = new ScriptMemory();
 	private boolean curNodeEventEnd;
 	private static final Lock fileReadLock = new ReentrantLock();
+	private int answerVal = 0;
 
 	private ScriptManagerImpl(Char chr, Field field) {
 		this.chr = chr;
@@ -158,15 +159,23 @@ public class ScriptManagerImpl implements ScriptManager {
 		startScript(parentID, 0, scriptType);
 	}
 
+	public void startScript(int parentID, String scriptName, ScriptType scriptType, int npcID) {
+		startScript(parentID, 0, scriptName, scriptType, npcID);
+	}
+
 	public void startScript(int parentID, String scriptName, ScriptType scriptType) {
-		startScript(parentID, 0, scriptName, scriptType);
+		startScript(parentID, 0, scriptName, scriptType, 0);
 	}
 
 	public void startScript(int parentID, int objID, ScriptType scriptType) {
-		startScript(parentID, objID, parentID + ".py", scriptType);
+		startScript(parentID, objID, parentID + ".py", scriptType, 0);
 	}
 
 	public void startScript(int parentID, int objID, String scriptName, ScriptType scriptType) {
+		startScript(parentID, objID, scriptName, scriptType, 0);
+	}
+
+	public void startScript(int parentID, int objID, String scriptName, ScriptType scriptType, int npcID) {
 		if (scriptType == ScriptType.None || (scriptType == ScriptType.Quest && !isQuestScriptAllowed())) {
 			log.debug(String.format("Did not allow script %s to go through (type %s)  |  Active Script Type: %s", scriptName, scriptType, getLastActiveScriptType()));
 			return;
@@ -202,8 +211,10 @@ public class ScriptManagerImpl implements ScriptManager {
 					scriptName.charAt(scriptName.length() - 1) == QUEST_START_SCRIPT_END_TAG.charAt(0)); // biggest hack eu
 		}
 		ScriptInfo scriptInfo = new ScriptInfo(scriptType, bindings, parentID, scriptName);
-		if (scriptType == ScriptType.Npc) {
+		if (scriptType == ScriptType.Npc || scriptType == ScriptType.Item) {
 			getNpcScriptInfo().setTemplateID(parentID);
+		} else if (scriptType == ScriptType.Item) {
+			getNpcScriptInfo().setTemplateID(npcID);
 		}
 		scriptInfo.setObjectID(objID);
 		getScripts().put(scriptType, scriptInfo);
@@ -565,13 +576,31 @@ public class ScriptManagerImpl implements ScriptManager {
 		getNpcScriptInfo().addParam(NpcScriptInfo.Param.PlayerAsSpeaker);
 	}
 
-	public void setBoxChat() {
-		setBoxChat(true);
+	public void setColor(byte color) {
+		getNpcScriptInfo().setColor(color);
 	}
+
+	public void setBoxChat() { getNpcScriptInfo().addParam(NpcScriptInfo.Param.BoxChat); }
 
 	public void setBoxChat(boolean color) { // true = Standard BoxChat  |  false = Zero BoxChat
 		getNpcScriptInfo().setColor((byte) (color ? 1 : 0));
 		getNpcScriptInfo().addParam(NpcScriptInfo.Param.BoxChat);
+	}
+
+	public void setBoxOverrideSpeaker() {
+		getNpcScriptInfo().addParam(NpcScriptInfo.Param.BoxChatOverrideSpeaker);
+	}
+
+	public void setIntroBoxChat(int npcID) {
+		setSpeakerID(npcID);
+		getNpcScriptInfo().setColor((byte) 1);
+		getNpcScriptInfo().addParam(NpcScriptInfo.Param.BoxChatOverrideSpeakerNoEndChat);
+	}
+
+	public void setNpcOverrideBoxChat(int npcID) {
+		setSpeakerID(npcID);
+		getNpcScriptInfo().setColor((byte) 1);
+		getNpcScriptInfo().addParam(NpcScriptInfo.Param.BoxChatOverrideSpeakerNoEndChat);
 	}
 
 	public void flipBoxChat() {
@@ -629,7 +658,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void setJob(short jobID) {
 		chr.setJob(jobID);
 		Map<Stat, Object> stats = new HashMap<>();
-		stats.put(Stat.subJob, jobID);
+		stats.put(Stat.subJob, new Tuple<>((short) jobID, (short)chr.getSubJob()));
 		chr.getClient().write(WvsContext.statChanged(stats));
 	}
 
@@ -653,6 +682,14 @@ public class ScriptManagerImpl implements ScriptManager {
 		Map<Stat, Object> stats = new HashMap<>();
 		stats.put(Stat.sp, chr.getAvatarData().getCharacterStat().getExtendSP());
 		chr.getClient().write(WvsContext.statChanged(stats));
+	}
+
+	public int getSP() {
+		return chr.getSpToCurrentJob();
+	}
+
+	public int getAP() {
+		return chr.getAvatarData().getCharacterStat().getAp();
 	}
 
 	@Override
@@ -738,7 +775,12 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	@Override
 	public void giveExp(long expGiven) {
-		chr.addExp(expGiven);
+		ExpIncreaseInfo eii = new ExpIncreaseInfo();
+		eii.setLastHit(true);
+		eii.setIncEXP(Util.maxInt(expGiven));
+		eii.setOnQuest(true);
+		chr.addExp(expGiven, eii);
+
 	}
 
 	@Override
@@ -807,6 +849,12 @@ public class ScriptManagerImpl implements ScriptManager {
 		}
 	}
 
+	public void setInGameDirectionMode(boolean lockUI, boolean blackFrame, boolean forceMouseOver, boolean showUI) {
+		if (chr != null) {
+			chr.write(UserLocal.setInGameDirectionMode(lockUI, blackFrame, forceMouseOver, showUI));
+		}
+	}
+
 	public void lockInGameUI(boolean lock) {
 		lockInGameUI(lock, true);
 	}
@@ -824,6 +872,35 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void setCurNodeEventEnd(boolean curNodeEventEnd) {
 		this.curNodeEventEnd = curNodeEventEnd;
+	}
+
+	public void setTemporarySkillSet(int skillSet) {
+		// SET_TEMPORARY_SKILL_SET
+	}
+
+	public void setStandAloneMode(boolean enable) {
+
+	}
+
+	public void lockUI() {
+		curNodeEventEnd(true);
+		setTemporarySkillSet(0);
+		lockInGameUI(true, false);
+	}
+
+	public void unlockUI() {
+		setTemporarySkillSet(0);
+		lockInGameUI(false, true);
+	}
+
+	public void lockForIntro() {
+		lockUI();
+		setStandAloneMode(true);
+	}
+
+	public void unlockForIntro() {
+		setStandAloneMode(false);
+		unlockUI();
 	}
 
 	public void progressMessageFont(int fontNameType, int fontSize, int fontColorType, int fadeOutDelay, String message) {
@@ -1061,6 +1138,9 @@ public class ScriptManagerImpl implements ScriptManager {
 		chr.write(CField.fieldEffect(FieldEffect.takeSnapShotOfClient(duration)));
 	}
 
+	public void removeOverlapScreen(int fadeOutTime) {
+		chr.write(CField.fieldEffect(FieldEffect.removeOverlapScreen(fadeOutTime)));
+	}
 	public void setFieldColour(GreyFieldType colorFieldType, short red, short green, short blue, int time) {
 		chr.write(CField.fieldEffect(FieldEffect.setFieldColor(colorFieldType, red, green, blue, time)));
 	}
@@ -1167,7 +1247,7 @@ public class ScriptManagerImpl implements ScriptManager {
 		NpcShopDlg nsd = NpcData.getShopById(shopID);
 		if (nsd != null) {
 			chr.setShop(nsd);
-			chr.write(ShopDlg.openShop(0, nsd));
+			chr.write(ShopDlg.openShop(getParentID(), 0, nsd));
 		} else {
 			chat(String.format("Could not find shop with id %d.", shopID));
 			log.error(String.format("Could not find shop with id %d.", shopID));
@@ -1299,6 +1379,16 @@ public class ScriptManagerImpl implements ScriptManager {
 			return;
 		}
 		chr.write(NpcPool.npcSetSpecialAction(life.getObjectId(), effectName, duration));
+	}
+
+	public void stopNpcSpecialActionByTemplateId(int npcTemplateId) {
+		Field field = chr.getField();
+		Life life = field.getLifeByTemplateId(npcTemplateId);
+		if(!(life instanceof Npc)) {
+			log.error(String.format("npc %d is null or not an instance of Npc", npcTemplateId));
+			return;
+		}
+		chr.write(NpcPool.npcResetSpecialAction(life.getObjectId()));
 	}
 
 	public int getNpcObjectIdByTemplateId(int npcTemplateId) {
@@ -1455,7 +1545,15 @@ public class ScriptManagerImpl implements ScriptManager {
 		chr.write(ReactorPool.reactorChangeState(reactor, delay, stateLength));
 	}
 
-
+	public Reactor getReactor(int objectID) {
+		Field field = chr.getField();
+		Life life = field.getLifeByObjectID(objectID);
+		if (life != null && life instanceof Reactor) {
+			Reactor reactor = (Reactor) life;
+			return reactor;
+		}
+		return null;
+	}
 
 	// Party-related methods -------------------------------------------------------------------------------------------
 
@@ -1628,6 +1726,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public void giveItem(int id, int quantity) {
 		chr.addItemToInventory(id, quantity);
+		chr.write(User.effect(Effect.gainQuestItem(id, quantity)));
 	}
 
 	public void giveAndEquip(int id) {
@@ -1676,6 +1775,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public void consumeItem(int itemID, int amount) {
 		chr.consumeItem(itemID, amount);
+		chr.write(User.effect(Effect.gainQuestItem(itemID, -amount)));
 	}
 
 	@Override
@@ -1762,15 +1862,24 @@ public class ScriptManagerImpl implements ScriptManager {
 		return chr.getQuestManager().hasQuestCompleted(id);
 	}
 
-	public void createQuestWithQRValue(int questId, String qrValue, boolean ex) {
-		createQuestWithQRValue(chr, questId, qrValue, ex);
+	public void setQuestEx(int questID, String key, String value) {
+		chr.setQuestEx(questID, key, value);
+		chr.write(WvsContext.questRecordExMessage(chr.getQuestEx(questID)));
+	}
+
+	public String getQuestEx(int questID, String key) {
+		String value = chr.getQuestEx(questID, key);
+		if (value != null) {
+			return value;
+		}
+		return "";// or null ?
 	}
 
 	public void createQuestWithQRValue(int questId, String qrValue) {
-		createQuestWithQRValue(chr, questId, qrValue, true);
+		createQuestWithQRValue(chr, questId, qrValue);
 	}
 
-	public void createQuestWithQRValue(Char character, int questId, String qrValue, boolean ex) {
+	public void createQuestWithQRValue(Char character, int questId, String qrValue) {
 		QuestManager qm = character.getQuestManager();
 		Quest quest = qm.getQuests().get(questId);
 		if (quest == null) {
@@ -1779,7 +1888,7 @@ public class ScriptManagerImpl implements ScriptManager {
 			qm.addCustomQuest(quest);
 		}
 		quest.setQrValue(qrValue);
-		updateQRValue(questId, ex);
+		updateQRValue(questId);
 	}
 
 	public void deleteQuest(int questId) {
@@ -1802,52 +1911,42 @@ public class ScriptManagerImpl implements ScriptManager {
 	public String getQRValue(Char character, int questId) {
 		Quest quest = chr.getQuestManager().getQuests().get(questId);
 		if (quest == null) {
-			return "Quest is Null";
+			return "";
 		}
 		return quest.getQRValue();
 	}
 
-	public void setQRValue(int questId, String qrValue) { setQRValue(questId, qrValue, true);}
-
-	public void setQRValue(int questId, String qrValue, boolean ex) {
-		setQRValue(chr, questId, qrValue, ex);
+	public void setQRValue(int questId, String qrValue) {
+		setQRValue(chr, questId, qrValue);
 	}
 
-	public void setQRValue(Char character, int questId, String qrValue, boolean ex) {
+	public void setQRValue(Char character, int questId, String qrValue) {
 		Quest quest = chr.getQuestManager().getQuests().get(questId);
 		quest.setQrValue(qrValue);
-		updateQRValue(questId, ex);
+		updateQRValue(questId);
 	}
 
 	public void addQRValue(int questId, String qrValue) {
-		addQRValue(questId, qrValue, true);
-	}
-
-	public void addQRValue(int questId, String qrValue, boolean ex) {
 		String qrVal = getQRValue(questId);
 		if (qrVal.equals("") || qrVal.equals("Quest is Null")) {
 			createQuestWithQRValue(questId, qrValue);
 			return;
 		}
 		setQRValue(questId, qrValue + ";" + qrVal);
-		updateQRValue(questId, ex);
+		updateQRValue(questId);
 	}
 
 	public boolean isComplete(int questID) {
 		return chr.getQuestManager().isComplete(questID);
 	}
 
-	public void updateQRValue(int questId, boolean ex) {
+	public void updateQRValue(int questId) {
 		Quest quest = chr.getQuestManager().getQuests().get(questId);
 		if (quest == null) {
 			log.error(String.format("The user does not have the quest %d.", questId));
 			return;
 		}
-		if (ex) {
-			chr.write(WvsContext.questRecordExMessage(quest));
-		} else {
-			chr.write(WvsContext.questRecordMessage(quest));
-		}
+		chr.write(WvsContext.questRecordMessage(quest));
 	}
 
 
@@ -2028,12 +2127,16 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	@Override
 	public int zoomCamera(int inZoomDuration, int scale, int x, int y) {
+		return zoomCamera(inZoomDuration, scale, 1000, x, y);
+	}
+
+	public int zoomCamera(int inZoomDuration, int scale, int timePos, int x, int y) {
 		getNpcScriptInfo().setMessageType(NpcMessageType.AskIngameDirection);
-		chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.cameraZoom(inZoomDuration, scale, 1000, new Position(x, y))));
-        Object response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
-        if (response == null) {
-            throw new NullPointerException(INTENDED_NPE_MSG);
-        }
+		chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.cameraZoom(inZoomDuration, scale, timePos, new Position(x, y))));
+		Object response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
+		if (response == null) {
+			throw new NullPointerException(INTENDED_NPE_MSG);
+		}
 		return (int) response;
 	}
 
@@ -2147,6 +2250,10 @@ public class ScriptManagerImpl implements ScriptManager {
 		chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.avatarLookSet(equipIDs)));
 	}
 
+	public void removeAdditionalEffect() {
+		chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.removeAdditionalEffect()));
+	}
+
 	public void faceOff(int faceItemID) {
 		chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.faceOff(faceItemID)));
 	}
@@ -2217,9 +2324,17 @@ public class ScriptManagerImpl implements ScriptManager {
 		chr.write(CField.openUI(uiIDValue));
 	}
 
-	@Override
-	public void showClearStageExpWindow(long expGiven) {
-		chr.write(CField.fieldEffect(FieldEffect.showClearStageExpWindow((int) expGiven)));
+	public void openUIWithOption(UIType uiID, int option){
+		openUIWithOption(uiID, option, new int[0]);
+	}
+
+	public void openUIWithOption(UIType uiID, int option, int[] minigameOptions){
+		int uiIDValue = uiID.getVal();
+		chr.write(CField.openUIWithOption(uiIDValue, option, minigameOptions));
+	}
+
+	public void showClearStageExpWindow(int expGiven) {
+		chr.write(CField.fieldEffect(FieldEffect.showClearStageExpWindow(expGiven)));
 		giveExpNoMsg(expGiven);
 	}
 
@@ -2239,7 +2354,16 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void blind(int enable, int x, int color, int time) { blind(enable, x, color, 0, 0, time); }
 
-	public void blind(int enable, int x, int color, int unk1, int unk2, int time) { chr.write(CField.fieldEffect(FieldEffect.blind(enable, x, color, unk1, unk2, time))); }
+	public void blind(int enable, int x, int color, int unk1, int unk2, int time) { chr.write(CField.fieldEffect(FieldEffect.blind(enable, x, color, unk1, unk2, time, 0))); }
+
+	public void blind(int enable, int x, int color, int unk1, int unk2, int time, int unk3){ chr.write(CField.fieldEffect(FieldEffect.blind(enable, x, color, unk1, unk2, time, unk3)));}
+
+	public void OnOffLayer_On(int term, String key, int unk1, int unk2, int z, String path, int origin, int unk5, int unk6, int unk7) { chr.write(CField.fieldEffect(FieldEffect.OnOffLayer_On(term, key, unk1, unk2, z, path, origin, unk5, unk6, unk7))); }
+
+	public void OnOffLayer_Move(int term, String key, int dx, int dy) { chr.write(CField.fieldEffect(FieldEffect.OnOffLayer_Move(term, key, dx, dy))); }
+
+	public void OnOffLayer_Off(int term, String key, int unk) { chr.write(CField.fieldEffect(FieldEffect.OnOffLayer_Off(term, key, unk))); }
+
 	@Override
 	public int getRandomIntBelow(int upBound) {
 		return new Random().nextInt(upBound);
@@ -2263,6 +2387,9 @@ public class ScriptManagerImpl implements ScriptManager {
 		chr.write(User.effect(Effect.effectFromWZ(dir, false, delay, placement, 0)));
 	}
 
+	public void createFieldTextEffect(String msg, int letterDelay, int showTime, int clientPosition, int boxPosX, int boxPosY, int align, int lineSpace, TextEffectType type, int enterType, int leaveType) {
+		chr.write(User.effect(Effect.createFieldTextEffect(msg, letterDelay, showTime, clientPosition, new Position(boxPosX, boxPosY), align, lineSpace, type, enterType, leaveType)));
+	}
 	public void avatarOriented(String effectPath) {
 		chr.write(User.effect(Effect.avatarOriented(effectPath)));
 	}
@@ -2348,7 +2475,17 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public int playVideoByScript(String videoPath) {
 		getNpcScriptInfo().setMessageType(NpcMessageType.PlayMovieClip);
-		chr.write(UserLocal.videoByScript(videoPath, false));
+		chr.write(UserLocal.videoByScript(videoPath, true));
+		Object response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
+		if (response == null) {
+			throw new NullPointerException(INTENDED_NPE_MSG);
+		}
+		return (int) response;
+	}
+
+	public int playURLVideoByScript(String videoPath) {
+		getNpcScriptInfo().setMessageType(NpcMessageType.PlayMovieClip);
+		chr.write(UserLocal.videoByScript(videoPath));
 		Object response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
 		if (response == null) {
 			throw new NullPointerException(INTENDED_NPE_MSG);
@@ -2363,6 +2500,10 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void addPopUpSay(int npcID, int duration, String message, String effect) {
 		chr.write(UserLocal.addPopupSay(npcID, duration, message, effect));
+	}
+
+	public void setFieldFloating(int fieldID, int x, int y, int term) {
+		chr.write(UserLocal.setFieldFloating(fieldID, x, y, term));
 	}
 
 	public void moveParticleEff(String type, int startX, int startY, int endX, int endY, int moveTime, int totalCount, int oneSprayMin, int oneSprayMax) {
@@ -2405,6 +2546,244 @@ public class ScriptManagerImpl implements ScriptManager {
 	}
 
 	public void makingSkillLevelUp(int skillID) { chr.makingSkillLevelUp(skillID); }
+
+	public void resetStats() {
+		int amount = chr.getStat(Stat.str) + chr.getStat(Stat.dex) + chr.getStat(Stat.inte) + chr.getStat(Stat.luk);
+		chr.setStat(Stat.str, 4);
+		chr.setStat(Stat.dex, 4);
+		chr.setStat(Stat.inte, 4);
+		chr.setStat(Stat.luk, 4);
+		amount -= 4 * 4;
+		switch (JobConstants.getJobCategory(chr.getJob())) {
+			case 1:
+			case 5:
+				chr.setStat(Stat.str, 35);
+				amount -= 35;
+				break;
+			case 2:
+				chr.setStat(Stat.inte, 20);
+				amount -= 20;
+				break;
+			case 3:
+				chr.setStat(Stat.dex, 25);
+				amount -= 25;
+				break;
+			case 4:
+				chr.setStat(Stat.luk, 35);
+				amount -= 35;
+				break;
+		}
+		chr.setStatAndSendPacket(Stat.str, chr.getStat(Stat.str));
+		chr.setStatAndSendPacket(Stat.dex, chr.getStat(Stat.dex));
+		chr.setStatAndSendPacket(Stat.inte, chr.getStat(Stat.inte));
+		chr.setStatAndSendPacket(Stat.luk, chr.getStat(Stat.luk));
+		chr.setStatAndSendPacket(Stat.ap, amount);
+	}
+
+	public void useNodestone() {
+		MatrixSkill skill = new MatrixSkill();
+		int rate = Util.getRandom(0,100);
+		if (rate < 5) {// Special Node
+			List<VCoreData> specialNodes = VCore.getSpecialNodes();
+			VCoreData core = Util.getRandomFromCollection(specialNodes);
+			skill.setCoreID(core.getCoreID());
+			skill.setSkillID(0);
+			skill.setSkillLevel(1);
+			skill.setMasterLevel(1);
+			skill.setExpirationDate(FileTime.fromLong(System.currentTimeMillis() + (86400000 * core.getExpireAfter())));
+			specialNodes.clear();
+		} else if (rate < 15) {// Skill Node
+			List<VCoreData> decentNodes = VCore.getDecentNodes();
+			List<VCoreData> jobNodes = VCore.getJobNodes();
+			List<VCoreData> classNodes = VCore.getClassNodes();
+
+			rate = Util.getRandom(0,100);
+			VCoreData core;
+			if (rate < 40) {// Decent Skills
+				core = Util.getRandomFromCollection(decentNodes);
+			} else if (rate < 48) {// Blink
+				core = VCore.getCore(10000007);
+			} else if (rate < 54) {// Rope Lift
+				core = VCore.getCore(10000000);
+			} else if (rate < 60) {// Erda Nova
+				core = VCore.getCore(10000008);
+			} else if (rate < 65) {// Will of Erda
+				core = VCore.getCore(10000009);
+			} else if (rate < 72) {// Usable Class Skill
+				core = Util.getRandomFromCollection(classNodes);
+				while (!core.isClassSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(classNodes);
+				}
+			} else if (rate < 74) {// Unusable Class Skill
+				core = Util.getRandomFromCollection(classNodes);
+				while (core.isClassSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(classNodes);
+				}
+			} else if (rate < 79) {// Usable Job Skill
+				core = Util.getRandomFromCollection(jobNodes);
+				while (!core.isJobSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(jobNodes);
+				}
+			} else {// Unusable Job Skill
+				core = Util.getRandomFromCollection(jobNodes);
+				while (!core.isJobSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(jobNodes);
+				}
+			}
+			decentNodes.clear();
+			classNodes.clear();
+			jobNodes.clear();
+			skill.setCoreID(core.getCoreID());
+			skill.setSkillID(core.getConnectSkills().get(0));
+			skill.setSkillLevel(1);
+			skill.setMasterLevel(core.getMaxLevel());
+		} else {// Boost Node
+			rate = Util.getRandom(0,100);
+			VCoreData core;
+			if (rate < 70) {
+				List<VCoreData> boostNode = VCore.getBoostNodes();
+				core = Util.getRandomFromCollection(boostNode);
+				while (!core.isJobSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(boostNode);
+				}
+				skill.setCoreID(core.getCoreID());
+				skill.setSkillID(core.getConnectSkills().get(0));
+				skill.setSkillLevel(1);
+				skill.setMasterLevel(core.getMaxLevel());
+				boostNode.remove(core);
+
+				core = Util.getRandomFromCollection(boostNode);
+				while (!core.isJobSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(boostNode);
+				}
+				skill.setSkillID2(core.getConnectSkills().get(0));
+				boostNode.remove(core);
+
+				core = Util.getRandomFromCollection(boostNode);
+				while (!core.isJobSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(boostNode);
+				}
+				skill.setSkillID3(core.getConnectSkills().get(0));
+				boostNode.clear();
+			} else {
+				List<VCoreData> boostNode = VCore.getBoostNodes();
+				core = Util.getRandomFromCollection(boostNode);
+				while (core.isJobSkill(chr.getJob())) {
+					core = Util.getRandomFromCollection(boostNode);
+				}
+				int job = Integer.valueOf(core.getJobs().get(0));
+
+				skill.setCoreID(core.getCoreID());
+				skill.setSkillID(core.getConnectSkills().get(0));
+				skill.setSkillLevel(1);
+				skill.setMasterLevel(core.getMaxLevel());
+
+				boostNode.remove(core);
+
+				core = Util.getRandomFromCollection(boostNode);
+				while (!core.isJobSkill(job)) {
+					core = Util.getRandomFromCollection(boostNode);
+				}
+				skill.setSkillID2(core.getConnectSkills().get(0));
+				boostNode.remove(core);
+
+				core = Util.getRandomFromCollection(boostNode);
+				while (!core.isJobSkill(job)) {
+					core = Util.getRandomFromCollection(boostNode);
+				}
+				skill.setSkillID3(core.getConnectSkills().get(0));
+				boostNode.clear();
+			}
+		}
+		chr.getMatrixInventory().addSkill(skill);
+		chr.write(WvsContext.updateVMatrix(chr, false, MatrixUpdateType.ENABLE, 0));
+		chr.write(WvsContext.nodeStoneResult(skill.getCoreID(), skill.getSkillID(), skill.getSkillID2(), skill.getSkillID3()));
+		systemMessage("You used the Nodestone and got a Node.");
+	}
+
+	public void setSpineObjectEffectAlpha(boolean back, String key, int alpha, int delay) {
+		chr.write(MapLoadable.setSpineObjectEffectAlpha(back, key, alpha, delay));
+	}
+	public void setObjectEffectAlpha(String key, int alpha, int delay) {
+		setSpineObjectEffectAlpha(false, key, alpha, delay);
+		setSpineObjectEffectAlpha(true, key, alpha, delay);
+	}
+
+	public void setSpineObjectEffectPlay(boolean back, String key, String name, boolean loop, boolean randomStart) {
+		chr.write(MapLoadable.setSpineObjectEffectPlay(back, key, name, loop, randomStart));
+	}
+	public void setObjectEffectPlay(String key, String name, boolean loop, boolean randomStart) {
+		setSpineObjectEffectPlay(false, key, name, loop, randomStart);
+		setSpineObjectEffectPlay(true, key, name, loop, randomStart);
+	}
+
+	public void setSpineObjectEffectAddPlay(boolean back, String key, String name, boolean loop) {
+		chr.write(MapLoadable.setSpineObjectEffectAddPlay(back, key, name, loop));
+	}
+	public void setObjectEffectAddPlay(String key, String name, boolean loop) {
+		setSpineObjectEffectAddPlay(false, key, name, loop);
+		setSpineObjectEffectAddPlay(true, key, name, loop);
+	}
+
+	public void setSpineObjectEffectClearTracks(boolean back, String key, boolean setupPose) {
+		chr.write(MapLoadable.setSpineObjectEffectClearTracks(back, key, setupPose));
+	}
+	public void setObjectEffectClearTracks(String key, boolean setupPose) {
+		setSpineObjectEffectClearTracks(false, key, setupPose);
+		setSpineObjectEffectClearTracks(true, key, setupPose);
+	}
+
+	public void setSpineObjectEffectPlayrate(boolean back, String key, int scale) {
+		chr.write(MapLoadable.setSpineObjectEffectPlayrate(back, key, scale));
+	}
+	public void setObjectEffectPlayrate(String key, int scale) {
+		setSpineObjectEffectPlayrate(false, key, scale);
+		setSpineObjectEffectPlayrate(true, key, scale);
+	}
+
+	public void setSpineObjectEffectStop(boolean back, String key, boolean setupPose) {
+		chr.write(MapLoadable.setSpineObjectEffectStop(back, key, setupPose));
+	}
+	public void setObjectEffectStop(String key, boolean setupPose) {
+		setSpineObjectEffectStop(false, key, setupPose);
+		setSpineObjectEffectStop(true, key, setupPose);
+	}
+
+	public void cameraSwitchNormal(String targetName, int time) {
+		chr.write(UserLocal.cameraSwitchNormal(targetName, time));
+	}
+
+	public void cameraSwitchByPosition(int x, int y, int time) {
+		chr.write(UserLocal.cameraSwitchByPosition(new Position(x, y), time));
+	}
+
+	public void cameraSwitchBack() {
+		chr.write(UserLocal.cameraSwitchBack());
+	}
+
+	public void cameraSwitchPosByCID(int cid, boolean setCamera, int resetTime, String name) {
+		chr.write(UserLocal.cameraSwitchPosByCID(cid, setCamera, resetTime, name));
+	}
+
+	public void changeBGM(String sound, int startTime, int unk) {
+		chr.write(CField.fieldEffect(FieldEffect.changeBGM(sound, startTime, unk)));
+	}
+
+	public void setPartner(boolean add, int npcID, int skillID, boolean hasScript) {
+		chr.write(UserLocal.setPartner(add, npcID, skillID, hasScript));
+	}
+
+	public void sendUnityPortalDialog() {
+		chr.write(CField.unityPortalResult());
+	}
+
+	public int getAnswerVal() {
+		return answerVal;
+	}
+
+	public void setAnswerVal(int answerVal) {
+		this.answerVal = answerVal;
+	}
 
 	private ScriptMemory getMemory() {
 		return memory;

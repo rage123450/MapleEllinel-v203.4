@@ -1,5 +1,10 @@
 package net.swordie.ms.client.character;
 
+import net.swordie.ms.client.character.quest.QuestEx;
+import net.swordie.ms.constants.*;
+import net.swordie.ms.life.*;
+import net.swordie.ms.loaders.containerclasses.ItemInfo;
+import net.swordie.ms.util.container.Tuple;
 import net.swordie.ms.Server;
 import net.swordie.ms.client.Account;
 import net.swordie.ms.client.Client;
@@ -36,8 +41,6 @@ import net.swordie.ms.client.guild.GuildMember;
 import net.swordie.ms.client.guild.result.GuildResult;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.client.jobs.JobManager;
-import net.swordie.ms.client.jobs.legend.Evan;
-import net.swordie.ms.client.jobs.resistance.Demon;
 import net.swordie.ms.client.jobs.resistance.WildHunterInfo;
 import net.swordie.ms.client.jobs.sengoku.Kanna;
 import net.swordie.ms.client.party.Party;
@@ -47,23 +50,14 @@ import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.connection.db.InlinedIntArrayConverter;
 import net.swordie.ms.connection.packet.*;
-import net.swordie.ms.constants.GameConstants;
-import net.swordie.ms.constants.ItemConstants;
-import net.swordie.ms.constants.JobConstants;
-import net.swordie.ms.constants.SkillConstants;
 import net.swordie.ms.enums.*;
 import net.swordie.ms.handlers.ChatHandler;
 import net.swordie.ms.handlers.ClientSocket;
 import net.swordie.ms.handlers.EventManager;
-import net.swordie.ms.life.AffectedArea;
-import net.swordie.ms.life.Android;
-import net.swordie.ms.life.Familiar;
-import net.swordie.ms.life.Summon;
 import net.swordie.ms.life.drop.Drop;
 import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.pet.Pet;
 import net.swordie.ms.loaders.*;
-import net.swordie.ms.loaders.containerclasses.ItemInfo;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.scripts.ScriptType;
 import net.swordie.ms.util.*;
@@ -98,6 +92,7 @@ import static net.swordie.ms.enums.ChatType.SystemNotice;
 import static net.swordie.ms.enums.InvType.EQUIP;
 import static net.swordie.ms.enums.InvType.EQUIPPED;
 import static net.swordie.ms.enums.InventoryOperation.*;
+import static net.swordie.ms.util.FileTime.Type.ZERO_TIME;
 import static net.swordie.ms.world.field.FieldInstanceType.CHANNEL;
 
 /**
@@ -113,6 +108,7 @@ public class Char {
 	@Transient
 	private Client client;
 	private int rewardPoints;
+	private int vmatrixslots;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -148,6 +144,10 @@ public class Char {
 	@JoinColumn(name = "cashInventory")
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Inventory cashInventory = new Inventory(InvType.CASH, 52);
+
+	@JoinColumn(name = "matrixinventory")
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	private MatrixInventory matrixInventory = new MatrixInventory();
 
 	@JoinColumn(name = "avatarData")
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -209,9 +209,16 @@ public class Char {
 	@Column(name = "nextusabletime")
 	private Map<Integer, Long> skillCoolTimes;
 
+	@ElementCollection
+	@CollectionTable(name = "quests_ex", joinColumns = @JoinColumn(name = "charID"))
+	@MapKeyColumn(name = "questID")
+	@Column(name = "qrValue")
+	private Map<Integer, String> questsExStorage;
+
 	@Transient
 	private CharacterPotentialMan potentialMan;
-
+	@Transient
+	private Map<Integer, QuestEx> questRecordEx;
 	@Transient
 	private Ranking ranking;
 	@Transient
@@ -399,7 +406,15 @@ public class Char {
 	@Convert(converter = InlinedIntArrayConverter.class)
 	private List<Integer> quickslotKeys;
 	@Transient
-	private Android android;
+	private Dragon dragon = null;
+    @Transient
+    private Partner partner = null;
+	@Transient
+	private int psychicAreaCount = 1;
+    @Transient
+    private Map<Integer, PsychicArea> psychicArea = new HashMap<>();
+    @Transient
+    private Android android;
 
 	public Char() {
 		this(0, "", 0, 0, 0, (short) 0, (byte) -1, (byte) -1, 0, 0, new int[]{});
@@ -475,6 +490,8 @@ public class Char {
 		monsterParkCount = 0;
 		currentDirectionNode = new HashMap<>();
 		potentials = new HashSet<>();
+		questsExStorage = new HashMap<>();
+		questRecordEx = new HashMap<>();
 //        monsterBattleMobInfos = new ArrayList<>();
 //        monsterBattleLadder = new MonsterBattleLadder();
 //        monsterBattleRankInfo = new MonsterBattleRankInfo();
@@ -636,10 +653,16 @@ public class Char {
 	 * @param mask      Which info should be encoded.
 	 */
 	public void encode(OutPacket outPacket, DBChar mask) {
-
-		// CharacterData::Decode
+		//_______________________________________________
 		outPacket.encodeLong(mask.get());
+		//_______________________________________________
+
+		// -----------------------------------------
 		outPacket.encodeByte(getCombatOrders());
+		// -----------------------------------------
+
+
+		// -----------------------------------------
 		for (int i = 0; i < GameConstants.MAX_PET_AMOUNT; i++) {
 			if (i < getPets().size()) {
 				outPacket.encodeInt(getPets().get(i).getActiveSkillCoolTime());
@@ -647,33 +670,51 @@ public class Char {
 				outPacket.encodeInt(0);
 			}
 		}
+		// -----------------------------------------
+
+
+		// -----------------------------------------
 		outPacket.encodeByte(0); // unk, not in kmst
+		// -----------------------------------------
+
+		// -----------------------------------------
 		byte sizeByte = 0;
 		outPacket.encodeByte(sizeByte);
 		for (int i = 0; i < sizeByte; i++) {
 			outPacket.encodeInt(0);
 		}
+		// -----------------------------------------
 
+		// -----------------------------------------
 		int sizee = 0;
 		outPacket.encodeInt(sizee);
 		for (int i = 0; i < sizee; i++) {
 			outPacket.encodeInt(0); // nKey
 			outPacket.encodeLong(0); // pInfo
 		}
+		// -----------------------------------------
+
+
+		// -----------------------------------------
 		outPacket.encodeByte(0); // again unsure
+		// -----------------------------------------
+
 		if (mask.isInMask(DBChar.Character)) {
 			getAvatarData().getCharacterStat().encode(outPacket);
 			outPacket.encodeByte(getFriendRecords().size());
+
 			boolean hasBlessingOfFairy = getBlessingOfFairy() != null;
 			outPacket.encodeByte(hasBlessingOfFairy);
 			if (hasBlessingOfFairy) {
 				outPacket.encodeString(getBlessingOfFairy());
 			}
+
 			boolean hasBlessingOfEmpress = getBlessingOfEmpress() != null;
 			outPacket.encodeByte(hasBlessingOfEmpress);
 			if (hasBlessingOfEmpress) {
 				outPacket.encodeString(getBlessingOfEmpress());
 			}
+
 			outPacket.encodeByte(false); // ultimate explorer, deprecated
 		}
 		if (mask.isInMask(DBChar.Money)) {
@@ -698,6 +739,8 @@ public class Char {
 				outPacket.encodeLong(0);
 			}
 		}
+		// cant find monster battle info in gms for now
+		/*
 		if (mask.isInMask(DBChar.MonsterBattleInfo)) {
 			int count = 0; // MonsterBattle_MobInfo
 			outPacket.encodeInt(count);
@@ -732,7 +775,7 @@ public class Char {
 			if (hasMonsterBattleRankInfo) {
 				getMonsterBattleRankInfo().encode(outPacket); // TODO GW_MonsterBattleRankInfo::Decode(&dummyBLD, nSlotHyper);
 			}
-		}
+		}*/
 		if (mask.isInMask(DBChar.InventorySize)) {
 			outPacket.encodeByte(getEquipInventory().getSlots());
 			outPacket.encodeByte(getConsumeInventory().getSlots());
@@ -746,9 +789,11 @@ public class Char {
 			outPacket.encodeInt(0);
 		}
 		if (mask.isInMask(DBChar.ItemSlotEquip)) {
-			outPacket.encodeByte(0); // ?
+			boolean skipEquipInvEncode = false;
+			outPacket.encodeByte(skipEquipInvEncode);
 			List<Item> equippedItems = new ArrayList<>(getEquippedInventory().getItems());
 			equippedItems.sort(Comparator.comparingInt(Item::getBagIndex));
+
 			// Normal equipped items
 			for (Item item : equippedItems) {
 				Equip equip = (Equip) item;
@@ -758,6 +803,7 @@ public class Char {
 				}
 			}
 			outPacket.encodeShort(0);
+
 			// Cash equipped items
 			for (Item item : getEquippedInventory().getItems()) {
 				Equip equip = (Equip) item;
@@ -768,12 +814,15 @@ public class Char {
 			}
 			outPacket.encodeShort(0);
 			// Equip inventory
-			for (Item item : getEquipInventory().getItems()) {
-				Equip equip = (Equip) item;
-				outPacket.encodeShort(equip.getBagIndex());
-				equip.encode(outPacket);
+			if (!skipEquipInvEncode) {
+				for (Item item : getEquipInventory().getItems()) {
+					Equip equip = (Equip) item;
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+				outPacket.encodeShort(0);
 			}
-			outPacket.encodeShort(0);
+
 			// NonBPEquip::Decode (Evan)
 			for (Item item : getEquippedInventory().getItems()) {
 				Equip equip = (Equip) item;
@@ -782,7 +831,98 @@ public class Char {
 					equip.encode(outPacket);
 				}
 			}
-			outPacket.encodeShort(0);
+			outPacket.encodeShort(0);// 1
+
+			// Guessing pet consume items, could very well be wrong
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= 200 && item.getBagIndex() <= 300) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 2
+
+			// Android
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= APBase.getVal() && item.getBagIndex() <= APEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 3
+
+			// Angelic Buster
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= DUBase.getVal() && item.getBagIndex() < DUEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 4
+
+			// Bits
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= BitsBase.getVal() && item.getBagIndex() < BitsEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 5
+
+			// Zero
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= ZeroBase.getVal() && item.getBagIndex() < ZeroEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 6
+
+			// Monster Battle
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= MBPBase.getVal() && item.getBagIndex() < MBPEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 7
+
+			// Arcane Symbol
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= ASBase.getVal() && item.getBagIndex() < ASEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 8
+
+			// Totems
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= TotemBase.getVal() && item.getBagIndex() < TotemEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 9
+
+			// Haku
+			for (Item item : getEquippedInventory().getItems()) {
+				Equip equip = (Equip) item;
+				if (item.getBagIndex() >= HakuStart.getVal() && item.getBagIndex() < HakuEnd.getVal()) {
+					outPacket.encodeShort(equip.getBagIndex());
+					equip.encode(outPacket);
+				}
+			}
+			outPacket.encodeShort(0);// 10
+
 			// VirtualEquipInventory::Decode (Android)
 			// >= 20k < 200024?
 			for (Item item : getEquippedInventory().getItems()) {
@@ -793,81 +933,15 @@ public class Char {
 				}
 			}
 			outPacket.encodeShort(0);
-			// Guessing pet consume items, could very well be wrong
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= 200 && item.getBagIndex() <= 300) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
+
+			outPacket.encodeInt(0);// unk
+
+			if (mask.isInMask(DBChar.ItemSlotInstall)) {
+				outPacket.encodeShort(0);
+				outPacket.encodeShort(0);
 			}
-			outPacket.encodeShort(0);
-			// Android
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= APBase.getVal() && item.getBagIndex() <= APEnd.getVal()) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
-			}
-			outPacket.encodeShort(0);
-			// Angelic Buster
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= DUBase.getVal() && item.getBagIndex() < DUEnd.getVal()) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
-			}
-			outPacket.encodeShort(0);
-			// Bits
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= BitsBase.getVal() && item.getBagIndex() < BitsEnd.getVal()) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
-			}
-			outPacket.encodeShort(0);
-			// Zero
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= ZeroBase.getVal() && item.getBagIndex() < ZeroEnd.getVal()) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
-			}
-			outPacket.encodeShort(0);
-			// Totems
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= TotemBase.getVal() && item.getBagIndex() < TotemEnd.getVal()) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
-			}
-			outPacket.encodeShort(0);
-			// Maybe zero beta cash?
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= MBPBase.getVal() && item.getBagIndex() < MBPEnd.getVal()) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
-			}
-			outPacket.encodeShort(0);
-			// Haku
-			for (Item item : getEquippedInventory().getItems()) {
-				Equip equip = (Equip) item;
-				if (item.getBagIndex() >= HakuStart.getVal() && item.getBagIndex() < HakuEnd.getVal()) {
-					outPacket.encodeShort(equip.getBagIndex());
-					equip.encode(outPacket);
-				}
-			}
-			outPacket.encodeShort(0);
-			outPacket.encodeShort(0);
-			outPacket.encodeShort(0);
 		}
+		// All except equip
 		if (mask.isInMask(DBChar.ItemSlotConsume)) {
 			for (Item item : getConsumeInventory().getItems()) {
 				outPacket.encodeByte(item.getBagIndex());
@@ -896,7 +970,7 @@ public class Char {
 			}
 			outPacket.encodeByte(0);
 		}
-		// BagDatas
+		// BagDatas all except equip
 		if (mask.isInMask(DBChar.ItemSlotConsume)) {
 			// TODO
 			outPacket.encodeInt(0);
@@ -909,16 +983,20 @@ public class Char {
 			// TODO
 			outPacket.encodeInt(0);
 		}
-		if (mask.isInMask(DBChar.ItemSlotCash)) {
-			// TODO
-			outPacket.encodeInt(0);
-		}
 		// End bagdatas
 		if (mask.isInMask(DBChar.CoreAura)) {
 			int val = 0;
 			outPacket.encodeInt(val);
 			for (int i = 0; i < val; i++) {
 				outPacket.encodeInt(0);
+				outPacket.encodeLong(0);
+			}
+		}
+		if (mask.isInMask(DBChar.Unsure)) {
+			int val = 0;
+			outPacket.encodeInt(val);
+			for (int i = 0; i < val; i++) {
+				outPacket.encodeLong(0);
 				outPacket.encodeLong(0);
 			}
 		}
@@ -934,7 +1012,7 @@ public class Char {
 		}
 
 		if (mask.isInMask(DBChar.SkillRecord)) {
-			boolean encodeSkills = getSkills().size() > 0;
+			boolean encodeSkills = true;
 			outPacket.encodeByte(encodeSkills);
 			if (encodeSkills) {
 				Set<LinkSkill> linkSkills = getLinkSkills();
@@ -961,6 +1039,7 @@ public class Char {
 					outPacket.encodeInt(linkSkill.getLinkSkillID()); // another nCount
 					outPacket.encodeShort(linkSkill.getLevel() - 1); // idk
 				}
+				outPacket.encodeInt(0);
 			} else {
 				short size = 0;
 				outPacket.encodeShort(size);
@@ -1014,6 +1093,7 @@ public class Char {
 				outPacket.encodeInt((int) ((cooltime.getValue() - curTime) / 1000)); // nSkillCooltime
 			}
 		}
+
 		if (mask.isInMask(DBChar.QuestRecord)) {
 			// modified/deleted, not completed anyway
 			boolean removeAllOldEntries = true;
@@ -1047,7 +1127,7 @@ public class Char {
 			outPacket.encodeShort(completedQuests.size());
 			for (Quest quest : completedQuests) {
 				outPacket.encodeInt(quest.getQRKey());
-				outPacket.encodeInt(0); // Timestamp of completion
+				outPacket.encodeFT(quest.getCompletedTime());
 			}
 			if (!removeAllOldEntries) {
 				short size = 0;
@@ -1084,16 +1164,16 @@ public class Char {
 
 		if (mask.isInMask(DBChar.MapTransfer)) {
 			for (int i = 0; i < 5; i++) {
-				outPacket.encodeInt(0);
+				outPacket.encodeInt(999999999);
 			}
 			for (int i = 0; i < 10; i++) {
-				outPacket.encodeInt(0);
+				outPacket.encodeInt(999999999);
 			}
 			for (int i = 0; i < 13; i++) {
-				outPacket.encodeInt(0);
+				outPacket.encodeInt(999999999);
 			}
 			for (int i = 0; i < 13; i++) {
-				outPacket.encodeInt(0);
+				outPacket.encodeInt(999999999);
 			}
 		}
 		if (mask.isInMask(DBChar.MonsterBookCover)) {
@@ -1133,6 +1213,30 @@ public class Char {
 				familiar.encode(outPacket);
 			}
 		}
+		if (mask.isInMask(DBChar.QuestRecordEx)) {
+			outPacket.encodeShort(getQuestRecordEx().size());
+			for (Map.Entry<Integer, QuestEx> questEx : getQuestRecordEx().entrySet()) {
+				outPacket.encodeInt(questEx.getKey());
+				String str = "";
+				for (Map.Entry<String, String> value : questEx.getValue().getValues().entrySet()) {
+					if (str.isEmpty()) {
+						str = String.format("%s=%s", value.getKey(), value.getValue());
+					} else {
+						str = String.format("%s;%s=%s", str, value.getKey(), value.getValue());
+					}
+				}
+				outPacket.encodeString(str);
+			}
+		}
+		if (mask.isInMask(DBChar.Avatar)) {
+
+			short size = 0;
+			outPacket.encodeShort(size);
+			for (int i = 0; i < size; i++) {
+				outPacket.encodeInt(0); // sValue
+				new AvatarLook().encode(outPacket);
+			}
+		}
 		if (mask.isInMask(DBChar.NewYearCard)) {
 			short size = 0;
 			outPacket.encodeShort(size);
@@ -1150,23 +1254,18 @@ public class Char {
 				outPacket.encodeString("");
 			}
 		}
-		if (mask.isInMask(DBChar.QuestRecordEx)) {
-			outPacket.encodeShort(getQuestManager().getEx().size());
-			for (Quest quest : getQuestManager().getEx()) {
-				outPacket.encodeInt(quest.getQRKey());
-				outPacket.encodeString(quest.getQRValue());
-			}
-		}
-		if (mask.isInMask(DBChar.Avatar)) {
 
-			short size = 0;
-			outPacket.encodeShort(size);
+		outPacket.encodeByte(1);// v178
+
+		if (mask.isInMask(DBChar.Unk3)) {
+			int size = 0;
+			outPacket.encodeInt(0);
 			for (int i = 0; i < size; i++) {
-				outPacket.encodeInt(0); // sValue
-				new AvatarLook().encode(outPacket);
+				outPacket.encodeInt(0);
+				outPacket.encodeString("");
 			}
 		}
-		if (mask.isInMask(DBChar.MapTransfer)) {
+		if (mask.isInMask(DBChar.Unk4)) {
 			int size = 0;
 			outPacket.encodeInt(0);
 			for (int i = 0; i < size; i++) {
@@ -1192,6 +1291,13 @@ public class Char {
 			outPacket.encodeShort(size);
 			for (int i = 0; i < size; i++) {
 				// Encode shop buy limit
+			}
+		}
+		if (mask.isInMask(DBChar.Unk5)) {
+			short size = 0;
+			outPacket.encodeShort(size);
+			for (int i = 0; i < size; i++) {
+				// Encode something
 			}
 		}
 		if (mask.isInMask(DBChar.StolenSkills)) {
@@ -1302,6 +1408,7 @@ public class Char {
 //            getReturnEffectInfo().encode(outPacket); // ReturnEffectInfo::Decode
 			outPacket.encodeByte(0);
 		}
+
 		if (mask.isInMask(DBChar.DressUpInfo)) {
 			new DressUpInfo().encode(outPacket); // GW_DressUpInfo::Decode
 		}
@@ -1335,23 +1442,45 @@ public class Char {
 		}
 		if (mask.isInMask(DBChar.FarmUserInfo)) {
 			new FarmUserInfo().encode(outPacket); // FarmUserInfo::Decode
-			outPacket.encodeInt(0);
+			outPacket.encodeInt(-1);
 			outPacket.encodeInt(0);
 		}
+
+
 		if (mask.isInMask(DBChar.MemorialCubeInfo)) {
 			new MemorialCubeInfo().encode(outPacket); // MemorialCubeInfo::Decode
+		}
+		if (mask.isInMask(DBChar.UNK6)) {
+			outPacket.encodeLong(0);
+			outPacket.encodeLong(0);
+			outPacket.encodeInt(0);
+			outPacket.encodeInt(0);
 		}
 		if (mask.isInMask(DBChar.LikePoint)) {
 			new LikePoint().encode(outPacket);
 		}
 		if (mask.isInMask(DBChar.RunnerGameRecord)) {
-			new RunnerGameRecord().encode(outPacket); // RunnerGameRecord::Decode
+			new RunnerGameRecord().encode(outPacket);
+		}
+		if (mask.isInMask(DBChar.UNK7)) {
+			// sub_92A4F0
+			int size = 0;
+			outPacket.encodeInt(size);
+			for (int i = 0; i < size; i++) {
+				outPacket.encodeInt(0);
+				outPacket.encodeByte(0);
+				outPacket.encodeByte(0);
+				outPacket.encodeByte(0);
+			}
+			outPacket.encodeInt(0);
+			outPacket.encodeLong(0);
 		}
 		short sizeO = 0;
 		outPacket.encodeShort(sizeO);
 		for (int i = 0; i < sizeO; i++) {
 			outPacket.encodeInt(0);
 			outPacket.encodeString("");
+
 		}
 		if (mask.isInMask(DBChar.MonsterCollection)) {
 			Set<MonsterCollectionExploration> mces = getAccount().getMonsterCollection().getMonsterCollectionExplorations();
@@ -1363,12 +1492,46 @@ public class Char {
 		}
 		boolean farmOnline = false;
 		outPacket.encodeByte(farmOnline);
+
 		int sizeInt = 0;
 		// CharacterData::DecodeTextEquipInfo
 		outPacket.encodeInt(sizeInt);
 		for (int i = 0; i < sizeInt; i++) {
 			outPacket.encodeInt(0);
 			outPacket.encodeString("");
+		}
+
+		if (mask.isInMask(DBChar.UNK8)) {
+			int size = 0;
+			outPacket.encodeShort(size);
+			for (int i = 0; i < size; i++) {
+				outPacket.encodeInt(0);
+				outPacket.encodeInt(0);
+			}
+		}
+		if (mask.isInMask(DBChar.VMatrixRecord)) {
+			matrixInventory.encode(outPacket);
+		}
+		if (mask.isInMask(DBChar.Unk)) {
+			// sub_92C4A0
+			outPacket.encodeInt(0);// acc id
+			outPacket.encodeInt(0);// char id
+
+			//	sub_92B650
+			outPacket.encodeInt(0);
+			outPacket.encodeInt(-1);
+			outPacket.encodeInt(2147483647);
+			outPacket.encodeFT(FileTime.fromType(ZERO_TIME));
+			// end sub_92B650
+
+			outPacket.encodeLong(0);
+			outPacket.encodeLong(0);
+			outPacket.encodeInt(0);// 219
+			outPacket.encodeInt(0);// 1255
+			// end sub_92C4A0
+		}
+		if (mask.isInMask(DBChar.Unk)) {
+			outPacket.encodeInt(0);
 		}
 
 		if (mask.isInMask(DBChar.VisitorLog4)) {
@@ -1430,11 +1593,23 @@ public class Char {
 			// red leaf information
 			outPacket.encodeInt(getAccId());
 			outPacket.encodeInt(getId());
+			outPacket.encodeInt(4);
 			outPacket.encodeInt(0);
-			outPacket.encodeInt(0);
+			outPacket.encodeArr(new byte[32]); // real
 		}
-		outPacket.encodeArr(new byte[32]); // real
 
+		if (mask.isInMask(DBChar.Unk)) {
+			outPacket.encodeByte(0);// if true avatar look encode
+		}
+
+		if (mask.isInMask(DBChar.Unk)) {
+			outPacket.encodeInt(0);
+			outPacket.encodeInt(0);
+			outPacket.encodeInt(0);
+			outPacket.encodeInt(0);
+			outPacket.encodeShort(0);
+			outPacket.encodeShort(0);
+		}
 	}
 
 	@Override
@@ -1614,14 +1789,28 @@ public class Char {
 		getAvatarData().getCharacterStat().setJob(id);
 		setJobHandler(JobManager.getJobById((short) id, this));
 		List<Skill> skills = SkillData.getSkillsByJob((short) id);
+		if (id == JobConstants.JobEnum.EVAN4.getJobId()) {
+			skills.addAll(SkillData.getSkillsByJob((short) 2217));
+		}
 		skills.forEach(skill -> addSkill(skill, true));
 		getClient().write(WvsContext.changeSkillRecordResult(skills, true, false, false, false));
 		notifyChanges();
+		renewDragon();
 	}
 
 	public short getJob() {
 		return getAvatarData().getCharacterStat().getJob();
 	}
+
+	public int getSpToCurrentJob() {
+		if (JobConstants.isExtendSpJob(getJob())) {
+			byte jobLevel = (byte) JobConstants.getJobLevel(getJob());
+			return getAvatarData().getCharacterStat().getExtendSP().getSpByJobLevel(jobLevel);
+		} else {
+			return getAvatarData().getCharacterStat().getSp();
+		}
+	}
+
 
 	/**
 	 * Sets the SP to the current job level.
@@ -1762,7 +1951,7 @@ public class Char {
 	public void addToBaseStatCache(Skill skill) {
 		SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
 		if(SkillConstants.isPassiveSkill(skill.getSkillId())) {
-			Map<BaseStat, Integer> stats = si.getBaseStatValues(this, skill.getCurrentLevel());
+			Map<BaseStat, Integer> stats = si.getBaseStatValues(this, skill.getCurrentLevel(), skill.getSkillId());
 			stats.forEach(this::addBaseStat);
 		}
 		if (si.isPsd() && si.getSkillStatInfo().containsKey(SkillStat.coolTimeR)) {
@@ -1779,7 +1968,7 @@ public class Char {
 	 */
 	public void removeFromBaseStatCache(Skill skill) {
 		SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-		Map<BaseStat, Integer> stats = si.getBaseStatValues(this, skill.getCurrentLevel());
+		Map<BaseStat, Integer> stats = si.getBaseStatValues(this, skill.getCurrentLevel(), skill.getSkillId());
 		stats.forEach(this::removeBaseStat);
 	}
 
@@ -1869,9 +2058,6 @@ public class Char {
 				break;
 			case mhp:
 				cs.setMaxHp(amount);
-				if (JobConstants.isDemonAvenger(getJob())) {
-					((Demon) getJobHandler()).sendHpUpdate();
-				}
 				break;
 			case mp:
 				cs.setMp(amount);
@@ -2029,7 +2215,6 @@ public class Char {
 		setStat(charStat, value);
 		Map<Stat, Object> stats = new HashMap<>();
 		switch (charStat) {
-			case level:
 			case skin:
 			case fatigue:
 				stats.put(charStat, (byte) getStat(charStat));
@@ -2039,9 +2224,9 @@ public class Char {
 			case inte:
 			case luk:
 			case ap:
-			case subJob:
 				stats.put(charStat, (short) getStat(charStat));
 				break;
+			case level:
 			case hp:
 			case mhp:
 			case mp:
@@ -2057,6 +2242,9 @@ public class Char {
 			case charmEXP:
 			case eventPoints:
 				stats.put(charStat, getStat(charStat));
+				break;
+			case subJob:
+				stats.put(charStat, new Tuple<>((short) getStat(charStat), (short)getSubJob()));
 				break;
 		}
 		write(WvsContext.statChanged(stats));
@@ -2170,9 +2358,6 @@ public class Char {
             getTemporaryStatManager().removeStatsBySkill(equippedSummonSkill);
             getTemporaryStatManager().removeStatsBySkill(getTemporaryStatManager().getOption(RepeatEffect).rOption);
 		}
-		if (JobConstants.isDemonAvenger(getJob())) {
-			((Demon) getJobHandler()).sendHpUpdate();
-		}
 	}
 
 	/**
@@ -2228,9 +2413,6 @@ public class Char {
 		byte maskValue = AvatarModifiedMask.AvatarLook.getVal();
 		getField().broadcastPacket(UserRemote.avatarModified(this, maskValue, (byte) 0), this);
 		initSoulMP();
-		if (JobConstants.isDemonAvenger(getJob())) {
-			((Demon) getJobHandler()).sendHpUpdate();
-		}
 		return true;
 	}
 
@@ -2384,9 +2566,8 @@ public class Char {
 		for (AffectedArea aa : tsm.getAffectedAreas()) {
 			tsm.removeStatsBySkill(aa.getSkillID());
 		}
-		Field currentField = getField();
-		if (currentField != null) {
-			currentField.removeChar(this);
+		if (getField() != null) {
+			getField().removeChar(this);
 		}
 		setField(toField);
 		toField.addChar(this);
@@ -2394,7 +2575,6 @@ public class Char {
 		setPosition(new Position(portal.getX(), portal.getY()));
 		getClient().write(Stage.setField(this, toField, getClient().getChannel(), false, 0, characterData, hasBuffProtector(),
 				(byte) (portal != null ? portal.getId() : 0), false, 100, null, true, -1));
-		showProperUI(currentField != null ? currentField.getId() : -1, toField.getId());
 		if (characterData) {
 			initSoulMP();
 			Party party = getParty();
@@ -2421,9 +2601,6 @@ public class Char {
 		}
 		toField.spawnLifesForChar(this);
 
-		if (JobConstants.isEvan(getJob()) && getJob() != JobConstants.JobEnum.EVAN_NOOB.getJobId()) {
-			((Evan) getJobHandler()).spawnMir();
-		}
 		if (JobConstants.isKanna(getJob())) {
 			((Kanna) getJobHandler()).spawnHaku();
 		}
@@ -2440,11 +2617,7 @@ public class Char {
 				}
 			}
 		}
-		for (int skill : Job.REMOVE_ON_WARP) {
-			if (tsm.hasStatBySkillId(skill)) {
-				tsm.removeStatsBySkill(skill);
-			}
-		}
+
 		notifyChanges();
 		toField.execUserEnterScript(this);
 		initPets();
@@ -2471,7 +2644,7 @@ public class Char {
 			mob.addObserver(getScriptManager());
 		}
 		if (getFieldInstanceType() == CHANNEL) {
-			write(CField.setQuickMoveInfo(GameConstants.getQuickMoveInfos().stream().filter(qmi -> !qmi.isNoInstances() || getField().isChannelField()).collect(Collectors.toList())));
+			write(CField.setQuickMoveInfo(GameConstants.getQuickMoveInfos()));
 		}
 		if (JobConstants.isAngelicBuster(getJob())) {
 			write(UserLocal.setDressChanged(false, true));
@@ -2519,7 +2692,7 @@ public class Char {
 		while (newExp >= GameConstants.charExp[level] && level < GameConstants.charExp.length) {
 			newExp -= GameConstants.charExp[level];
 			addStat(Stat.level, 1);
-			stats.put(Stat.level, (byte) getStat(Stat.level));
+			stats.put(Stat.level, getStat(Stat.level));
 			getJobHandler().handleLevelUp();
 			level++;
 			getField().broadcastPacket(UserRemote.effect(getId(), Effect.levelUpEffect()));
@@ -2731,11 +2904,13 @@ public class Char {
 				return true;
 			} else if (isRunOnPickUp) {
 				String script = String.valueOf(itemID);
+				int npcID = 0;
 				ItemInfo ii = ItemData.getItemInfoByID(itemID);
 				if (ii.getScript() != null && !"".equals(ii.getScript())) {
 					script = ii.getScript();
+                    npcID = ii.getNpcID();
 				}
-				getScriptManager().startScript(itemID, script, ScriptType.Item);
+				getScriptManager().startScript(itemID, script, ScriptType.Item, npcID);
 				return true;
 			} else if (getInventoryByType(item.getInvType()).canPickUp(item)) {
 				if (item instanceof Equip) {
@@ -2830,18 +3005,28 @@ public class Char {
 		return getTotalStat(BaseStat.mmp);
 	}
 
+	public void heal(int amount) { heal(amount, false); }
 	/**
 	 * Heals this Char's HP for a certain amount. Caps off at maximum HP.
 	 *
 	 * @param amount The amount to heal.
 	 */
-	public void heal(int amount) {
+	public void heal(int amount, boolean mp) {
 		int curHP = getHP();
 		int maxHP = getMaxHP();
 		int newHP = curHP + amount > maxHP ? maxHP : curHP + amount;
 		Map<Stat, Object> stats = new HashMap<>();
 		setStat(Stat.hp, newHP);
 		stats.put(Stat.hp, newHP);
+
+		if (mp) {
+			int curMP = getMP();
+			int maxMP = getMaxMP();
+			int newMP = curMP + amount > maxMP ? maxMP : curMP + amount;
+			setStat(Stat.mp, newMP);
+			stats.put(Stat.mp, newMP);
+		}
+
 		write(WvsContext.statChanged(stats));
 		if (getParty() != null) {
 			getParty().broadcast(UserRemote.receiveHP(this), this);
@@ -3284,6 +3469,7 @@ public class Char {
 			getTradeRoom().cancelTrade();
 			other.chatMessage("Your trade partner disconnected.");
 		}
+		rebuildQuestExValues(true);
 		ChatHandler.removeClient(getAccId());
 		setOnline(false);
 		getJobHandler().handleCancelTimer(this);
@@ -3325,14 +3511,6 @@ public class Char {
 
 	public Field getPersonalById(int id) {
 		return getFields().get(id);
-	}
-
-	private void showProperUI(int fromField, int toField) {
-		if (GameConstants.getMaplerunnerField(toField) > 0 && GameConstants.getMaplerunnerField(fromField) <= 0) {
-			write(CField.openUI(UIType.UI_PLATFORM_STAGE_LEAVE));
-		} else if (GameConstants.getMaplerunnerField(fromField) > 0 && GameConstants.getMaplerunnerField(toField) <= 0) {
-			write(CField.closeUI(UIType.UI_PLATFORM_STAGE_LEAVE));
-		}
 	}
 
 	public int calculateBulletIDForAttack() {
@@ -3613,10 +3791,6 @@ public class Char {
 		// Stat gained by buffs
 		int ctsStat = getTemporaryStatManager().getBaseStats().getOrDefault(baseStat, 0);
 		stat += ctsStat;
-		// Stat gained by the stat's corresponding "per level" value
-		if (baseStat.getLevelVar() != null) {
-			stat += getTotalStatAsDouble(baseStat.getLevelVar()) * getLevel();
-		}
 		// Stat gained by equips
 		for (Item item : getEquippedInventory().getItems()) {
 			Equip equip = (Equip) item;
@@ -3626,14 +3800,19 @@ public class Char {
 		if (baseStat.getRateVar() != null) {
 			stat += stat * (getTotalStat(baseStat.getRateVar()) / 100D);
 		}
+		// Stat gained by the stat's corresponding "per level" value
+		if (baseStat.getLevelVar() != null) {
+			stat += getTotalStatAsDouble(baseStat.getLevelVar()) * getLevel();
+		}
 		// --- Everything below this doesn't get affected by the rate var
 		// Character potential
 		for (CharacterPotential cp : getPotentials()) {
 			Skill skill = cp.getSkill();
 			SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-			Map<BaseStat, Integer> stats = si.getBaseStatValues(this, skill.getCurrentLevel());
+			Map<BaseStat, Integer> stats = si.getBaseStatValues(this, skill.getCurrentLevel(), skill.getSkillId());
 			stat += stats.getOrDefault(baseStat, 0);
 		}
+
 		return stat;
 	}
 
@@ -4484,20 +4663,167 @@ public class Char {
 		return quickslotKeys;
 	}
 
-	/**
-	 * Checks if this Char has a skill with at least a given level.
-	 * @param skillID the skill to get
-	 * @param slv the minimum skill level
-	 * @return whether or not this Char has the skill with the given skill level
-	 */
-	public boolean hasSkillWithSlv(int skillID, short slv) {
-		Skill skill = getSkill(skillID);
-		return skill != null && skill.getCurrentLevel() >= slv;
+	public Dragon getDragon() {
+		updateDragon();
+		return dragon;
 	}
 
-	public World getWorld() {
-		return getClient().getWorld();
+	public void initDragon() {
+		updateDragon();
+		if (dragon != null) {
+			getField().broadcastPacket(CField.createDragon(dragon));
+		}
 	}
+
+	public void updateDragon() {
+		if (JobConstants.isEvan(getJob()) && getJob() != 2001) {
+			//if (getQuestManager().hasQuestCompleted(QuestConstants.EVAN_PROMOTED)) {
+			if (dragon == null) {
+				dragon = new Dragon(this);
+			}
+			//}
+		} else {
+			dragon = null;
+		}
+	}
+
+	public void renewDragon() {
+		if (dragon != null) {
+			getField().broadcastPacket(CField.removeDragon(dragon));
+			dragon = null;
+		}
+		initDragon();
+	}
+
+	public DelayEffect getDelayEffect() {
+		DelayEffect delayEffect = DelayEffect.DEFAULT;
+		updateDragon();
+		if (dragon != null) {
+			delayEffect = DelayEffect.DRAGON_FURY;
+		}
+		return delayEffect;
+	}
+
+	public MatrixInventory getMatrixInventory() { return matrixInventory; }
+
+	public void setMatrixInventory(MatrixInventory matrixInventory) { this.matrixInventory = matrixInventory; }
+
+	public void setVMatrixSlots(int slots) { this.vmatrixslots = slots; }
+
+	public int getBonusVMatrixSlots() { return vmatrixslots; }
+
+	public int getTotalVMatrixSlots() {
+        int level = getLevel();
+        if (level < 200 || level > 275) {
+            return 0;
+        }
+        return MatrixConstants.EQUIP_SLOT_MIN + getBonusVMatrixSlots() + MatrixConstants.getSlotsByLevel(level);
+    }
+
+    public int getShards() {
+	    String value = getQuestEx(QuestConstants.MATRIX_SHARDS, "count");
+	    if (value != null) {
+	        return Integer.parseInt(value);
+        }
+        return 0;
+    }
+
+    public void incShards(int inc) {
+	    setQuestEx(QuestConstants.MATRIX_SHARDS, "count", Integer.toString(getShards() + inc));
+    }
+
+    public void rebuildQuestExValues(boolean save) {
+		if (save) {
+			for (Map.Entry<Integer, QuestEx> questEx : questRecordEx.entrySet()) {
+				String qrValue = "";
+				for (Map.Entry<String, String> quest : questEx.getValue().getValues().entrySet()) {
+					qrValue += String.format("%s=%s;", quest.getKey(), quest.getValue());
+				}
+				questsExStorage.put(questEx.getKey(), qrValue.substring(0, qrValue.length() - 1));
+			}
+		} else {
+			for (Map.Entry<Integer, String> questEx : questsExStorage.entrySet()) {
+				String[] qrValues = questEx.getValue().split(";");
+				QuestEx quest = new QuestEx(questEx.getKey());
+				for (String qrValue : qrValues) {
+					String[] val = qrValue.split("=");
+					quest.setValue(val[0], val[1]);
+				}
+				questRecordEx.put(quest.getQuestID(), quest);
+			}
+		}
+	}
+
+	public boolean setQuestEx(int questID, String key, String value) {
+		return setQuestEx(questID, key, value, false);
+	}
+
+	public boolean setQuestEx(int questID, String key, String value, boolean onMigrate) {
+		if (key == null || key.isEmpty() || key.equals("")) {
+			return false;
+		}
+		if (value.equals("DayN")) {
+			return false;
+		}
+		QuestEx str = getQuestRecordEx().getOrDefault(questID, null);
+		if (str == null) {
+			getQuestRecordEx().put(questID, new QuestEx(questID));
+			str = getQuestRecordEx().getOrDefault(questID, null);
+			if (str == null) {
+				return false;
+			}
+		}
+		if (str.setValue(key, value)) {
+			if (!onMigrate) rebuildQuestExValues(true);
+			return true;
+		}
+		return false;
+	}
+
+	public String getQuestEx(int questID, String key) {
+		QuestEx str = getQuestRecordEx().getOrDefault(questID, null);
+		if (str != null) {
+			return str.getValue(key);
+		}
+		return null;
+	}
+
+	public QuestEx getQuestEx(int questID) {
+		return getQuestRecordEx().getOrDefault(questID, null);
+	}
+
+	public Map<Integer, QuestEx> getQuestRecordEx() {
+		return questRecordEx;
+	}
+
+    public PsychicArea getPsychicArea(int psychicAreaKey) {
+        return psychicArea.getOrDefault(psychicAreaKey, null);
+    }
+
+    public PsychicArea addPsychicArea(PsychicArea pa) {
+		pa.psychicAreaKey = psychicAreaCount;
+		pa.localPsychicAreaKey = psychicArea.size() + 1;
+		psychicAreaCount++;
+		psychicArea.put(pa.psychicAreaKey, pa);
+		return pa;
+    }
+
+    public void removePsychicArea(int psychicAreaKey) { this.psychicArea.remove(psychicAreaKey); }
+
+    /**
+     * Checks if this Char has a skill with at least a given level.
+     * @param skillID the skill to get
+     * @param slv the minimum skill level
+     * @return whether or not this Char has the skill with the given skill level
+     */
+    public boolean hasSkillWithSlv(int skillID, short slv) {
+        Skill skill = getSkill(skillID);
+        return skill != null && skill.getCurrentLevel() >= slv;
+    }
+
+    public World getWorld() {
+        return getClient().getWorld();
+    }
 
     public Android getAndroid() {
         return android;

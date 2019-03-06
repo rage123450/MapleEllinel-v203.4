@@ -55,6 +55,8 @@ public class Pet extends Life {
         outPacket.encodeShort(getFh());
         outPacket.encodeInt(getHue());
         outPacket.encodeShort(getGiantRate());
+        outPacket.encodeShort(0);
+        outPacket.encodeShort(0);
         outPacket.encodeByte(isTransformed());
         outPacket.encodeByte(isReinforced());
     }

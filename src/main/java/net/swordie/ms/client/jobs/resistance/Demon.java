@@ -738,7 +738,7 @@ public class Demon extends Job {
                 int cd = si.getValue(y, slv) * 1000;
                 if(cd + leechAuraCD < System.currentTimeMillis()) {
                     for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
-                        int totaldmg = Arrays.stream(mai.damages).sum();
+                        long totaldmg = Arrays.stream(mai.damages).sum();
                         int hpheal = (int) (totaldmg * ((double) 100 / si.getValue(x, slv)));
                         if (hpheal >= (chr.getMaxHP() / 4)) {
                             hpheal = (chr.getMaxHP() / 4);
@@ -787,7 +787,7 @@ public class Demon extends Job {
             } else {
 
                 //Attacking with another skill
-                int totaldmg = Arrays.stream(mai.damages).sum();
+                long totaldmg = Arrays.stream(mai.damages).sum();
                 if (totaldmg > mob.getHp()) {
                     int inc = ForceAtomEnum.DEMON_SLAYER_FURY_1.getInc();
                     int type = ForceAtomEnum.DEMON_SLAYER_FURY_1.getForceAtomType();
@@ -967,6 +967,4 @@ public class Demon extends Job {
         super.setCharCreationStats(chr);
         chr.getAvatarData().getCharacterStat().setPosMap(927000000);
     }
-
-
 }

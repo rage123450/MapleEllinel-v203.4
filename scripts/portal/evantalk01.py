@@ -1,5 +1,3 @@
-# Portal & Balloon Msgs for Evan Intro | Dream World: Dream Forest Entrance (900010000)
-# Author: Tiger
-
-# "What was that? I heard something!"
-sm.avatarOriented("Effect/OnUserEff.img/guideEffect/evanTutorial/evanBalloon01")
+if not "mo01=o" in sm.getQRValue(22013):
+    sm.avatarOriented("Effect/OnUserEff.img/guideEffect/evanTutorial/evanBalloon01")
+    sm.addQRValue(22013, "mo01=o")

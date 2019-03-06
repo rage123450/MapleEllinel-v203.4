@@ -57,33 +57,41 @@ public class NpcShopItem {
     }
 
     public void encode(OutPacket outPacket) {
+        outPacket.encodeInt(0);
+        // NpcShopItem::Decode
         outPacket.encodeInt(getItemID());
         outPacket.encodeInt(getPrice());
-        outPacket.encodeByte(getDiscountPerc());
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(getDiscountPerc());
         outPacket.encodeInt(getTokenItemID());
         outPacket.encodeInt(getTokenPrice());
         outPacket.encodeInt(getPointQuestID());
         outPacket.encodeInt(getPointPrice());
         outPacket.encodeInt(getStarCoin());
-        outPacket.encodeInt(getQuestExID());
-        outPacket.encodeString(getQuestExKey());
-        outPacket.encodeInt(getQuestExValue());
+        outPacket.encodeByte(0);
         outPacket.encodeInt(getItemPeriod());
         outPacket.encodeInt(getLevelLimited());
+        outPacket.encodeInt(0);
         outPacket.encodeShort(getShowLevMin());
         outPacket.encodeShort(getShowLevMax());
-        outPacket.encodeInt(getQuestID());
-        outPacket.encodeFT(getSellStart());
-        outPacket.encodeFT(getSellEnd());
-        outPacket.encodeInt(getTabIndex());
-        outPacket.encodeByte(isWorldBlock());
-        outPacket.encodeInt(getPotentialGrade());
-        outPacket.encodeInt(getBuyLimit());
         if (getBuyLimitInfo() != null) {
             getBuyLimitInfo().encode(outPacket);
         } else {
             new BuyLimitInfo().encode(outPacket);
         }
+        //outPacket.encodeInt(getQuestID());
+        outPacket.encodeByte(0);
+        outPacket.encodeFT(getSellStart());
+        outPacket.encodeFT(getSellEnd());
+        outPacket.encodeInt(getTabIndex());
+        outPacket.encodeShort(1);
+        outPacket.encodeByte(isWorldBlock());
+        outPacket.encodeInt(getQuestExID());
+        outPacket.encodeString(getQuestExKey());
+        outPacket.encodeInt(getQuestExValue());
+        outPacket.encodeInt(getPotentialGrade());
         int prefix = getItemID() / 10000;
         if (prefix != 207 && prefix != 233) {
             outPacket.encodeShort(getQuantity());
@@ -91,11 +99,15 @@ public class NpcShopItem {
             outPacket.encodeLong(getUnitPrice());
         }
         outPacket.encodeShort(getMaxPerSlot());
-        outPacket.encodeByte(getItem() != null);
+        outPacket.encodeFT(FileTime.fromType(FileTime.Type.MAX_TIME));
+        // end NpcShopItem::Decode
+
+        /*outPacket.encodeByte(getItem() != null);
         if (getItem() != null) {
             getItem().encode(outPacket);
-        }
+        }*/
         // wtf is the following
+        outPacket.encodeByte(0);
         boolean idkProperty = false;
         if(idkProperty) {
             boolean bool2 = false;
@@ -111,6 +123,7 @@ public class NpcShopItem {
         outPacket.encodeInt(0);
         outPacket.encodeArr(new byte[32]); // decodeBuffer(32)
         // end sub_71F670
+        outPacket.encodeByte(0);
     }
     public int getItemID() {
         return itemID;

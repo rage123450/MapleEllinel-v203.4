@@ -3,6 +3,7 @@ package net.swordie.ms.connection.packet;
 import net.swordie.ms.client.character.avatar.AvatarLook;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.info.HitInfo;
+import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.info.MobAttackInfo;
@@ -51,16 +52,17 @@ public class UserRemote {
 
     public static OutPacket attack(Char chr, AttackInfo ai) {
         OutHeader attackType = ai.attackHeader;
-        // 535: melee
-        // 536: shoot
-        // 537: magic
-        // 538: body
+        /*
+        REMOTE_MELEE_ATTACK(753),
+        REMOTE_SHOOT_ATTACK(754),
+        REMOTE_MAGIC_ATTACK(755),
+         */
         OutPacket outPacket = new OutPacket(attackType);
         outPacket.encodeInt(chr.getId());
 
         outPacket.encodeByte(ai.fieldKey);
         outPacket.encodeByte(ai.mobCount << 4 | ai.hits);
-        outPacket.encodeByte(chr.getLevel());
+        outPacket.encodeInt(chr.getLevel());
         outPacket.encodeByte(ai.slv);
         if(ai.slv > 0) {
             outPacket.encodeInt(ai.skillId);
@@ -70,6 +72,9 @@ public class UserRemote {
             if(ai.zero != 0) {
                 outPacket.encodePosition(chr.getPosition());
             }
+        }
+        if (ai.skillId == 101110104) {
+            return outPacket;
         }
         if(attackType == OutHeader.REMOTE_SHOOT_ATTACK &&
                 (SkillConstants.getAdvancedCountHyperSkill(ai.skillId) != 0  ||
@@ -93,7 +98,7 @@ public class UserRemote {
         }
         byte left = (byte) (ai.left ? 1 : 0);
         outPacket.encodeShort((left << 15) | ai.attackAction);
-        if(ai.attackAction <= 1516) {
+        if(ai.attackAction <= 1895) {
             outPacket.encodeByte(ai.attackActionType);
             outPacket.encodeShort(ai.x);
             outPacket.encodeShort(ai.y);
@@ -109,14 +114,16 @@ public class UserRemote {
                     outPacket.encodeByte(mai.byteIdk2);
                     outPacket.encodeByte(mai.byteIdk3);
                     outPacket.encodeShort(mai.byteIdk4);
+                    outPacket.encodeInt(0);
+                    outPacket.encodeInt(0);
                     if(ai.skillId == 80001835 || ai.skillId == 42111002 || ai.skillId == 80011050) {
                         // Soul Shear
                         outPacket.encodeByte(ai.hits);
                         outPacket.encodeInt(0); // not exactly sure
                     }
-                    for(int dmg : mai.damages) {
+                    for(long dmg : mai.damages) {
                         outPacket.encodeByte(0); // isCrit
-                        outPacket.encodeInt(dmg);
+                        outPacket.encodeLong(dmg);
                     }
                     if(SkillConstants.isKinesisPsychicLockSkill(ai.skillId)) {
                         outPacket.encodeInt(mai.psychicLockInfo);
@@ -128,9 +135,12 @@ public class UserRemote {
             }
             if(ai.skillId == 2321001 || ai.skillId == 2221052 || ai.skillId == 11121052 || ai.skillId == 12121054) {
                 outPacket.encodeInt(ai.keyDown);
-            } else if(SkillConstants.isSuperNovaSkill(ai.skillId) || SkillConstants.isScreenCenterAttackSkill(ai.skillId)
-                    || ai.skillId == 101000202 || ai.skillId == 101000102 || ai.skillId == 80001762) {
-                outPacket.encodePosition(ai.ptAttackRefPoint);
+            } else if(SkillConstants.isSuperNovaSkill(ai.skillId) || SkillConstants.isScreenCenterAttackSkill(ai.skillId) ||
+                      ai.skillId == 101000202 || ai.skillId == 101000102 ||
+                      SkillConstants.isSupportAttackSkill(ai.skillId) ||
+                      ai.skillId == 400041019 ||ai.skillId == 400031016 ||ai.skillId == 400041024 ||
+                      SkillConstants.isWingedJavelin(ai.skillId) || ai.skillId == 400021075 || ai.skillId == 80002452) {
+                outPacket.encodePositionInt(ai.ptAttackRefPoint);
             }
             if(SkillConstants.isKeydownSkillRectMoveXY(ai.skillId)) {
                 outPacket.encodePosition(ai.keyDownRectMoveXY);
@@ -149,8 +159,17 @@ public class UserRemote {
                     outPacket.encodePosition(new Position());
                 }
             }
-            if(ai.skillId == 21120019 || ai.skillId == 37121052) {
+            if(ai.skillId == 21120019 || ai.skillId == 37121052 || SkillConstants.isShadowAssault(ai.skillId) ||
+               ai.skillId == 11121014 || ai.skillId == 5101004) {
+                outPacket.encodeByte(0);
                 outPacket.encodePositionInt(ai.teleportPt);
+            }
+            if (SkillConstants.isPoisonAttackSkill(ai.skillId)) {
+                outPacket.encodePosition(new Position());
+            }
+            if (SkillConstants.isUNKAttackSkill(ai.skillId)) {
+                outPacket.encodeInt(0);
+                outPacket.encodeByte(0);
             }
 //            if(ai.attackHeader == )
             outPacket.encodeArr(new byte[50]);
@@ -307,7 +326,7 @@ public class UserRemote {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         tsm.encodeForRemote(outPacket, tsm.getNewStats());
         outPacket.encodeShort(delay);
-
+        outPacket.encodeByte(0);
         return outPacket;
     }
 

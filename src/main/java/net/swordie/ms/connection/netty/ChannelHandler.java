@@ -6,9 +6,11 @@ import net.swordie.ms.client.Account;
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.handlers.AdminHandler;
 import net.swordie.ms.handlers.ChatHandler;
 import net.swordie.ms.handlers.LoginHandler;
 import net.swordie.ms.handlers.header.InHeader;
+import net.swordie.ms.world.World;
 import net.swordie.ms.world.WorldHandler;
 import net.swordie.ms.world.shop.cashshop.CashShopHandler;
 import org.apache.log4j.LogManager;
@@ -59,7 +61,10 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     public void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         Client c = (Client) ctx.channel().attr(CLIENT_KEY).get();
         Char chr = c.getChr();
-        short op = inPacket.decodeShort();
+        int op = inPacket.decodeShort();
+        if (c.mEncryptedOpcode.containsKey(op)) {
+            op = c.mEncryptedOpcode.get(op);
+        }
         InHeader opHeader = InHeader.getInHeaderByOp(op);
         if(opHeader == null) {
             handleUnknown(inPacket, op);
@@ -191,16 +196,20 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             case WORLD_STATUS_REQUEST:
                 LoginHandler.handleWorldStatusRequest(c, inPacket);
                 break;
+            case WORLD_INFO_REQUEST:
             case WORLD_LIST_REQUEST:
             case LOGOUT_WORLD:
             case WORLD_LIST_REQ:
                 LoginHandler.handleWorldListRequest(c, inPacket);
                 break;
+            case SELECT_WORLD_BUTTON:
+                LoginHandler.handleSelectWorldButton(c, inPacket);
+                break;
             case SELECT_WORLD:
                 LoginHandler.handleSelectWorld(c, inPacket);
                 break;
             case CHECK_SPW_REQUEST:
-                LoginHandler.handleCheckSpwRequest(c, inPacket);
+                LoginHandler.handleCheckSpwRequest(c, inPacket, false);
                 break;
             case CHECK_DUPLICATE_ID:
                 LoginHandler.handleCheckDuplicatedID(c, inPacket);
@@ -424,6 +433,9 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 break;
             case CREATE_KINESIS_PSYCHIC_AREA:
                 WorldHandler.handleCreateKinesisPsychicArea(chr, inPacket);
+                break;
+            case DO_ACTIVE_PSYCHIC_AREA:
+                WorldHandler.handleActivePsychicArea(chr, inPacket);
                 break;
             case RELEASE_PSYCHIC_AREA:
                 WorldHandler.handleReleasePsychicArea(chr, inPacket);
@@ -682,6 +694,23 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 break;
             case USER_TRANSFER_FREE_MARKET_REQUEST:
                 WorldHandler.handleTransferFreeMarketRequest(chr, inPacket);
+            case DRAGON_MOVE:
+                WorldHandler.handleDragonMove(chr, inPacket);
+                break;
+            case SPECTRA_ENERGY_UPDATE:
+                WorldHandler.handleSpectraUpdate(chr, inPacket);
+                break;
+            case UPDATE_MATRIX:
+                WorldHandler.handleMatrixUpdate(chr, inPacket);
+                break;
+            case ADMIN:
+                AdminHandler.handleAdminCommand(chr, inPacket);
+                break;
+            case LOG:
+                AdminHandler.handleAdminLog(chr, inPacket);
+                break;
+            case UNITY_PORTAL_REQUEST:
+                WorldHandler.handleUnityPortalRequest(chr, inPacket);
                 break;
             default:
                 handleUnknown(inPacket, op);
@@ -689,7 +718,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         }
     }
 
-    private void handleUnknown(InPacket inPacket, short opCode) {
+    private void handleUnknown(InPacket inPacket, int opCode) {
         if(!InHeader.isSpamHeader(InHeader.getInHeaderByOp(opCode))) {
             log.warn(String.format("Unhandled opcode %s/0x%s, packet %s", opCode, Integer.toHexString(opCode).toUpperCase(), inPacket));
         }

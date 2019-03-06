@@ -107,6 +107,8 @@ public class Equip extends Item {
     private short iucMax = ItemConstants.MAX_HAMMER_SLOTS;
     @Transient
     private boolean hasIUCMax = false;
+    @Transient
+    private int effectItemID = 0;
 
     // flame stats
     // TODO: refactor these to be in a different table
@@ -234,6 +236,7 @@ public class Equip extends Item {
         ret.fLevel = fLevel;
         ret.dropStreak = dropStreak;
         ret.itemSkills = itemSkills;
+        ret.effectItemID = effectItemID;
         return ret;
     }
 
@@ -1022,6 +1025,10 @@ public class Equip extends Item {
         this.itemSkills.remove(itemSkill);
     }
 
+    public int getEffectItemID() { return effectItemID; }
+
+    public void setEffectItemID(int effectItemID) { this.effectItemID = effectItemID;}
+
     public void encode(OutPacket outPacket) {
         // GW_ItemSlotBase
         super.encode(outPacket);
@@ -1033,117 +1040,113 @@ public class Equip extends Item {
         // GW_ItemSlotEquipBase
         int mask = getStatMask(0);
         outPacket.encodeInt(mask);
-        if (hasStat(EquipBaseStat.tuc)) {
+        if(hasStat(EquipBaseStat.tuc)) {
             outPacket.encodeByte(getTuc());
         }
-        if (hasStat(EquipBaseStat.cuc)) {
+        if(hasStat(EquipBaseStat.cuc)) {
             outPacket.encodeByte(getCuc());
         }
-        if (hasStat(EquipBaseStat.iStr)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iStr));
+        if(hasStat(EquipBaseStat.iStr)) {
+            outPacket.encodeShort(getiStr() + getfSTR() + getEnchantStat(EnchantStat.STR));
         }
-        if (hasStat(EquipBaseStat.iDex)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iDex));
+        if(hasStat(EquipBaseStat.iDex)) {
+            outPacket.encodeShort(getiDex() + getfDEX() + getEnchantStat(EnchantStat.DEX));
         }
-        if (hasStat(EquipBaseStat.iInt)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iInt));
+        if(hasStat(EquipBaseStat.iInt)) {
+            outPacket.encodeShort(getiInt() + getfINT() + getEnchantStat(EnchantStat.INT));
         }
-        if (hasStat(EquipBaseStat.iLuk)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iLuk));
+        if(hasStat(EquipBaseStat.iLuk)) {
+            outPacket.encodeShort(getiLuk() + getfLUK() + getEnchantStat(EnchantStat.LUK));
         }
-        if (hasStat(EquipBaseStat.iMaxHP)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iMaxHP));
+        if(hasStat(EquipBaseStat.iMaxHP)) {
+            outPacket.encodeShort(getiMaxHp() + getfHP() + getEnchantStat(EnchantStat.MHP));
         }
-        if (hasStat(EquipBaseStat.iMaxMP)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iMaxMP));
+        if(hasStat(EquipBaseStat.iMaxMP)) {
+            outPacket.encodeShort(getiMaxMp() + getfMP() + getEnchantStat(EnchantStat.MMP));
         }
-        if (hasStat(EquipBaseStat.iPAD)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iPAD));
+        if(hasStat(EquipBaseStat.iPAD)) {
+            outPacket.encodeShort(getiPad() + getfATT() + getEnchantStat(EnchantStat.PAD));
         }
-        if (hasStat(EquipBaseStat.iMAD)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iMAD));
+        if(hasStat(EquipBaseStat.iMAD)) {
+            outPacket.encodeShort(getiMad() + getfMATT() + getEnchantStat(EnchantStat.MAD));
         }
-        if (hasStat(EquipBaseStat.iPDD)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iPDD));
+        if(hasStat(EquipBaseStat.iPDD)) {
+            outPacket.encodeShort(getiPDD() + getfDEF() + getEnchantStat(EnchantStat.PDD));
         }
-        if (hasStat(EquipBaseStat.iMDD)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iMDD));
-        }
-        if (hasStat(EquipBaseStat.iACC)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iACC));
-        }
-        if (hasStat(EquipBaseStat.iEVA)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iEVA));
-        }
-        if (hasStat(EquipBaseStat.iCraft)) {
+        if(hasStat(EquipBaseStat.iCraft)) {
             outPacket.encodeShort(getiCraft());
         }
-        if (hasStat(EquipBaseStat.iSpeed)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iSpeed));
+        if(hasStat(EquipBaseStat.iSpeed)) {
+            outPacket.encodeShort(getiSpeed() + getfSpeed() + getEnchantStat(EnchantStat.SPEED));
         }
-        if (hasStat(EquipBaseStat.iJump)) {
-            outPacket.encodeShort(getTotalStat(EquipBaseStat.iJump));
+        if(hasStat(EquipBaseStat.iJump)) {
+            outPacket.encodeShort(getiJump() + getfJump() + getEnchantStat(EnchantStat.JUMP));
         }
-        if (hasStat(EquipBaseStat.attribute)) {
+        if(hasStat(EquipBaseStat.attribute)) {
             outPacket.encodeShort(getAttribute());
         }
-        if (hasStat(EquipBaseStat.levelUpType)) {
+        if(hasStat(EquipBaseStat.levelUpType)) {
             outPacket.encodeByte(getLevelUpType());
         }
-        if (hasStat(EquipBaseStat.level)) {
+        if(hasStat(EquipBaseStat.level)) {
             outPacket.encodeByte(getLevel());
         }
-        if (hasStat(EquipBaseStat.exp)) {
+        if(hasStat(EquipBaseStat.exp)) {
             outPacket.encodeLong(getExp());
         }
-        if (hasStat(EquipBaseStat.durability)) {
+        if(hasStat(EquipBaseStat.durability)) {
             outPacket.encodeInt(getDurability());
         }
-        if (hasStat(EquipBaseStat.iuc)) {
+        if(hasStat(EquipBaseStat.iuc)) {
             outPacket.encodeInt(getIuc()); // hammer
         }
-        if (hasStat(EquipBaseStat.iPvpDamage)) {
+        if(hasStat(EquipBaseStat.iPvpDamage)) {
             outPacket.encodeShort(getiPvpDamage());
         }
-        if (hasStat(EquipBaseStat.iReduceReq)) {
-            outPacket.encodeByte(getTotalStat(EquipBaseStat.iReduceReq));
+        if(hasStat(EquipBaseStat.iReduceReq)) {
+            byte bLevel = (byte) (getiReduceReq() + getfLevel());
+            if (getrLevel() + getiIncReq() - bLevel < 0) {
+                bLevel = (byte) (getrLevel() + getiIncReq());
+            }
+            outPacket.encodeByte(bLevel);
         }
-        if (hasStat(EquipBaseStat.specialAttribute)) {
+        if(hasStat(EquipBaseStat.specialAttribute)) {
             outPacket.encodeShort(getSpecialAttribute());
         }
-        if (hasStat(EquipBaseStat.durabilityMax)) {
+        if(hasStat(EquipBaseStat.durabilityMax)) {
             outPacket.encodeInt(getDurabilityMax());
         }
-        if (hasStat(EquipBaseStat.iIncReq)) {
+        if(hasStat(EquipBaseStat.iIncReq)) {
             outPacket.encodeByte(getiIncReq());
         }
-        if (hasStat(EquipBaseStat.growthEnchant)) {
+        if(hasStat(EquipBaseStat.growthEnchant)) {
             outPacket.encodeByte(getGrowthEnchant()); // ygg
         }
-        if (hasStat(EquipBaseStat.psEnchant)) {
+        if(hasStat(EquipBaseStat.psEnchant)) {
             outPacket.encodeByte(getPsEnchant()); // final strike
         }
-        if (hasStat(EquipBaseStat.bdr)) {
+        if(hasStat(EquipBaseStat.bdr)) {
             outPacket.encodeByte(getBdr() + getfBoss()); // bd
         }
-        if (hasStat(EquipBaseStat.imdr)) {
+        if(hasStat(EquipBaseStat.imdr)) {
             outPacket.encodeByte(getImdr()); // ied
         }
+
         outPacket.encodeInt(getStatMask(1)); // mask 2
-        if (hasStat(EquipBaseStat.damR)) {
-            outPacket.encodeByte(getTotalStat(EquipBaseStat.damR)); // td
+        if(hasStat(EquipBaseStat.damR)) {
+            outPacket.encodeByte(getDamR() + getfDamage()); // td
         }
-        if (hasStat(EquipBaseStat.statR)) {
-            outPacket.encodeByte(getTotalStat(EquipBaseStat.statR)); // as
+        if(hasStat(EquipBaseStat.statR)) {
+            outPacket.encodeByte(getStatR() + getfAllStat()); // as
         }
-        if (hasStat(EquipBaseStat.cuttable)) {
+        if(hasStat(EquipBaseStat.cuttable)) {
             outPacket.encodeByte(getCuttable()); // sok
         }
-        if (hasStat(EquipBaseStat.exGradeOption)) {
+        if(hasStat(EquipBaseStat.exGradeOption)) {
             outPacket.encodeLong(getExGradeOption());
         }
-        if (hasStat(EquipBaseStat.hyperUpgrade)) {
-            outPacket.encodeInt(getHyperUprade());
+        if(hasStat(EquipBaseStat.itemState)) {
+            outPacket.encodeInt(getItemState());
         }
         // GW_ItemSlotEquipOpt
         outPacket.encodeString(getOwner());
@@ -1169,18 +1172,29 @@ public class Equip extends Item {
             // sockets 0 through 2 (-1 = none, 0 = empty, >0 = filled
             outPacket.encodeShort(getSocket(i));
         }
-        outPacket.encodeLong(getId()); // ?
-        outPacket.encodeInt(-1); // ?
+        outPacket.encodeInt(0); // ?
+        // if (!v3->liCashItemSN.QuadPart) {
+            outPacket.encodeLong(getId());
+        // }
+        outPacket.encodeFT(FileTime.fromType(FileTime.Type.MAX_TIME));
+        outPacket.encodeInt(-1);//nPrevBonusExpRate
         // GW_CashItemOption
         outPacket.encodeLong(getCashItemSerialNumber());
         outPacket.encodeFT(getDateExpire());
-        outPacket.encodeFT(FileTime.fromType(FileTime.Type.MAX_TIME));
-        for (int i = 0; i < 2; i++) {
-            outPacket.encodeLong(0);
+        outPacket.encodeInt(0);// grade
+        for (int i = 0; i < 3; i++) {
+            outPacket.encodeInt(0);
         }
+        // end GW_CashItemOption
         outPacket.encodeShort(getSoulOptionId()); // soul ID
         outPacket.encodeShort(getSoulSocketId()); // enchanter ID
         outPacket.encodeShort(getSoulOption()); // optionID (same as potentials)
+        if (getItemId() / 10000 == 171) {
+            outPacket.encodeShort(0);// Arcane
+            outPacket.encodeInt(0);// Arcane EXP
+            outPacket.encodeShort(0);// Arcane Max Level
+        }
+        // TODO: encode flame stats when we're at v190+ or whatever version with flames decoded
     }
 
     public int getTotalStat(EquipBaseStat stat) {
@@ -1257,7 +1271,7 @@ public class Equip extends Item {
                 return getCuttable(); // sok
             case exGradeOption:
                 return getExGradeOption();
-            case hyperUpgrade:
+            case itemState:
                 return getHyperUprade();
         }
         return 0;
@@ -1271,7 +1285,10 @@ public class Equip extends Item {
         int mask = 0;
         for (EquipBaseStat ebs : EquipBaseStat.values()) {
             if (hasStat(ebs) && ebs.getPos() == pos) {
-                mask |= ebs.getVal();
+                int value = ebs.getVal();
+                if (value != EquipBaseStat.iMDD.getVal() && value != EquipBaseStat.iACC.getVal() && value != EquipBaseStat.iEVA.getVal()) {
+                    mask |= ebs.getVal();
+                }
             }
         }
         return mask;
@@ -1387,7 +1404,7 @@ public class Equip extends Item {
             case exGradeOption:
                 setExGradeOption((short) amount);
                 break;
-            case hyperUpgrade:
+            case itemState:
                 setHyperUpgrade((short) amount);
                 break;
         }
@@ -1467,7 +1484,7 @@ public class Equip extends Item {
                 return getCuttable();
             case exGradeOption:
                 return getExGradeOption();
-            case hyperUpgrade:
+            case itemState:
                 return getHyperUprade();
             default:
                 return 0;

@@ -17,14 +17,15 @@
 */
 package net.swordie.ms.connection.netty;
 
+import net.swordie.ms.connection.crypto.AESCipher;
+import net.swordie.ms.connection.crypto.CIGCipher;
 import net.swordie.ms.handlers.header.OutHeader;
-import net.swordie.ms.connection.crypto.MapleCrypto;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import net.swordie.ms.connection.Packet;
 import org.apache.log4j.LogManager;
-
+import static net.swordie.ms.connection.crypto.AESCipher.nVersion;
 /**
  * Implementation of a Netty encoder pattern so that encryption of MapleStory
  * packets is possible. Follows steps using the special MapleAES as well as
@@ -34,31 +35,39 @@ import org.apache.log4j.LogManager;
  */
 public final class PacketEncoder extends MessageToByteEncoder<Packet> {
     private static final org.apache.log4j.Logger log = LogManager.getRootLogger();
+    private static final int uSeqBase = (short) ((((0xFFFF - nVersion) >> 8) & 0xFF) | (((0xFFFF - nVersion) << 8) & 0xFF00));
 
     @Override
     protected void encode(ChannelHandlerContext chc, Packet outPacket, ByteBuf bb) {
         byte[] data = outPacket.getData();
+        boolean bEncryptData = true;
         NettyClient c = chc.channel().attr(NettyClient.CLIENT_KEY).get();
-        MapleCrypto mCr = chc.channel().attr(NettyClient.CRYPTO_KEY).get();
-
         if (c != null) {
             if(!OutHeader.isSpamHeader(OutHeader.getOutHeaderByOp(outPacket.getHeader()))) {
                 log.debug("[Out]\t| " + outPacket);
             }
-            byte[] iv = c.getSendIV();
-            byte[] head = MapleCrypto.getHeader(data.length, iv);
-
+            int uSeqSend = c.getSendIV();
+            short uDataLen = (short) (((data.length << 8) & 0xFF00) | (data.length >>> 8));
+            short uRawSeq = (short) ((((uSeqSend >> 24) & 0xFF) | (((uSeqSend >> 16) << 8) & 0xFF00)) ^ uSeqBase);
 //            ShandaCrypto.encrypt(data); // pre-149
 
             c.acquireEncoderState();
             try {
-                mCr.crypt(data, iv);
-                c.setSendIV(MapleCrypto.getNewIv(iv));
+                if (bEncryptData) {
+                    uDataLen ^= uRawSeq;
+                    if (c.getPort() == 8484) {
+                        AESCipher.Crypt(data, uSeqSend);
+                    } else {
+                        CIGCipher.Crypt(data, uSeqSend);
+                    }
+                }
+                c.setSendIV(CIGCipher.InnoHash(uSeqSend, 4, 0));
             } finally {
                 c.releaseEncodeState();
             }
-            
-            bb.writeBytes(head);
+
+            bb.writeShort(uRawSeq);
+            bb.writeShort(uDataLen);
             bb.writeBytes(data);
             
         } else {

@@ -1487,7 +1487,7 @@ public interface ScriptManager extends Observer {
 	 * @param expGiven
 	 * 		The amount of Exp given to the {@link Char}
 	 */
-	void showClearStageExpWindow(long expGiven);
+	void showClearStageExpWindow(int expGiven);
 
 	/**
 	 * Returns a random integer below the number specified.

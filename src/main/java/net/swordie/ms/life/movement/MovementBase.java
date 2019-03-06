@@ -16,6 +16,8 @@ public abstract class MovementBase implements Movement {
     protected short footStart;
     protected short elapse;
 
+    protected int unk;
+
     protected Position position;
     protected Position vPosition;
     protected Position offset;
@@ -76,6 +78,14 @@ public abstract class MovementBase implements Movement {
 
     public short getElapse() {
         return elapse;
+    }
+
+    public void setUNK(int unk) {
+        this.unk = unk;
+    }
+
+    public int getUNK() {
+        return unk;
     }
 
     public void setElapse(short elapse) {

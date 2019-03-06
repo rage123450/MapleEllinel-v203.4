@@ -6,6 +6,8 @@ import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
 import net.swordie.ms.client.jobs.adventurer.*;
 import net.swordie.ms.client.jobs.cygnus.*;
+import net.swordie.ms.client.jobs.flora.Ark;
+import net.swordie.ms.client.jobs.flora.Illium;
 import net.swordie.ms.client.jobs.legend.*;
 import net.swordie.ms.client.jobs.nova.AngelicBuster;
 import net.swordie.ms.client.jobs.nova.Kaiser;
@@ -62,7 +64,10 @@ public class JobManager {
             Hayato.class,
             Kanna.class,
 
-            Zero.class
+            Zero.class,
+
+            Illium.class,
+            Ark.class
     };
 
     private short id;

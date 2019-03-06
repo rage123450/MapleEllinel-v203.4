@@ -4,6 +4,7 @@ package net.swordie.ms.life.movement;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.OutPacket;
+import net.swordie.ms.life.Dragon;
 import net.swordie.ms.life.Life;
 import net.swordie.ms.util.Position;
 
@@ -34,6 +35,8 @@ public class MovementNormal extends MovementBase {
         short yoffset = inPacket.decodeShort();
         offset = new Position(xoffset, yoffset);
 
+        unk = inPacket.decodeShort();
+
         moveAction = inPacket.decodeByte();
         elapse = inPacket.decodeShort();
         forcedStop = inPacket.decodeByte();
@@ -49,6 +52,7 @@ public class MovementNormal extends MovementBase {
             outPacket.encodeShort(getFootStart());
         }
         outPacket.encodePosition(getOffset());
+        outPacket.encodeShort(getUNK());
         outPacket.encodeByte(getMoveAction());
         outPacket.encodeShort(getDuration());
         outPacket.encodeByte(getForcedStop());
@@ -67,5 +71,13 @@ public class MovementNormal extends MovementBase {
         life.setvPosition(getVPosition());
         life.setFh(getFh());
         life.setMoveAction(getMoveAction());
+    }
+
+    @Override
+    public void applyTo(Dragon dragon) {
+        dragon.setPosition(getPosition());
+        dragon.setvPosition(getVPosition());
+        dragon.setFh(getFh());
+        dragon.setMoveAction(getMoveAction());
     }
 }

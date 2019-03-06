@@ -31,6 +31,7 @@ import static net.swordie.ms.client.jobs.resistance.Blaster.*;
  * Created on 12/18/2017.
  */
 public class SkillConstants {
+
     public static final short PASSIVE_HYPER_MIN_LEVEL = 140;
     public static final List<Short> ACTIVE_HYPER_LEVELS = Arrays.asList((short) 150, (short) 170, (short) 200);
 
@@ -46,6 +47,7 @@ public class SkillConstants {
     public static final int MAKING_SKILL_EXPERT_LEVEL = 10;
     public static final int MAKING_SKILL_MASTER_LEVEL = 11;
     public static final int MAKING_SKILL_MEISTER_LEVEL = 12;
+
 
     public static boolean isSkillNeedMasterLevel(int skillId) {
         if (isIgnoreMasterLevel(skillId)
@@ -168,71 +170,73 @@ public class SkillConstants {
         }
     }
 
-    public static boolean isKeyDownSkill(int skillId) {
-        return skillId == 2321001 || skillId == 80001836 || skillId == 37121052 || skillId == 36121000 ||
-                skillId == 37121003 || skillId == 36101001 || skillId == 33121114 || skillId == 33121214 ||
-                skillId == 35121015 || skillId == 33121009 || skillId == 32121003 || skillId == 31211001 ||
-                skillId == 31111005 || skillId == 30021238 || skillId == 31001000 || skillId == 31101000 ||
-                skillId == 80001887 || skillId == 80001880 || skillId == 80001629 || skillId == 20041226 ||
-                skillId == 60011216 || skillId == 65121003 || skillId == 80001587 || skillId == 131001008 ||
-                skillId == 142111010 || skillId == 131001004 || skillId == 95001001 || skillId == 101110100 ||
-                skillId == 101110101 || skillId == 101110102 || skillId == 27111100 || skillId == 12121054 ||
-                skillId == 11121052 || skillId == 11121055 || skillId == 5311002 || skillId == 4341002 ||
-                skillId == 5221004 || skillId == 5221022 || skillId == 3121020 || skillId == 3101008 ||
-                skillId == 3111013 || skillId == 1311011 || skillId == 2221011 || skillId == 2221052 ||
-                skillId == 25121030 || skillId == 27101202 || skillId == 25111005 || skillId == 23121000 ||
-                skillId == 22171083 || skillId == 14121004 || skillId == 13111020 || skillId == 13121001 ||
-                skillId == 14111006 || (skillId >= 80001389 && skillId <= 80001392) || skillId == 42121000 ||
-                skillId == 42120003 || skillId == 5700010 || skillId == 5711021 || skillId == 5721001 ||
-                skillId == 5721061 || skillId == 21120018 || skillId == 21120019;
-
+    // updated to v200
+    public static boolean isKeyDownSkill(int skillID) {
+        return skillID == 1311011 || skillID == 2221011 || skillID == 2221052 || skillID == 2321001 || skillID == 3101008 || skillID == 3111013 || skillID == 3121020 || skillID == 4341002 ||
+               skillID == 5081002 || skillID == 5081010 || skillID == 5221004 || skillID == 5311002 || skillID == 5700010 || skillID == 5711021 || skillID == 5721001 || skillID == 5721061 ||
+               skillID == 11121052 || skillID == 11121055 || skillID == 12121054 || skillID == 13111020 || skillID == 13121001 || skillID == 14111006 || skillID == 14121004 || skillID == 20041226 ||
+               skillID == 21120018 || skillID == 22171083 || skillID == 23121000 || skillID == 24121000 || skillID == 24121005 || skillID == 25111005 || skillID == 25121030 || skillID == 27101202 ||
+               skillID == 27111100 || skillID == 30021238 || skillID == 31001000 || skillID == 31101000 || skillID == 31111005 || skillID == 31211001 || skillID == 33121009 || skillID == 33121114 ||
+               skillID == 33121214 || skillID == 35121015 || skillID == 36101001 || skillID == 36121000 || skillID == 37121003 || skillID == 37121052 || skillID == 41121001 || skillID == 42121000 ||
+               skillID == 60011216 || skillID == 64001000 || skillID == 64001007 || skillID == 64001008 || skillID == 64121002 || skillID == 65121003 || skillID == 80001392 || skillID == 80001587 ||
+               skillID == 80001629 || skillID == 80001836 || skillID == 80001887 || skillID == 80002458 || skillID == 80011051 || skillID == 80011362 || skillID == 80011366 || skillID == 80011371 ||
+               skillID == 80011381 || skillID == 80011382 || skillID == 80011387 || skillID == 95001001 || skillID == 101110101 || skillID == 101110102 || skillID == 112001008 || skillID == 112110003 ||
+               skillID == 112111016 || skillID == 131001004 || skillID == 131001008 || skillID == 131001020 || skillID == 142111010;
     }
 
-    public static boolean isEvanForceSkill(int skillId) {
-        switch (skillId) {
+    // updated to v202
+    public static final boolean isEvanForceSkill(int skillID) { // is_evan_force_skill
+        switch (skillID) {
+            case 400021046:
+            case 400021012:
+            case 80001894:
+            case 22141011:
             case 22140022:
+            case 22111017:
             case 22111011:
             case 22111012:
             case 22110022:
             case 22110023:
-            case 22111017:
-            case 80001894:
-            case 22171062:
-            case 22171063:
-            case 22141011:
-            case 22141012:
                 return true;
+        }
+        if (skillID > 22141012 && skillID <= 22171063) {
+            return true;
         }
         return false;
     }
 
+    // updated to v200
     public static boolean isSuperNovaSkill(int skillID) {
         return skillID == 4221052 || skillID == 65121052;
     }
 
+    // updated to v200
     public static boolean isRushBombSkill(int skillID) {
         switch (skillID) {
-            case 101120205:
-            case 101120203:
-            case 80011386:
-            case 101120200:
-            case 80011380:
-            case 61111113:
-            case 61111218:
-            case 61111111:
             case 42120003:
             case 61111100:
             case 40021186:
-            case 31201001:
-            case 27121201:
-            case 22140015:
             case 22140024:
-            case 14111022:
-            case 5101014:
+            case 27121201:
+            case 31201001:
             case 5301001:
-            case 12121001:
             case 2221012:
             case 5101012:
+            case 5101014:
+            case 12121001:
+            case 14111022:
+            case 80011380:
+            case 80011386:
+            case 80002300:
+            case 61111218:
+            case 64101002:
+            case 80002247:
+            case 400001018:
+            case 400031003:
+            case 400031004:
+            case 101120205:
+            case 101120200:
+            case 101120203:
                 return true;
 
         }
@@ -268,9 +272,32 @@ public class SkillConstants {
         return skillID == 14121052 || skillID == 14121003 || skillID == 14000028 || skillID == 14000029;
     }
 
+    // v202.3
     public static boolean isScreenCenterAttackSkill(int skillID) {
-        return skillID == 80001431 || skillID == 100001283 || skillID == 21121057 || skillID == 13121052 ||
-                skillID == 14121052 || skillID == 15121052 || skillID == 80001429;
+        switch (skillID) {
+            case 80001431:
+            case 80011562:
+            case 100001283:
+            case 21121057:
+            case 13121052:
+            case 14121052:
+            case 15121052:
+                return true;
+        }
+        return false;
+    }
+
+    // v202.3
+    public static boolean isSupportAttackSkill(int skillID) {
+        return skillID == 80011561 || skillID == 80002463 || skillID == 80001762 || skillID == 80002212;
+    }
+
+    // v202.3
+    public static boolean isWingedJavelin(int skillID) {
+        // Winged Javelin
+        // Winged Javelin
+        // Abyssal Cast
+        return skillID == 152110004 || skillID == 152120016 || skillID == 155121003;
     }
 
     public static boolean isAranFallingStopSkill(int skillID) {
@@ -394,8 +421,50 @@ public class SkillConstants {
         return 0;
     }
 
+    // v202.3
     public static boolean isKeydownSkillRectMoveXY(int skillID) {
-        return skillID == 13111020;
+        return skillID == 13111020 || skillID == 112111016;
+    }
+
+    // v202.3
+    public static boolean isShadowAssault(int skillID) {
+        return skillID == 400041002 || skillID == 400041003 || skillID == 400041004 || skillID == 400041005;
+    }
+
+    // v202.3 - not sure about the name
+    public static boolean isPoisonAttackSkill(int skillID) {
+        // Ultimate - Mind Over Matter
+        // Poison Nova
+        // Summon Decoy Bomb
+        // Psychic Tornado
+        return skillID == 400021053 || skillID == 400021029 || skillID == 64111012 || skillID == 400020009 || skillID == 400020010 || skillID == 400020011;
+    }
+
+    // v202.3
+    public static boolean isUNKAttackSkill(int skillID) {
+        switch (skillID) {
+            case 400051003:// Meltdown
+            case 400051008:// Cannon of Mass Destruction
+            case 400051016:// Shark Torpedo
+            case 400041034:// Apocalypse Cannon
+            case 400041020:// Shurrikane
+            case 400041016:// Lucky Seven
+            case 400041017:// Triple Throw
+            case 400021078:// Liberated Spirit Circle
+            case 400021080:// Liberated Spirit Circle
+            case 400021009:// Psychic Tornado
+            case 400021010:// Psychic Tornado
+            case 400021011:// Psychic Tornado
+            case 400021028:// Poison Nova
+            case 400021047:// Altar of Annihilation
+            case 400021048:// Ultimate - Mind Over Matter
+            case 400011004:// Spear of Darkness
+            case 152121004:// Longinus Spear
+            case 152001002:// Radiant Orb
+            case 152120003:// Radiant Orb II
+                return true;
+        }
+        return false;
     }
 
     public static int getOriginalOfLinkedSkill(int skillID) {

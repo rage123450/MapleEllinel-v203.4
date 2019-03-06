@@ -155,6 +155,7 @@ public class ItemData {
             }
             equip.setFixedGrade(dataInputStream.readInt());
             equip.setSpecialGrade(dataInputStream.readInt());
+            equip.setEffectItemID(dataInputStream.readInt());
             equips.put(equip.getItemId(), equip);
         } catch (IOException e) {
             e.printStackTrace();
@@ -228,6 +229,7 @@ public class ItemData {
                 }
                 dataOutputStream.writeInt(equip.getFixedGrade());
                 dataOutputStream.writeInt(equip.getSpecialGrade());
+                dataOutputStream.writeInt(equip.getEffectItemID());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -424,6 +426,9 @@ public class ItemData {
                                         options.set(index, Integer.parseInt(optionAttr.get("value")));
                                     }
                                     break;
+                                    case "effectItemID":
+                                        equip.setEffectItemID(Integer.parseInt(value));
+                                        break;
                             }
                             for (int i = 0; i < 7 - options.size(); i++) {
                                 options.add(0);

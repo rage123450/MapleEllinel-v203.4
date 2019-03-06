@@ -249,20 +249,26 @@ public class AvatarLook {
             }
         }
         outPacket.encodeByte(-1);
+
         for (int itemId : getUnseenEquips()) {
             outPacket.encodeByte(ItemConstants.getBodyPartFromItem(itemId, getGender())); // body part
             outPacket.encodeInt(itemId);
         }
         outPacket.encodeByte(-1);
+
+        outPacket.encodeByte(-1);
+
         for (int itemId : getTotems()) {
             outPacket.encodeByte(ItemConstants.getBodyPartFromItem(itemId, getGender()));
             outPacket.encodeInt(itemId);
         }
         outPacket.encodeByte(-1);
+
         outPacket.encodeInt(getWeaponStickerId());
         outPacket.encodeInt(getWeaponId());
         outPacket.encodeInt(getSubWeaponId());
-        outPacket.encodeByte(isDrawElfEar());
+        outPacket.encodeInt(isDrawElfEar() ? 1 : 0);
+        outPacket.encodeByte(0);
 
         for (int i = 0; i < 3; i++) {
             if (getPetIDs().size() > i) {
@@ -271,13 +277,17 @@ public class AvatarLook {
                 outPacket.encodeInt(0);
             }
         }
-        if (JobConstants.isZero((short) getJob())) {
+        short jobID = (short) getJob();
+        if (JobConstants.isZero(jobID)) {
              outPacket.encodeByte(isZeroBetaLook());
         }
-        if (JobConstants.isXenon((short) getJob())) {
+        if (JobConstants.isXenon(jobID)) {
             outPacket.encodeInt(getXenonDefFaceAcc());
         }
-        if (JobConstants.isDemon((short) getJob())) {
+        if (JobConstants.isDemon(jobID)) {
+            outPacket.encodeInt(getDemonSlayerDefFaceAcc());
+        }
+        if (JobConstants.isArk(jobID)) {
             outPacket.encodeInt(getDemonSlayerDefFaceAcc());
         }
         if (JobConstants.isBeastTamer((short) getJob())) {

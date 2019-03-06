@@ -17,7 +17,6 @@ import net.swordie.ms.loaders.containerclasses.QuestInfo;
 import net.swordie.ms.util.FileTime;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,9 +46,9 @@ public class QuestManager {
     @CollectionTable(name = "questlists")
     @MapKeyColumn(name = "questID")
     private Map<Integer, Quest> questList;
+
     @Transient
     private Char chr;
-
     public QuestManager() {
 
     }
@@ -57,10 +56,6 @@ public class QuestManager {
     public QuestManager(Char chr) {
         questList = new HashMap<>();
         this.chr = chr;
-    }
-
-    public Collection<Quest> getEx() {
-        return getQuests().values();
     }
 
     public Set<Quest> getCompletedQuests() {

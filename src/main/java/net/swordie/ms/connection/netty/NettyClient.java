@@ -18,11 +18,12 @@
 package net.swordie.ms.connection.netty;
 
 import net.swordie.ms.connection.InPacket;
-import net.swordie.ms.connection.crypto.MapleCrypto;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import net.swordie.ms.connection.Packet;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -35,24 +36,20 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Zygon
  */
 public class NettyClient {
-    
-    /**
-     * Attribute key for MapleCrypto related to this Client.
-     */
-    public static final AttributeKey<MapleCrypto> CRYPTO_KEY = AttributeKey.valueOf("A");
     /**
      * Attribute key for this NettyClient object.
      */
     public static final AttributeKey<NettyClient> CLIENT_KEY = AttributeKey.valueOf("C");
-    
+
+    public Map<Integer, Integer> mEncryptedOpcode = new LinkedHashMap<>();
     /**
      * Send seed or IV for one of the cryptography stages.
      */
-    private byte[] siv;
+    private int siv;
     /**
      * Receive seed or IV for one of the cryptography stages.
      */
-    private byte[] riv;
+    private int riv;
     /**
      * Stored length used for net.swordie.ms.connection.packet decryption. This is used for
      * storing the net.swordie.ms.connection.packet length for the next net.swordie.ms.connection.packet that is readable.
@@ -94,7 +91,7 @@ public class NettyClient {
      * @param alpha the send seed or IV.
      * @param delta the recv seed or IV.
      */
-    public NettyClient(Channel c, byte[] alpha, byte[] delta) {
+    public NettyClient(Channel c, int alpha, int delta) {
         ch = c;
         siv = alpha;
         riv = delta;
@@ -132,7 +129,7 @@ public class NettyClient {
      * Gets the current send seed or IV.
      * @return send IV.
      */
-    public final byte[] getSendIV() {
+    public final int getSendIV() {
         return siv;
     }
     
@@ -140,7 +137,7 @@ public class NettyClient {
      * Gets the current recv seed or IV.
      * @return recv IV.
      */
-    public final byte[] getRecvIV() {
+    public final int getRecvIV() {
         return riv;
     }
 
@@ -148,7 +145,7 @@ public class NettyClient {
      * Sets the send seed or IV for this session.
      * @param alpha the new send IV.
      */
-    public final void setSendIV(byte[] alpha) {
+    public final void setSendIV(int alpha) {
         siv = alpha;
     }
 
@@ -156,7 +153,7 @@ public class NettyClient {
      * Sets the recv seed or IV for this session.
      * @param delta  the new recv IV.
      */
-    public final void setRecvIV(byte[] delta) {
+    public final void setRecvIV(int delta) {
         riv = delta;
     }
     
@@ -183,7 +180,11 @@ public class NettyClient {
     public String getIP() {
         return ch.remoteAddress().toString().split(":")[0].substring(1);
     }
-    
+
+    public int getPort() {
+        return Integer.parseInt(ch.localAddress().toString().split(":")[1]);
+    }
+
     /**
      * Acquires the encoding state for this specific send IV. This is to
      * prevent multiple encoding states to be possible at the same time. If 

@@ -1,6 +1,6 @@
 package net.swordie.ms.handlers;
 
-import net.swordie.ms.ServerConfig;
+import net.swordie.ms.api.ApiFactory;
 import net.swordie.ms.client.Account;
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.BroadcastMsg;
@@ -9,9 +9,11 @@ import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.keys.FuncKeyMap;
 import net.swordie.ms.client.character.items.BodyPart;
 import net.swordie.ms.client.character.items.Equip;
+import net.swordie.ms.client.character.skills.MatrixInventory;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.jobs.JobManager;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.MapLoadable;
 import net.swordie.ms.connection.packet.WvsContext;
 import net.swordie.ms.constants.GameConstants;
 import net.swordie.ms.constants.ItemConstants;
@@ -24,7 +26,6 @@ import net.swordie.ms.handlers.header.OutHeader;
 import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.util.Util;
-import net.swordie.ms.world.World;
 import org.apache.log4j.LogManager;
 import net.swordie.ms.connection.packet.Login;
 import net.swordie.ms.world.Channel;
@@ -56,6 +57,7 @@ public class LoginHandler {
 
     public static void handleClientStart(Client client, InPacket inPacket) {
         client.write(Login.sendStart());
+        client.write(Login.sendLoginTime());
     }
 
     public static void handlePong(Client c, InPacket inPacket) {
@@ -120,14 +122,13 @@ public class LoginHandler {
     }
 
     public static void handleWorldListRequest(Client c, InPacket packet) {
+        c.write(MapLoadable.setMapTaggedObjectVisible());
         c.write(Login.sendWorldInformation(null));
         c.write(Login.sendWorldInformationEnd());
-        c.write(Login.sendRecommendWorldMessage(ServerConfig.WORLD_ID, ServerConfig.RECOMMEND_MSG));
     }
 
     public static void handleServerStatusRequest(Client c, InPacket inPacket) {
-        c.write(Login.sendWorldInformation(null));
-        c.write(Login.sendWorldInformationEnd());
+        handleWorldListRequest(c, inPacket);
     }
 
     public static void handleWorldStatusRequest(Client c, InPacket inPacket) {
@@ -136,24 +137,53 @@ public class LoginHandler {
     }
 
     public static void handleSelectWorld(Client c, InPacket inPacket) {
-        byte somethingThatIsTwo = inPacket.decodeByte();
+        inPacket.decodeByte();
+        String token = inPacket.decodeString();
+        byte[] machineID = inPacket.decodeArr(16);
+        inPacket.decodeInt();
+        inPacket.decodeByte();
+        inPacket.decodeByte();
         byte worldId = inPacket.decodeByte();
         byte channel = (byte) (inPacket.decodeByte() + 1);
-        byte code = 0; // success code
-        World world = Server.getInstance().getWorldById(worldId);
-        if (world != null && world.getChannelById(channel) != null) {
-            c.setWorldId(worldId);
-            c.setChannel(channel);
-            c.write(Login.selectWorldResult(c.getAccount(), code, Server.getInstance().getWorldById(worldId).isReboot() ? "reboot" : "normal", false));
+        inPacket.decodeInt();// ip
+
+        String accountName = ApiFactory.getFactory().getAccountByToken(c, token);
+        Account account = Account.getFromDBByName(accountName);
+        if (account != null) {
+            if (Server.getInstance().isAccountLoggedIn(account)) {
+                c.write(Login.checkPasswordResult(false, LoginType.AlreadyConnected, account));
+            } else if (account.getBanExpireDate() != null && !account.getBanExpireDate().isExpired()) {
+                String banMsg = String.format("You have been banned. \nReason: %s. \nExpire date: %s",
+                        account.getBanReason(), account.getBanExpireDate().toLocalDateTime());
+                c.write(WvsContext.broadcastMsg(BroadcastMsg.popUpMessage(banMsg)));
+                c.write(Login.checkPasswordResult(false, LoginType.Blocked, account));
+            }  else {
+                //Server.getInstance().addAccount(account);
+                c.setAccount(account);
+                c.setMachineID(machineID);
+                DatabaseManager.saveToDB(account);
+                byte code = 0; // success code
+                c.setWorldId(worldId);
+                c.setChannel(channel);
+                //c.write(Login.checkPasswordResult(true, LoginType.Success, account));
+                c.write(Login.sendAccountInfo(c.getAccount()));
+                c.write(Login.selectWorldResult(c.getAccount(), code, Server.getInstance().getWorldById(worldId).isReboot() ? "reboot" : "normal", true));
+            }
         } else {
-            c.write(Login.selectCharacterResult(LoginType.UnauthorizedUser, (byte) 0, 0, 0));
+            c.write(Login.checkPasswordResult(false, LoginType.NotRegistered, null));
         }
+    }
+
+    public static void handleSelectWorldButton(Client c, InPacket inPacket) {
+        byte unk = inPacket.decodeByte();
+        int worldId = inPacket.decodeInt();
+        c.write(Login.sendSelectWorld(worldId, unk));
     }
 
     public static void handleCheckDuplicatedID(Client c, InPacket inPacket) {
         String name = inPacket.decodeString();
         CharNameResult code;
-        if (!GameConstants.isValidName(name)) {
+        if (name.toLowerCase().contains("virtual") || name.toLowerCase().contains("kernel")) {
             code = CharNameResult.Unavailable_Invalid;
         } else {
             code = Char.getFromDBByName(name) == null ? CharNameResult.Available : CharNameResult.Unavailable_InUse;
@@ -199,7 +229,7 @@ public class LoginHandler {
         Char chr = new Char(c.getAccount().getId(), name, keySettingType, eventNewCharSaleJob, job.getJobId(),
                 curSelectedSubJob, gender, skin, face, hair, items);
         JobManager.getJobById(job.getJobId(), chr).setCharCreationStats(chr);
-
+        chr.setMatrixInventory(MatrixInventory.getDefault());
         chr.setFuncKeyMap(FuncKeyMap.getDefaultMapping());
         c.getAccount().addCharacter(chr);
         DatabaseManager.saveToDB(c.getAccount());
@@ -233,7 +263,7 @@ public class LoginHandler {
     }
 
     public static void handleDeleteCharacter(Client c, InPacket inPacket) {
-        if (c.getAccount() != null && handleCheckSpwRequest(c, inPacket)) {
+        if (c.getAccount() != null && handleCheckSpwRequest(c, inPacket, true)) {
             int charId = inPacket.decodeInt();
             Account acc = c.getAccount();
             Char chr = acc.getCharById(charId);
@@ -329,8 +359,11 @@ public class LoginHandler {
         }
     }
 
-    public static boolean handleCheckSpwRequest(Client c, InPacket inPacket) {
+    public static boolean handleCheckSpwRequest(Client c, InPacket inPacket, boolean delete) {
         boolean success = false;
+        if (!delete) {
+            inPacket.decodeInt();
+        }
         String pic = inPacket.decodeString();
 //        int userId = inPacket.decodeInt();
         // after this: 2 strings indicating pc info. Not interested in that rn

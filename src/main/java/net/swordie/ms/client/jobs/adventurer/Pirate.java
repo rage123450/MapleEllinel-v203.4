@@ -265,7 +265,7 @@ public class Pirate extends Beginner {
                 break;
             case TIME_LEAP:
                 long nextAvailableTime = System.currentTimeMillis() + (si.getValue(time, slv)*1000);
-                chr.getScriptManager().createQuestWithQRValue(chr, GameConstants.TIME_LEAP_QR_KEY, String.valueOf(nextAvailableTime), false);
+                chr.getScriptManager().createQuestWithQRValue(chr, GameConstants.TIME_LEAP_QR_KEY, String.valueOf(nextAvailableTime));
                 if (chr.getQuestManager().getQuestById(GameConstants.TIME_LEAP_QR_KEY).getQRValue() == null
                         || Long.parseLong(chr.getQuestManager().getQuestById(GameConstants.TIME_LEAP_QR_KEY).getQRValue()) < System.currentTimeMillis()) {
                     for (int skillId : chr.getSkillCoolTimes().keySet()) {

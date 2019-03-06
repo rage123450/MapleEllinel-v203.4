@@ -20,9 +20,14 @@ public enum InGameDirectionEventType {
     MonologueScroll(12),
     AvatarLookSet(13),
     RemoveAdditionalEffect(14),
-    ForcedMove(15),
-    ForcedFlip(16),
-    InputUI(17),
+    // 15
+    ForcedMove(16),
+    ForcedFlip(17),
+    InputUI(18),
+    // 19
+    // 20
+    // 21
+    // 22
     ;
 
     private int val;

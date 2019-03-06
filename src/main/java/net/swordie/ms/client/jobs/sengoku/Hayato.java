@@ -155,13 +155,13 @@ public class Hayato extends Job {
                 o2.nOption = 8;
                 o2.rOption = skillID;
                 o2.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(DamR, o2);
+                tsm.putCharacterStatValue(IndieDamR, o2);
                 break;
             case KATANA_BOOSTER:
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(Booster, o1);
+                tsm.putCharacterStatValue(IndieBooster, o1);
                 break;
             case MILITARY_MIGHT:
                 o1.nReason = skillID;
@@ -219,11 +219,11 @@ public class Hayato extends Job {
                 o1.tStart = (int) System.currentTimeMillis();
                 o1.tTerm = si.getValue(time, slv);
                 tsm.putCharacterStatValue(IndieDamR, o1);
-                o2.nReason = skillID;
+                /*o2.nReason = skillID;
                 o2.nValue = si.getValue(indieMaxDamageOver, slv);
                 o2.tStart = (int) System.currentTimeMillis();
                 o2.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieMaxDamageOver, o2);
+                tsm.putCharacterStatValue(IndieMaxDamageOver, o2);*/
                 break;
             case GOD_OF_BLADES:
                 o1.nReason = skillID;
@@ -550,7 +550,7 @@ public class Hayato extends Job {
             if(mob == null) {
                 continue;
             }
-            int totaldmg = Arrays.stream(mai.damages).sum();
+            long totaldmg = Arrays.stream(mai.damages).sum();
 
             if(totaldmg >= mob.getHp()) {
 
@@ -650,7 +650,7 @@ public class Hayato extends Job {
         o1.nOption = si.getValue(damR, slv);
         o1.rOption = WILLOW_DODGE;
         o1.tOption = 20;
-        tsm.putCharacterStatValue(DamR, o1);
+        tsm.putCharacterStatValue(IndieDamR, o1);
         tsm.sendSetStatPacket();
     }
 

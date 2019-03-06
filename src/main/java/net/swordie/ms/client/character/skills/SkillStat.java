@@ -36,6 +36,7 @@ public enum SkillStat {
     indieMdd,
     indieTerR,
     indieEva,
+    indieEvaR,
     indieAcc,
     indieBooster,
     indieSpeed,
@@ -373,6 +374,9 @@ public enum SkillStat {
             case indieEva:
             case eva:
                 return BaseStat.eva;
+            case indieEvaR:
+            case evaR:
+                return BaseStat.evaR;
             case indieBooster:
                 return BaseStat.booster;
             case mastery:

@@ -16,7 +16,7 @@ public class MobAttackInfo {
     public short oldPosX;
     public short oldPosY;
     public short hpPerc;
-    public int[] damages;
+    public long[] damages;
     public int mobUpDownYRange;
     public byte type;
     public String currentAnimationName;
@@ -55,7 +55,7 @@ public class MobAttackInfo {
         mai.oldPosX = oldPosX;
         mai.oldPosY = oldPosY;
         mai.hpPerc = hpPerc;
-        mai.damages = new int[damages.length];
+        mai.damages = new long[damages.length];
         if(damages != null && damages.length > 0) {
             System.arraycopy(damages, 0, mai.damages, 0, damages.length);
         }

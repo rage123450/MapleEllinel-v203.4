@@ -6,7 +6,7 @@ import net.swordie.ms.connection.OutPacket;
  * Created on 12/20/2017.
  */
 public class FarmUserInfo {
-    private String farmName = "Kappa";
+    private String farmName = "Creating...";
     private int farmPoint;
     private int farmLevel;
     private int farmExp;
@@ -104,7 +104,7 @@ public class FarmUserInfo {
         outPacket.encodeInt(getFarmExp());
         outPacket.encodeInt(getDecoPoint());
         outPacket.encodeInt(getFarmCash());
-        outPacket.encodeByte(getFarmGender());
+        outPacket.encodeInt(getFarmGender());
         outPacket.encodeInt(getFarmTheme());
         outPacket.encodeInt(getSlotExtend());
         outPacket.encodeInt(getLockerSlotCount());

@@ -1,6 +1,6 @@
 package net.swordie.ms.client.character.commands;
 
-import net.swordie.ms.enums.AccountType;
+import net.swordie.ms.enums.PrivateStatusIDFlag;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,6 +9,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Command {
 
     String[] names();
-    AccountType requiredType();
+    PrivateStatusIDFlag requiredType();
 
 }

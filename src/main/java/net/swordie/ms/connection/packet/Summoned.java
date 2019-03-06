@@ -125,8 +125,8 @@ public class Summoned {
         for (MobAttackInfo mai : ai.mobAttackInfo) {
             outPacket.encodeInt(mai.mobId);
             outPacket.encodeByte(mai.byteIdk1);
-            for (int dmg : mai.damages) {
-                outPacket.encodeInt(dmg);
+            for (long dmg : mai.damages) {
+                outPacket.encodeLong(dmg);
             }
         }
         outPacket.encodeByte(counter); // bCounterAttack

@@ -6,6 +6,7 @@ import net.swordie.ms.life.mob.*;
 import net.swordie.ms.life.mob.skill.BurnedInfo;
 import net.swordie.ms.life.mob.skill.MobSkillID;
 import net.swordie.ms.life.mob.skill.MobSkillStat;
+import net.swordie.ms.life.mob.skill.ShootingMoveStat;
 import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.handlers.header.OutHeader;
@@ -13,7 +14,7 @@ import net.swordie.ms.life.movement.MovementInfo;
 import net.swordie.ms.loaders.containerclasses.MobSkillInfo;
 import net.swordie.ms.util.Position;
 import net.swordie.ms.util.Rect;
-
+import net.swordie.ms.util.container.Tuple;
 import java.util.List;
 
 /**
@@ -70,16 +71,15 @@ public class MobPool {
         return outPacket;
     }
 
-    public static OutPacket damaged(int mobID, long damage, int templateID, byte type, int hp, int maxHp) {
+    public static OutPacket damaged(int mobID, long damage, int templateID, byte type, long hp, long maxHp) {
         OutPacket outPacket = new OutPacket(OutHeader.MOB_DAMAGED);
 
         outPacket.encodeInt(mobID);
         outPacket.encodeByte(type);
-        damage = damage > Integer.MAX_VALUE ? Integer.MAX_VALUE : damage;
-        outPacket.encodeInt((int) damage);
+        outPacket.encodeLong(damage);
         if(templateID / 10000 == 250 || templateID / 10000 == 251) {
-            outPacket.encodeInt(hp);
-            outPacket.encodeInt(maxHp);
+            outPacket.encodeLong(hp);
+            outPacket.encodeLong(maxHp);
         }
 
         return outPacket;
@@ -89,7 +89,8 @@ public class MobPool {
         OutPacket outPacket = new OutPacket(OutHeader.MOB_HP_INDICATOR);
 
         outPacket.encodeInt(objectId);
-        outPacket.encodeByte(percDamage);
+        outPacket.encodeInt(percDamage);
+        outPacket.encodeByte(0);
 
         return outPacket;
     }
@@ -102,9 +103,10 @@ public class MobPool {
         outPacket.encodeByte(nextAttackPossible);
         outPacket.encodeInt((int) mob.getMp());
         outPacket.encodeInt(skillID);
-        outPacket.encodeByte(slv);
+        outPacket.encodeShort(slv);
         outPacket.encodeInt(forcedAttack);
-
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);// for secure
         return outPacket;
     }
 
@@ -200,7 +202,7 @@ public class MobPool {
         outPacket.encodeInt(mob.getObjectId());
         outPacket.encodeByte(msai.actionAndDirMask);
         outPacket.encodeByte(msai.action);
-        outPacket.encodeInt(msai.targetInfo);
+        outPacket.encodeLong(msai.targetInfo);
         outPacket.encodeByte(msai.multiTargetForBalls.size());
         for(Position pos : msai.multiTargetForBalls) {
             outPacket.encodePosition(pos);

@@ -14,23 +14,28 @@ public enum FieldEffectType {
     ChangeBGM(7),
     BGMVolumeOnly(8),
     SetBGMVolume(9),
-    RewardRoulette(10),
-    TopScreen(11),
-    BackScreen(12),
-    TopScreenEffect(13),
-    ScreenEffect(14),
-    ScreenFloatingEffect(15),
-    Blind(16),
-    SetGrey(17),
-    OnOffLayer(18),
-    OverlapScreen(19),
-    OverlapScreenDetail(20),
-    RemoveOverlapScreen(21),
-    ChangeColor(22),
-    StageClearExpOnly(23),
-    EvenMoreAnimation(24),
-    SkeletonAnimation(25),
-    OneTimeSkeletonAnimation(26),
+    // 10
+    // 11
+    // 12
+    // 13
+    // 14
+    RewardRoulette(15),
+    TopScreen(16),
+    BackScreen(17),
+    TopScreenEffect(18),
+    ScreenEffect(19),
+    ScreenFloatingEffect(20),
+    Blind(21),
+    SetGrey(22),
+    OnOffLayer(23),
+    OverlapScreen(24),
+    OverlapScreenDetail(25),
+    RemoveOverlapScreen(26),
+    ChangeColor(27),
+    StageClearExpOnly(28),
+    EvenMoreAnimation(29),
+    SkeletonAnimation(30),
+    OneTimeSkeletonAnimation(31),
 
 
     ;

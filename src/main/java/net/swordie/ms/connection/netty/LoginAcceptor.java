@@ -7,7 +7,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import net.swordie.ms.connection.crypto.MapleCrypto;
 import org.apache.log4j.LogManager;
 import net.swordie.ms.connection.packet.Login;
 import net.swordie.ms.handlers.EventManager;
@@ -41,8 +40,8 @@ public class LoginAcceptor implements Runnable{
 
                     ch.pipeline().addLast(new PacketDecoder(), new ChannelHandler(), new PacketEncoder());
 
-                    byte[] siv = new byte[]{70, 114, 30, 82};
-                    byte[] riv = new byte[]{82, 48, 25, 115};
+                    int siv = (int) (Math.random() * Integer.MAX_VALUE);
+                    int riv = (int) (Math.random() * Integer.MAX_VALUE);
 
                     Client c = new Client(ch, siv, riv);
                     // remove after debug stage
@@ -54,7 +53,6 @@ public class LoginAcceptor implements Runnable{
 
 
                     ch.attr(CLIENT_KEY).set(c);
-                    ch.attr(Client.CRYPTO_KEY).set(new MapleCrypto());
 
                     EventManager.addFixedRateEvent(c::sendPing, 0, 10000);
                 }

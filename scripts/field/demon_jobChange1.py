@@ -16,9 +16,7 @@ if sm.sendAskSelectMenu(1, 0) == 1:
     sm.setJob(3100)
     sm.showEffect("Effect/BasicEff.img/JobChangedDemon", 0, 0, 0, -2, -2, False, 0)
     sm.playSound("tutoCommon/JobChanged", 100)
-    sm.setSTR(35)
-    sm.setDEX(4)
-    sm.setAP(23)
+    sm.resetStats()
     sm.addMaxHP(50)
     # Max MP setting to 10
     sm.addSP(5, True)

@@ -175,14 +175,16 @@ public class Item implements Serializable, Encodable {
         }
         outPacket.encodeFT(FileTime.fromType(FileTime.Type.MAX_TIME));
         outPacket.encodeInt(getBagIndex());
+        outPacket.encodeByte(0);// idk
         if (getType() == Type.ITEM) {
             outPacket.encodeShort(getQuantity()); // nQuantity
             outPacket.encodeString(getOwner()); // sOwner
             outPacket.encodeShort(0); // flag
             if (ItemConstants.isThrowingStar(getItemId()) || ItemConstants.isBullet(getItemId()) ||
-                    ItemConstants.isFamiliar(getItemId())) {
+                    ItemConstants.isFamiliar(getItemId()) || getItemId() == 4001886) {
                 outPacket.encodeLong(getId());
             }
+            outPacket.encodeInt(0);// unk
         }
     }
 

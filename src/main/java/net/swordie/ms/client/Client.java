@@ -26,7 +26,7 @@ public class Client extends NettyClient {
 	private byte[] machineID;
 	private byte oldChannel;
 
-	public Client(io.netty.channel.Channel channel, byte[] sendSeq, byte[] recvSeq) {
+	public Client(io.netty.channel.Channel channel, int sendSeq, int recvSeq) {
 		super(channel, sendSeq, recvSeq);
 		lock = new ReentrantLock(true);
 	}

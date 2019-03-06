@@ -82,7 +82,7 @@ public class MobData {
                 dataOutputStream.writeInt(fms.getMdr());
                 dataOutputStream.writeInt(fms.getAcc());
                 dataOutputStream.writeInt(fms.getEva());
-                dataOutputStream.writeInt(fms.getPushed());
+                dataOutputStream.writeLong(fms.getPushed());
                 dataOutputStream.writeLong(fms.getExp());
                 dataOutputStream.writeInt(mob.getSummonType());
                 dataOutputStream.writeInt(mob.getCategory());
@@ -234,7 +234,7 @@ public class MobData {
             fms.setMdr(dataInputStream.readInt());
             fms.setAcc(dataInputStream.readInt());
             fms.setEva(dataInputStream.readInt());
-            fms.setPushed(dataInputStream.readInt());
+            fms.setPushed(dataInputStream.readLong());
             fms.setExp(dataInputStream.readLong());
             mob.setSummonType(dataInputStream.readInt());
             mob.setCategory(dataInputStream.readInt());
@@ -470,7 +470,7 @@ public class MobData {
                         fms.setEva(Integer.parseInt(value));
                         break;
                     case "pushed":
-                        fms.setPushed(Integer.parseInt(value));
+                        fms.setPushed(Long.parseLong(value));
                         break;
                     case "exp":
                         fms.setExp(Integer.parseInt(value));

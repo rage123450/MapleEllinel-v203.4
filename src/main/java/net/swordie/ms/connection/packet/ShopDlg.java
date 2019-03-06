@@ -10,9 +10,10 @@ import net.swordie.ms.handlers.header.OutHeader;
  */
 public class ShopDlg {
 
-    public static OutPacket openShop(int petTemplateID, NpcShopDlg nsd) {
+    public static OutPacket openShop(int npcID, int petTemplateID, NpcShopDlg nsd) {
 
         OutPacket outPacket = new OutPacket(OutHeader.SHOP_OPEN);
+        outPacket.encodeInt(npcID);
         outPacket.encodeByte(petTemplateID != 0);
         if(petTemplateID != 0) {
             outPacket.encodeInt(petTemplateID);

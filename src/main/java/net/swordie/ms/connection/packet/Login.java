@@ -7,8 +7,10 @@ import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.ServerConstants;
 import net.swordie.ms.enums.LoginType;
 import net.swordie.ms.ServerStatus;
+import net.swordie.ms.handlers.header.InHeader;
 import net.swordie.ms.handlers.header.OutHeader;
 import net.swordie.ms.util.Position;
+import net.swordie.ms.util.Util;
 import net.swordie.ms.util.container.Tuple;
 import net.swordie.ms.world.Channel;
 import net.swordie.ms.Server;
@@ -25,18 +27,16 @@ import java.util.Set;
  */
 public class Login {
 
-    public static OutPacket sendConnect(byte[] siv, byte[] riv) {
+    public static OutPacket sendConnect(int siv, int riv) {
         OutPacket oPacket = new OutPacket();
-
-        // version (short) + MapleString (short + char array size) + local IV (int) + remote IV (int) + locale (byte)
-        // 0xE
-        oPacket.encodeShort((short) 15);
+        int length = 14 + ServerConstants.MINOR_VERSION.length();
+        oPacket.encodeShort((short) length);
         oPacket.encodeShort(ServerConstants.VERSION);
         oPacket.encodeString(ServerConstants.MINOR_VERSION);
-        oPacket.encodeArr(siv);
-        oPacket.encodeArr(riv);
+        oPacket.encodeInt(siv);
+        oPacket.encodeInt(riv);
         oPacket.encodeByte(ServerConstants.LOCALE);
-        oPacket.encodeByte(false);
+        oPacket.encodeByte(false);// bLoadSingleThread
         return oPacket;
     }
 
@@ -58,6 +58,14 @@ public class Login {
         return outPacket;
     }
 
+    public static OutPacket sendLoginTime() {
+        OutPacket outPacket = new OutPacket(OutHeader.LOGIN_TIME.getValue());
+
+        outPacket.encodeFT(FileTime.currentTime());
+
+        return outPacket;
+    }
+
     public static OutPacket checkPasswordResult(boolean success, LoginType msg, Account account) {
         OutPacket outPacket = new OutPacket(OutHeader.CHECK_PASSWORD_RESULT.getValue());
 
@@ -67,10 +75,10 @@ public class Login {
             outPacket.encodeInt(0);
             outPacket.encodeString(account.getName());
             outPacket.encodeInt(account.getId());
-            outPacket.encodeByte(account.getGender());
-            outPacket.encodeByte(account.getMsg2());
-            outPacket.encodeInt(account.getAccountType().getVal());
-            outPacket.encodeInt(account.getAge());
+            //outPacket.encodeByte(account.getGender());
+            outPacket.encodeByte(account.getMsg2());// nGradeCode
+            outPacket.encodeInt(account.getPrivateStatusIDFlag().getFlag());
+            outPacket.encodeInt(account.getAge());// nVIPGrade
             outPacket.encodeByte(!account.hasCensoredNxLoginID());
             if(account.hasCensoredNxLoginID()) {
                 outPacket.encodeString(account.getCensoredNxLoginID());
@@ -123,8 +131,6 @@ public class Login {
         outPacket.encodeString(world.getName());
         outPacket.encodeByte(world.getWorldState());
         outPacket.encodeString(world.getWorldEventDescription());
-        outPacket.encodeShort(world.getWorldEventEXP_WSE());
-        outPacket.encodeShort(world.getWorldEventDrop_WSE());
         outPacket.encodeByte(world.isCharCreateBlock());
         outPacket.encodeByte(world.getChannels().size());
         for(Channel c : world.getChannels()) {
@@ -151,7 +157,10 @@ public class Login {
     public static OutPacket sendWorldInformationEnd() {
         OutPacket outPacket = new OutPacket(OutHeader.WORLD_INFORMATION);
 
-        outPacket.encodeInt(255);
+        outPacket.encodeByte(-1);
+        outPacket.encodeByte(0);
+        outPacket.encodeByte(0);
+        outPacket.encodeByte(0);
 
         return outPacket;
     }
@@ -161,15 +170,13 @@ public class Login {
 
         outPacket.encodeByte(0); // succeed
         outPacket.encodeInt(account.getId());
-        outPacket.encodeByte(account.getGender());
         outPacket.encodeByte(account.getGradeCode());
-        outPacket.encodeInt(account.getAccountType().getVal());
+        outPacket.encodeInt(account.getPrivateStatusIDFlag().getFlag());
         outPacket.encodeInt(account.getVipGrade());
-//        outPacket.encodeInt(account.getAge());
-        outPacket.encodeByte(account.getPurchaseExp());
+        outPacket.encodeByte(account.getGender());
         outPacket.encodeString(account.getName());
+        outPacket.encodeByte(account.getPurchaseExp());
         outPacket.encodeByte(account.getnBlockReason());
-        outPacket.encodeByte(0); // ?
         outPacket.encodeLong(account.getChatUnblockDate());
         outPacket.encodeString(account.getCensoredNxLoginID());
         outPacket.encodeLong(0);
@@ -201,11 +208,20 @@ public class Login {
         return outPacket;
     }
 
+    public static OutPacket sendSelectWorld(int worldId, byte unk) {
+        OutPacket outPacket = new OutPacket(OutHeader.SELECT_WORLD_BUTTON);
+
+        outPacket.encodeByte(unk);
+        outPacket.encodeInt(worldId);
+        return outPacket;
+    }
     public static OutPacket selectWorldResult(Account account, byte code, String specialServer,
                                   boolean burningEventBlock) {
         OutPacket outPacket = new OutPacket(OutHeader.SELECT_WORLD_RESULT);
 
         outPacket.encodeByte(code);
+        outPacket.encodeByte(0);
+        outPacket.encodeString(specialServer);
         outPacket.encodeString(specialServer);
         outPacket.encodeInt(account.getTrunk().getSlotCount());
         outPacket.encodeByte(burningEventBlock); // bBurningEventBlock
@@ -233,11 +249,11 @@ public class Login {
         for(Char chr : chars) {
             chr.getAvatarData().encode(outPacket);
             outPacket.encodeByte(false); // family stuff, deprecated (v61 = &v2->m_abOnFamily.a[v59];)
-            boolean hasRanking = chr.getRanking() != null && !JobConstants.isGmJob(chr.getJob());
+            /*boolean hasRanking = chr.getRanking() != null && !JobConstants.isGmJob(chr.getJob());
             outPacket.encodeByte(hasRanking);
             if (hasRanking) {
                 chr.getRanking().encode(outPacket);
-            }
+            }*/
         }
         outPacket.encodeByte(account.getPicStatus().getVal()); // bLoginOpt
         outPacket.encodeByte(false); // bQuerySSNOnCreateNewCharacter
@@ -247,7 +263,11 @@ public class Login {
         outPacket.encodeFT(FileTime.fromType(FileTime.Type.ZERO_TIME));
         outPacket.encodeByte(0); // nRenameCount
         outPacket.encodeByte(0);
-
+        outPacket.encodeByte(0);
+        outPacket.encodeByte(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
         return outPacket;
     }
 
@@ -267,7 +287,7 @@ public class Login {
         if(type == LoginType.Success) {
             c.getAvatarData().encode(outPacket);
         }
-
+        outPacket.encodeByte(0);
         return outPacket;
     }
 
@@ -292,16 +312,20 @@ public class Login {
 
             byte[] chatServer = new byte[]{8, 31, 99, ((byte) 133)};
             // chat stuff
-            outPacket.encodeArr(chatServer);
-            outPacket.encodeShort(ServerConstants.CHAT_PORT);
+            outPacket.encodeInt(0);//encodeArr(chatServer);
+            outPacket.encodeShort(0);//(ServerConstants.CHAT_PORT);
 
+            outPacket.encodeInt(0);
             outPacket.encodeInt(characterId);
+
             outPacket.encodeByte(0);
             outPacket.encodeInt(0); // ulArgument
+
             outPacket.encodeByte(0);
             outPacket.encodeInt(0);
-            outPacket.encodeInt(0);
+
             outPacket.encodeByte(0);
+            outPacket.encodeLong(0);
         }
 
         return outPacket;
@@ -312,8 +336,8 @@ public class Login {
 
         outPacket.encodeInt(charId);
         outPacket.encodeByte(loginType.getValue());
-
-
+        outPacket.encodeLong(0);
+        outPacket.encodeLong(0);
         return outPacket;
     }
 
@@ -323,5 +347,13 @@ public class Login {
         oPacket.encodeInt(nWorldID);
         oPacket.encodeString(nMsg);
         return oPacket;
+    }
+
+    public static OutPacket initOpcodeEncryption(int nBlockSize, byte[] aBuffer) {
+        OutPacket outPacket = new OutPacket(OutHeader.INIT_OPCODE_ENCRYPTION);
+        outPacket.encodeInt(nBlockSize);
+        outPacket.encodeInt(aBuffer.length);
+        outPacket.encodeArr(aBuffer);
+        return outPacket;
     }
 }

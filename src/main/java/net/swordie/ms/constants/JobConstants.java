@@ -14,7 +14,7 @@ import java.util.Set;
 public class JobConstants {
 
     public static final boolean enableJobs = true;
-    public static final int jobOrder = 8;
+    public static final int jobOrder = 2;
 
     public static boolean isXenon(short jobId) {
         return jobId / 100 == 36 || jobId == 3002;
@@ -269,6 +269,13 @@ public class JobConstants {
         JETT2(570, 0),
         JETT3(571, 0),
         JETT4(572, 0),
+        BRAWLER_NEW(580, 0),
+        MARAUDER_NEW(581, 0),
+        BUCCANEER_NEW(582, 0),
+        GUNSLINGER_NEW(590, 0),
+        OUTLAW_NEW(591, 0),
+        CORSAIR_NEW(592, 0),
+        // 580, 581, 582 - bucc
         MANAGER(800, 0),
         GM(900, 0),
         SUPERGM(910, 0),
@@ -299,6 +306,7 @@ public class JobConstants {
         ARAN2(2110, 2000),
         ARAN3(2111, 2000),
         ARAN4(2112, 2000),
+        EVAN(2200, 2001),
         EVAN1(2210, 2001),
         EVAN2(2212, 2001),
         EVAN3(2214, 2001),
@@ -371,10 +379,15 @@ public class JobConstants {
         MIHILE4(5112, 5000),
         KAISER(6000, 6000),
         ANGELIC_BUSTER(6001, 6001),
+        CADENA(6002, 6002),
         KAISER1(6100, 6000),
         KAISER2(6110, 6000),
         KAISER3(6111, 6000),
         KAISER4(6112, 6000),
+        CADENA1(6400, 6002),
+        CADENA2(6410, 6002),
+        CADENA3(6411, 6002),
+        CADENA4(6412, 6002),
         ANGELIC_BUSTER1(6500, 6001),
         ANGELIC_BUSTER2(6510, 6001),
         ANGELIC_BUSTER3(6511, 6001),
@@ -397,6 +410,16 @@ public class JobConstants {
         KINESIS_2(14210, 14000),
         KINESIS_3(14211, 14000),
         KINESIS_4(14212, 14000),
+        ILLIUM(15000, 15000),
+        ARK(15001, 15001),
+        ILLIUM1(15200, 15000),
+        ILLIUM2(15210, 15000),
+        ILLIUM3(15211, 15000),
+        ILLIUM4(15212, 15000),
+        ARK1(15500, 15001),
+        ARK2(15510, 15001),
+        ARK3(15511, 15001),
+        ARK4(15512, 15001),
         EMPTY_0(30000, 0),
         V_SKILLS(40000, 0),
         EMPTY_2(40001, 0),
@@ -736,7 +759,10 @@ public class JobConstants {
         KANNA(19, JobFlag.ENABLED, JobEnum.KANNA),
         CHASE(20, JobFlag.ENABLED, JobEnum.BEAST_TAMER),
         PINK_BEAN(21, JobFlag.ENABLED, JobEnum.PINK_BEAN_0),
-        KINESIS(22, JobFlag.ENABLED, JobEnum.KINESIS_0);
+        KINESIS(22, JobFlag.ENABLED, JobEnum.KINESIS_0),
+        CADENA(23, JobFlag.ENABLED, JobEnum.CADENA),
+        ILLIUM(24, JobFlag.ENABLED, JobEnum.ILLIUM),
+        ARK(25, JobFlag.ENABLED, JobEnum.ARK);
 
         private final int jobType, flag;
         private JobEnum beginJob;
@@ -781,10 +807,13 @@ public class JobConstants {
 
     public static void encode(OutPacket outPacket) {
         outPacket.encodeByte(enableJobs);
-        outPacket.encodeByte(jobOrder);
-        for (LoginJob loginJobId : LoginJob.values()) {
-            outPacket.encodeByte(loginJobId.getFlag());
-            outPacket.encodeShort(loginJobId.getFlag());
+        if (enableJobs) {
+            // Job Order location: UI.wz/Login.img/RaceSelect_new/order/X
+            outPacket.encodeByte(jobOrder);
+            for (LoginJob loginJobId : LoginJob.values()) {
+                outPacket.encodeByte(loginJobId.getFlag());
+                outPacket.encodeShort(loginJobId.getFlag());
+            }
         }
     }
 
@@ -900,23 +929,38 @@ public class JobConstants {
         return jobId / 100 == 31 || jobId == 3001;
     }
 
+    public static boolean isCadena(short jobId) {
+        return jobId == JobEnum.CADENA.getJobId() || jobId == JobEnum.CADENA1.getJobId() || jobId == JobEnum.CADENA2.getJobId() || jobId == JobEnum.CADENA3.getJobId() || jobId == JobEnum.CADENA4.getJobId();
+    }
+
+    public static boolean isIllium(short jobId) {
+        return jobId == JobEnum.ILLIUM.getJobId() || jobId == JobEnum.ILLIUM1.getJobId() || jobId == JobEnum.ILLIUM2.getJobId() || jobId == JobEnum.ILLIUM3.getJobId() || jobId == JobEnum.ILLIUM4.getJobId();
+    }
+
+    public static boolean isArk(short jobId) {
+        return jobId == JobEnum.ARK.getJobId() || jobId == JobEnum.ARK1.getJobId() || jobId == JobEnum.ARK2.getJobId() || jobId == JobEnum.ARK3.getJobId() || jobId == JobEnum.ARK4.getJobId();
+    }
+
     public static boolean isBeginnerJob(short jobId) {
         switch (jobId) {
-            case 8001:
-            case 13000:
-            case 14000:
-            case 6000:
-            case 6001:
-            case 5000:
-            case 4001:
-            case 4002:
-            case 3001:
-            case 3002:
             case 2001:
             case 2002:
             case 2003:
             case 2004:
             case 2005:
+            case 3001:
+            case 3002:
+            case 4001:
+            case 4002:
+            case 5000:
+            case 6000:
+            case 6001:
+            case 6002:
+            case 8001:
+            case 13000:
+            case 14000:
+            case 15000:
+            case 15001:
                 return true;
             default:
                 return jobId % 1000 == 0 || jobId / 100 == 8000;
@@ -925,21 +969,15 @@ public class JobConstants {
 
     public static int getJobLevel(short jobId) {
         int prefix;
-        if (isBeginnerJob(jobId) || (jobId % 100 == 0) || jobId == 501 || jobId == 3101) {
+        if (isBeginnerJob(jobId) || jobId % 100 <= 0 || jobId == 501 || jobId == 3101 || jobId == 508) {
             return 1;
         }
         if (isEvan(jobId)) {
             return getEvanJobLevel(jobId);
         }
+        prefix = jobId % 10;
         if (isDualBlade(jobId)) {
-            prefix = (jobId % 10) + 2;
-            if (prefix < 2) {
-                return 0;
-            } else if (prefix <= 6) {
-                return jobId % 10 + 2;
-            }
-        } else {
-            prefix = jobId % 10;
+            prefix = (jobId - 430) / 2;
         }
         return prefix <= 2 ? prefix + 2 : 0;
     }
@@ -1031,5 +1069,4 @@ public class JobConstants {
         return isAdventurerPirate(jobID) || isThunderBreaker(jobID) || isShade(jobID) || isAngelicBuster(jobID) ||
                 isXenon(jobID) || isMechanic(jobID) || isJett(jobID);
     }
-
 }

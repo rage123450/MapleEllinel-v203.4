@@ -17,6 +17,9 @@ hyperrockfields,
 characterpotentials,
 test,
 skills,
+matrixinventory,
+matrixskills,
+matrixslots,
 characters,
 avatardata,
 alliance_gradenames,
@@ -48,6 +51,8 @@ questprogressmobrequirements,
 questlists,
 questmanagers,
 quests,
+questlists_ex,
+quests_ex,
 bbs_replies,
 bbs_records,
 gradenames,
@@ -116,6 +121,15 @@ create table questlists (
     primary key (questlist_id),
     foreign key (questmanager_id) references questmanagers(id)  on delete cascade,
     foreign key (fk_questid) references quests(id)
+);
+
+create table quests_ex (
+	id bigint not null auto_increment,
+    charid int,
+    questid int,
+    qrValue varchar(255),
+	primary key (id),
+	foreign key (charid) references characters(id)
 );
 
 create table questprogressrequirements (
@@ -576,6 +590,8 @@ create table characters (
     monsterparkcount tinyint default 0,
     previousFieldID bigint,
     quickslotKeys varchar(255), # inlined array
+    vmatrixslots int default 0,# bonus slots
+    matrixinventory int,
 	primary key (id),
     foreign key (avatardata) references avatardata(id),
     foreign key (equippedinventory) references inventories(id),
@@ -584,6 +600,7 @@ create table characters (
     foreign key (etcinventory) references inventories(id),
     foreign key (installinventory) references inventories(id),
     foreign key (cashinventory) references inventories(id),
+    foreign key (matrixinventory) references matrixinventory(id),
     foreign key (funckeymap_id) references funckeymap(id),
     foreign key (questmanager) references questmanagers(id),
     foreign key (guild) references guilds(id),
@@ -728,6 +745,37 @@ create table skills (
     foreign key (charid) references characters(id)  on delete cascade
 );
 
+create table matrixinventory (
+	id int not null auto_increment,
+    primary key (id)
+);
+
+create table matrixskills (
+	id bigint not null auto_increment,
+    matrixID int,
+    slot int,
+    state tinyint,
+    coreID int,
+    skillID int,
+    skillID2 int,
+    skillID3 int,
+    skillID4 int,
+    level int,
+    masterLevel int,
+    experience int,
+    expirationDate datetime(3),
+    primary key (id)
+);
+
+create table matrixslots (
+	id bigint not null auto_increment,
+    matrixID int,
+    equippedSkill int,
+    slotID int,
+    enhanceLevel int,
+    primary key (id)
+);
+
 create table macros (
 	id bigint not null auto_increment,
     charid int,
@@ -782,7 +830,7 @@ create table accounts (
 	password varchar(255),
 	pic varchar(255),
 	mac varchar(255),
-	accounttype int default 0,
+	privateStatusIDFlag int default 0,
 	age int default 0,
 	vipgrade int default 0,
 	nblockreason int default 0,
@@ -804,6 +852,7 @@ create table accounts (
     banExpireDate datetime(3),
     banReason varchar(255),
     offensemanager int,
+    authid int default 0,
 	primary key (id),
     foreign key (trunkid) references trunks(id),
     foreign key (monstercollectionid) references monster_collections(id),
@@ -848,7 +897,7 @@ create table friends (
 );
 
 
-insert into `accounts` (`name`, `password`, `accounttype`, `chatunblockdate`, `pic`, `characterslots`, `nxcredit`) values ('admin', 'admin', '4', '0', '111111', '40', '500000');
-insert into `accounts` (`name`, `password`, `accounttype`, `chatunblockdate`, `pic`, `characterslots`, `nxcredit`) values ('admin1', 'admin', '4', '0', '111111', '40', '500000');
-insert into `accounts` (`name`, `password`, `accounttype`, `chatunblockdate`, `pic`, `characterslots`) values ('asura', 'admin', '4', '0', '111111', '40');
-insert into `accounts` (`name`, `password`, `accounttype`, `chatunblockdate`, `pic`, `characterslots`) values ('maigal', 'admin', '4', '0', '111111', '40');
+insert into `accounts` (`name`, `password`, `privateStatusIDFlag`, `chatunblockdate`, `pic`, `characterslots`, `nxcredit`) values ('admin', 'admin', '1', '0', '111111', '40', '500000');
+insert into `accounts` (`name`, `password`, `privateStatusIDFlag`, `chatunblockdate`, `pic`, `characterslots`, `nxcredit`) values ('admin1', 'admin', '1', '0', '111111', '40', '500000');
+insert into `accounts` (`name`, `password`, `privateStatusIDFlag`, `chatunblockdate`, `pic`, `characterslots`) values ('asura', 'admin', '1', '0', '111111', '40');
+insert into `accounts` (`name`, `password`, `privateStatusIDFlag`, `chatunblockdate`, `pic`, `characterslots`) values ('maigal', 'admin', '1', '0', '111111', '40');

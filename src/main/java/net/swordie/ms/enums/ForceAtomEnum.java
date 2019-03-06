@@ -1,5 +1,9 @@
 package net.swordie.ms.enums;
 
+import net.swordie.ms.client.jobs.flora.Ark;
+
+import java.util.Arrays;
+
 /**
  * Created on 1/7/2018.
  */
@@ -61,7 +65,34 @@ public enum ForceAtomEnum {
     ADV_WRECKAGE(24, 1), //Evan's Advanced Magic Debris
     TRANSPARENT_AB_ORB(25, 1), // same for 26, but that disappears
     TRANSPARENT_AB_ORB_RECREATION(26,1),
-
+    UNK27(27, 1),
+    UNK28(28, 1),
+    GREEN_STAR(29, 1),
+    BLUE_STAR(29, 2),
+    YELLOW_STAR(29, 3),
+    UNK30(30, 1),
+    UNK31(31, 1),
+    UNK32(32, 1),
+    UNK33(33, 1),
+    UNK34(34, 1),
+    UNK35(35, 1),
+    UNK36(36, 1),
+    UNK37(37, 1),
+    UNK38(38, 1),
+    UNK39(39, 1),
+    UNK40(40, 1),
+    UNK41(41, 1),
+    UNK42(42, 1),
+    BASIC_CHARGE(43, 1),
+    SCARLET_CHARGE(44, 1),
+    GUST_CHARGE(45, 1),
+    ABYSSAL_CHARGE(46, 1),
+    UNK47(47, 1),
+    UNK48(48, 1),
+    UNK49(49, 1),
+    UNK50(50, 1),
+    UNK51(51, 1),
+    // unks
     ;
 
     private int forceAtomType;
@@ -86,5 +117,9 @@ public enum ForceAtomEnum {
 
     public void setInc(int inc) {
         this.inc = inc;
+    }
+
+    public static ForceAtomEnum getByVal(int val) {
+        return Arrays.stream(values()).filter(fae -> fae.getForceAtomType() == val).findAny().orElse(null);
     }
 }

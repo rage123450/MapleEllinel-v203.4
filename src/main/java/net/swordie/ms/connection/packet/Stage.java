@@ -1,7 +1,9 @@
 package net.swordie.ms.connection.packet;
 
+import net.swordie.ms.ServerConfig;
 import net.swordie.ms.client.character.damage.DamageCalc;
 import net.swordie.ms.util.FileTime;
+import net.swordie.ms.util.Util;
 import net.swordie.ms.world.field.Field;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.world.field.FieldCustom;
@@ -23,18 +25,20 @@ public class Stage {
                                      boolean setWhiteFadeInOut, int mobStatAdjustRate, FieldCustom fieldCustom,
                                      boolean canNotifyAnnouncedQuest, int stackEventGauge) {
         OutPacket outPacket = new OutPacket(OutHeader.SET_FIELD);
-
-        short shortSize = 0;
+        /*short shortSize = 0;
         outPacket.encodeShort(shortSize);
         for (int i = 0; i < shortSize; i++) {
             outPacket.encodeInt(0);
             outPacket.encodeInt(0);
-        }
+        }*/
+
         outPacket.encodeInt(channelId - 1); // Damn nexon, randomly switching between starting at 1 and 0...
         outPacket.encodeByte(dev);
         outPacket.encodeInt(oldDriverID);
+
         outPacket.encodeByte(characterData ? 1 : 2);
         outPacket.encodeInt(0); // unused
+        outPacket.encodeByte(0);
         outPacket.encodeInt(field.getWidth());
         outPacket.encodeInt(field.getHeight());
         outPacket.encodeByte(characterData);
@@ -58,9 +62,15 @@ public class Stage {
 
             chr.setDamageCalc(new DamageCalc(chr, s1, s2, s3));
             chr.encode(outPacket, DBChar.All); // <<<<------------------------------------
+            //String packet = "";
+            //outPacket.encodeArr(Util.getByteArrayByString(packet));
             // unk sub (not in kmst)
             // logout event (mushy)
             encodeLogoutEvent(outPacket);
+
+            outPacket.encodeByte(1);
+            outPacket.encodeByte(0);
+            outPacket.encodeInt(0);
         } else {
             outPacket.encodeByte(usingBuffProtector);
             outPacket.encodeInt(field.getId());
@@ -86,6 +96,7 @@ public class Stage {
         }
         outPacket.encodeByte(false); // is pvp map, deprecated
         outPacket.encodeByte(canNotifyAnnouncedQuest);
+
         outPacket.encodeByte(stackEventGauge >= 0);
         if(stackEventGauge >= 0) {
             outPacket.encodeInt(stackEventGauge);
@@ -105,73 +116,34 @@ public class Stage {
         outPacket.encodeInt(chr.getAccId());
         // CUser::DecodeEventBestFriendInfo
         outPacket.encodeInt(0); // dwEventBestFriendAID
+
+        // unks
+        boolean read = true;
+        outPacket.encodeByte(read);
+        if (read) {
+            outPacket.encodeInt(-1);
+            outPacket.encodeInt(0);
+            outPacket.encodeInt(0);
+            outPacket.encodeInt(999999999);
+            outPacket.encodeInt(999999999);
+            outPacket.encodeString("");
+        }
+        outPacket.encodeString(ServerConfig.LOGIN_NOTICE_POPUP);
+        outPacket.encodeInt(0);
+
+        outPacket.encodeByte(0);// v202.3
+
         // sub_16A4D10
         outPacket.encodeInt(0); // ?
         // sub_16D99C0
-        size = 0;
-        outPacket.encodeInt(size);
-        for (int i = 0; i < size; i++) {
-            outPacket.encodeInt(0); // ?
-        }
+        //outPacket.encodeArr(new byte[69]);
+
         return outPacket;
     }
 
     private static void encodeLogoutEvent(OutPacket outPacket) {
         int idOrSomething = 0;
         outPacket.encodeInt(idOrSomething);
-        if(idOrSomething > 0) {
-            for (int i = 0; i < 3; i++) {
-                // sub_9896B0
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeString("");
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeLong(0);
-                outPacket.encodeLong(0);
-                outPacket.encodeLong(0);
-                outPacket.encodeLong(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeShort(0);
-                outPacket.encodeShort(0);
-                outPacket.encodeShort(0);
-                outPacket.encodeShort(0);
-                outPacket.encodeShort(0);
-                outPacket.encodeShort(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeString("");
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeInt(0);
-                outPacket.encodeByte(0);
-                // if(a3 & 1 != 0) -> encode int + str + buf of size 0x18 (24). a3 is 0 when called from setField
-                int size = 0;
-                outPacket.encodeInt(size);
-                for (int j = 0; j < size; j++) {
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                    outPacket.encodeInt(0);
-                }
-            }
-        }
     }
 
     public static OutPacket setCashShop(Char chr, CashShop cashShop) {

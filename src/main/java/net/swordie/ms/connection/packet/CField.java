@@ -9,6 +9,7 @@ import net.swordie.ms.client.character.items.PetItem;
 import net.swordie.ms.client.character.items.ScrollUpgradeInfo;
 import net.swordie.ms.client.character.keys.FuncKeyMap;
 import net.swordie.ms.client.character.runestones.RuneStone;
+import net.swordie.ms.client.character.skills.ForceAtom;
 import net.swordie.ms.client.character.skills.PsychicArea;
 import net.swordie.ms.client.character.skills.TownPortal;
 import net.swordie.ms.client.character.skills.info.ForceAtomInfo;
@@ -21,7 +22,9 @@ import net.swordie.ms.enums.*;
 import net.swordie.ms.handlers.PsychicLock;
 import net.swordie.ms.handlers.header.OutHeader;
 import net.swordie.ms.life.AffectedArea;
+import net.swordie.ms.life.Dragon;
 import net.swordie.ms.life.mob.Mob;
+import net.swordie.ms.life.movement.MovementInfo;
 import net.swordie.ms.life.pet.Pet;
 import net.swordie.ms.loaders.containerclasses.MakingSkillRecipe;
 import net.swordie.ms.util.FileTime;
@@ -33,6 +36,7 @@ import net.swordie.ms.world.field.fieldeffect.FieldEffect;
 import net.swordie.ms.world.field.obtacleatom.ObtacleAtomInfo;
 import net.swordie.ms.world.field.obtacleatom.ObtacleInRowInfo;
 import net.swordie.ms.world.field.obtacleatom.ObtacleRadianInfo;
+import org.python.antlr.ast.For;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +66,7 @@ public class CField {
         outPacket.encodeInt(aa.getCharID());
         outPacket.encodeInt(aa.getSkillID());
         outPacket.encodeByte(aa.getSlv());
+        outPacket.encodeByte(0);
         outPacket.encodeShort(aa.getDelay());
         aa.getRect().encode(outPacket);
         outPacket.encodeInt(aa.getElemAttr());
@@ -75,7 +80,7 @@ public class CField {
             outPacket.encodeByte(aa.isFlip());
         }
         outPacket.encodeInt(0); // ?
-
+        outPacket.encodeByte(0);
         return outPacket;
     }
 
@@ -91,6 +96,12 @@ public class CField {
     }
 
     public static OutPacket createForceAtom(boolean byMob, int userOwner, int targetID, int forceAtomType, boolean toMob,
+                                            int targets, int skillID, ForceAtomInfo fai, Rect rect, int arriveDir, int arriveRange,
+                                            Position forcedTargetPos, int bulletID, Position pos) {
+        return createForceAtom(byMob, userOwner, targetID, ForceAtomEnum.getByVal(forceAtomType), toMob, targets, skillID, fai, rect, arriveDir, arriveRange, forcedTargetPos, bulletID, pos);
+    }
+
+    public static OutPacket createForceAtom(boolean byMob, int userOwner, int targetID, ForceAtomEnum forceAtomType, boolean toMob,
                                      int targets, int skillID, ForceAtomInfo fai, Rect rect, int arriveDir, int arriveRange,
                                      Position forcedTargetPos, int bulletID, Position pos) {
         List<Integer> integers = new ArrayList<>();
@@ -108,73 +119,44 @@ public class CField {
         
         return outPacket;
     }
-    
-    public static OutPacket createForceAtom(boolean byMob, int userOwner, int charID, int forceAtomType, boolean toMob,
-                                     List<Integer> targets, int skillID, List<ForceAtomInfo> faiList, Rect rect, int arriveDir, int arriveRange,
-                                     Position forcedTargetPos, int bulletID, Position pos) {
-        OutPacket outPacket = new OutPacket(OutHeader.CREATE_FORCE_ATOM);
 
-        outPacket.encodeByte(byMob);
-        if(byMob) {
-            outPacket.encodeInt(userOwner);
-        }
+    public static OutPacket createArkForceAtom(int charID, int skillID, List<ForceAtom> chargeDriveAtoms) {
+        OutPacket outPacket = new OutPacket(OutHeader.ARK_CREATE_FORCE_ATOM);
+
         outPacket.encodeInt(charID);
-        outPacket.encodeInt(forceAtomType);
-        if(forceAtomType != 0 && forceAtomType != 9 && forceAtomType != 14) {
-            outPacket.encodeByte(toMob);
-            switch (forceAtomType) {
-                case 2:
-                case 3:
-                case 6:
-                case 7:
-                case 11:
-                case 12:
-                case 13:
-                case 17:
-                case 19:
-                case 20:
-                case 23:
-                case 24:
-                case 25:
-                    outPacket.encodeInt(targets.size());
-                    for (int i : targets) {
-                        outPacket.encodeInt(i);
-                    }
-                    break;
-                default:
-                    outPacket.encodeInt(targets.get(0));
-                    break;
+        outPacket.encodeInt(skillID);
+        outPacket.encodeInt(chargeDriveAtoms.size());// abyssal, gust, scarlet, basic
+        for (ForceAtom fa : chargeDriveAtoms) {
+            outPacket.encodeInt(fa.getForceAtomType().getForceAtomType());
+            outPacket.encodeInt(fa.getBulletID());
+            outPacket.encodeInt(fa.getFaiList().size());
+            for (ForceAtomInfo fai : fa.getFaiList()) {
+                outPacket.encodeInt(264874399);// unk
+                outPacket.encodeByte(1);
+                fai.encode(outPacket);
+                outPacket.encodeByte(0);
             }
-            outPacket.encodeInt(skillID);
         }
-        for(ForceAtomInfo fai : faiList) {
-            outPacket.encodeByte(1);
-            fai.encode(outPacket);
-        }
-        outPacket.encodeByte(0);
-        switch (forceAtomType) {
-            case 11:
-                outPacket.encodeRectInt(rect);
-                outPacket.encodeInt(bulletID);
-                break;
-            case 9:
-            case 15:
-                outPacket.encodeRectInt(rect);
-                break;
-            case 16:
-                outPacket.encodePositionInt(pos);
-                break;
-            case 17:
-                outPacket.encodeInt(arriveDir);
-                outPacket.encodeInt(arriveRange);
-                break;
-            case 18:
-                outPacket.encodePositionInt(forcedTargetPos);
-                break;
-        }
-
         return outPacket;
     }
+
+    public static OutPacket createForceAtom(boolean byMob, int userOwner, int charID, ForceAtomEnum forceAtomType, boolean toMob,
+                                     List<Integer> targets, int skillID, List<ForceAtomInfo> faiList, Rect rect, int arriveDir, int arriveRange,
+                                     Position forcedTargetPos, int bulletID, Position pos) {
+        return createForceAtom(new ForceAtom(byMob, userOwner, charID, forceAtomType, toMob, targets, skillID, faiList, rect, arriveDir, arriveRange, forcedTargetPos, bulletID, pos));
+    }
+
+    public static OutPacket createForceAtom(boolean byMob, int userOwner, int charID, int forceAtomType, boolean toMob,
+                                            List<Integer> targets, int skillID, List<ForceAtomInfo> faiList, Rect rect, int arriveDir, int arriveRange,
+                                            Position forcedTargetPos, int bulletID, Position pos) {
+        return createForceAtom(new ForceAtom(byMob, userOwner, charID, ForceAtomEnum.getByVal(forceAtomType), toMob, targets, skillID, faiList, rect, arriveDir, arriveRange, forcedTargetPos, bulletID, pos));
+    }
+    public static OutPacket createForceAtom(ForceAtom fa) {
+        OutPacket outPacket = new OutPacket(OutHeader.CREATE_FORCE_ATOM);
+        fa.encode(outPacket);
+        return outPacket;
+    }
+
     public static OutPacket finalAttackRequest(Char chr, int skillID, int finalSkillID, int delay, int mobID,
                                                int userRequestTime) {
         return finalAttackRequest(chr, skillID, finalSkillID, delay, mobID, userRequestTime, false, null);
@@ -216,7 +198,7 @@ public class CField {
         outPacket.encodeByte(pa.success);
         outPacket.encodeInt(pa.action);
         outPacket.encodeInt(pa.actionSpeed);
-        outPacket.encodeInt(pa.localPsychicAreaKey);
+        outPacket.encodeInt(-pa.localPsychicAreaKey);
         outPacket.encodeInt(pa.skillID);
         outPacket.encodeShort(pa.slv);
         outPacket.encodeInt(pa.psychicAreaKey);
@@ -226,13 +208,13 @@ public class CField {
         outPacket.encodeShort(pa.skeletonAniIdx);
         outPacket.encodeShort(pa.skeletonLoop);
         outPacket.encodePositionInt(pa.start);
-
         return outPacket;
     }
 
-    public static OutPacket releasePsychicArea(int localAreaKey) {
+    public static OutPacket releasePsychicArea(int charID, int localAreaKey) {
         OutPacket outPacket = new OutPacket(OutHeader.RELEASE_PSYCHIC_AREA);
 
+        outPacket.encodeInt(charID);
         outPacket.encodeInt(localAreaKey);
 
         return outPacket;
@@ -277,7 +259,7 @@ public class CField {
         outPacket.encodeByte(false); // Star Planet
         outPacket.encodeByte(chr.getStat(Stat.level));
         outPacket.encodeShort(chr.getJob());
-        outPacket.encodeShort(chr.getStat(Stat.subJob));
+        outPacket.encodeShort(chr.getSubJob());
         outPacket.encodeByte(cs.getPvpGrade());
         outPacket.encodeInt(cs.getPop()); //Fame
         MarriageRecord marriage = chr.getMarriageRecord();
@@ -514,20 +496,35 @@ public class CField {
         return outPacket;
     }
 
-    public static OutPacket createDragon(Char chr) {
+    public static OutPacket createDragon(Dragon dragon) {
         OutPacket outPacket = new OutPacket(OutHeader.DRAGON_CREATED);
 
-        outPacket.encodeInt(chr.getId());
-        outPacket.encodeInt(chr.getPosition().getX());
-        outPacket.encodeInt(chr.getPosition().getY());
-        outPacket.encodeByte(4); //Move Action
-        outPacket.encodeShort(0);
-        outPacket.encodeShort(chr.getJob());
+        outPacket.encodeInt(dragon.getCharID());
+        outPacket.encodeInt(dragon.getPosition().getX());
+        outPacket.encodeInt(dragon.getPosition().getY());
+        outPacket.encodeByte(dragon.getMoveAction()); //Move Action
+        outPacket.encodeShort(dragon.getFh());
+        outPacket.encodeShort(dragon.getJobCode());
 
         return outPacket;
     }
 
+    public static OutPacket removeDragon(Dragon dragon) {
+        OutPacket outPacket = new OutPacket(OutHeader.DRAGON_REMOVE);
 
+        outPacket.encodeInt(dragon.getCharID());
+
+        return outPacket;
+    }
+
+    public static OutPacket moveDragon(Dragon dragon, MovementInfo movementInfo) {
+        OutPacket outPacket = new OutPacket(OutHeader.DRAGON_MOVE);
+
+        outPacket.encodeInt(dragon.getCharID());
+        outPacket.encode(movementInfo);
+
+        return outPacket;
+    }
 
     public static OutPacket questClear(int qrKey) {
         OutPacket outPacket = new OutPacket(OutHeader.QUEST_CLEAR);
@@ -668,20 +665,26 @@ public class CField {
         return openUI(uiType.getVal());
     }
 
-    public static OutPacket openUI(int uiID) {
+    public static OutPacket openUI(int uiID){
         OutPacket outpacket = new OutPacket(OutHeader.OPEN_UI);
         outpacket.encodeInt(uiID);
         return outpacket;
     }
 
     public static OutPacket closeUI(UIType uiType) {
-        return closeUI(uiType.getVal());
+        return null;//closeUI(uiType.getVal());
     }
 
-    public static OutPacket closeUI(int uiID) {
-        OutPacket outpacket = new OutPacket(OutHeader.CLOSE_UI);
-        outpacket.encodeInt(uiID);
-        return outpacket;
+    public static OutPacket openUIWithOption(int uiID, int option, int[] minigameOptions){
+        OutPacket outPacket = new OutPacket(OutHeader.OPEN_UI_WITH_OPTION);
+
+        outPacket.encodeInt(uiID);
+        outPacket.encodeInt(option);
+        outPacket.encodeInt(minigameOptions.length);
+        for (int i = 0; i < minigameOptions.length; i++) {
+            outPacket.encodeInt(minigameOptions[i]);
+        }
+        return outPacket;
     }
 
     public static OutPacket socketCreateResult(boolean success) {
@@ -728,6 +731,8 @@ public class CField {
         OutPacket outPacket = new OutPacket(OutHeader.RUNE_STONE_APPEAR);
 
         outPacket.encodeInt(0); // object id ??
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
         outPacket.encodeInt(runeStone.getRuneType().getVal()); // Rune Type
         outPacket.encodePositionInt(runeStone.getPosition()); // Position
         outPacket.encodeByte(runeStone.isFlip()); // flip
@@ -736,11 +741,12 @@ public class CField {
     }
 
     public static OutPacket completeRune(Char chr) { //RuneStone Disappears
-        OutPacket outPacket = new OutPacket(OutHeader.COMPLETE_RUNE);
+        OutPacket outPacket = new OutPacket(OutHeader.RUNE_STONE_DISAPPEAR);
 
         outPacket.encodeInt(0);
         outPacket.encodeInt(chr.getId());
-
+        outPacket.encodeInt(100);// ?
+        outPacket.encodeShort(0);// or 2 bytes ?
         return outPacket;
     }
 
@@ -766,7 +772,8 @@ public class CField {
 
         outPacket.encodeInt(0); // Has to be 0
         outPacket.encodeInt(0); // Doesn't matter what number this is
-
+        outPacket.encodeInt(0);
+        outPacket.encodeShort(0);
         return outPacket;
     }
 
@@ -783,7 +790,7 @@ public class CField {
         OutPacket outPacket = new OutPacket(OutHeader.RUNE_STONE_SKILL_ACK);
 
         outPacket.encodeInt(runeType.getVal());
-
+        outPacket.encodeByte(0);
         return outPacket;
     }
 
@@ -791,10 +798,14 @@ public class CField {
         OutPacket outPacket = new OutPacket(OutHeader.RUNE_STONE_CLEAR_AND_ALL_REGISTER);
         int count = 0;
         outPacket.encodeInt(count); // count
+        outPacket.encodeInt(0);
         for (int i = 0; i < count; i++) {
             outPacket.encodeInt(0); // not sure, but whatever
+            // sub_1967EB0
+            outPacket.encodeInt(0);
+            outPacket.encodeInt(0);
+            outPacket.encodeByte(0);
         }
-
         return outPacket;
     }
 
@@ -972,4 +983,35 @@ public class CField {
 
         return outPacket;
     }
+
+    public static OutPacket transferChannelReqIgnored(int error) {
+        OutPacket outPacket = new OutPacket(OutHeader.TRANSFER_CHANNEL_REQ_IGNORED);
+
+        outPacket.encodeByte(error);
+
+        return outPacket;
+    }
+
+    public static OutPacket unityPortalResult() {
+        OutPacket outPacket = new OutPacket(OutHeader.UNITY_PORTAL);
+
+        outPacket.encodeInt(DimensionalMirror.values().length);
+        for (DimensionalMirror unityPortal : DimensionalMirror.values()) {
+            outPacket.encodeString(unityPortal.getName());
+            outPacket.encodeString(unityPortal.getDesc());
+            outPacket.encodeInt(unityPortal.getReqLevel());
+            outPacket.encodeInt(0);// unk
+            outPacket.encodeInt(unityPortal.getId());
+            outPacket.encodeInt(unityPortal.getReqQuest());
+            outPacket.encodeInt(unityPortal.getQuestToSave());
+            outPacket.encodeByte(unityPortal.isSquad());
+
+            outPacket.encodeInt(unityPortal.getRewards().length);
+            for (Integer reward : unityPortal.getRewards()) {
+                outPacket.encodeInt(reward);
+            }
+        }
+        return outPacket;
+    }
+
 }

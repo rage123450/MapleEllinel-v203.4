@@ -371,7 +371,7 @@ public class ExpIncreaseInfo {
 
     public void encode(OutPacket outPacket) {
         outPacket.encodeByte(isLastHit());
-        outPacket.encodeInt(getIncEXP());
+        outPacket.encodeLong(getIncEXP());
         outPacket.encodeByte(isOnQuest());
         long mask = getMask();
         outPacket.encodeLong(mask);
@@ -379,7 +379,7 @@ public class ExpIncreaseInfo {
             outPacket.encodeInt(getSelectedMobBonusExp());
         }
         if ((mask & PartyBonusPercentage.getVal()) != 0) {
-            outPacket.encodeInt(getPartyBonusPercentage());
+            outPacket.encodeByte(getPartyBonusPercentage());
         }
         if (isOnQuest()) {
             outPacket.encodeByte(getQuestBonusRate());
@@ -420,9 +420,9 @@ public class ExpIncreaseInfo {
         if ((mask & InstallItemBonusExp.getVal()) != 0) {
             outPacket.encodeInt(getInstallItemBonusExp());
         }
-        if ((mask & AswanWinnerBonusExp.getVal()) != 0) {
-            outPacket.encodeInt(getAswanWinnerBonusExp());
-        }
+        //if ((mask & AswanWinnerBonusExp.getVal()) != 0) {
+        //    outPacket.encodeInt(getAswanWinnerBonusExp());
+        //}
         if ((mask & ExpByIncExpR.getVal()) != 0) {
             outPacket.encodeInt(getExpByIncExpR());
         }
@@ -457,6 +457,23 @@ public class ExpIncreaseInfo {
         if ((mask & LiveEventBonusExp.getVal()) != 0) {
             outPacket.encodeInt(getLiveEventBonusExp());
         }
-
+        if ((mask & Unk8000000.getVal()) != 0) {
+            outPacket.encodeInt(0);
+        }
+        if ((mask & Unk10000000.getVal()) != 0) {
+            outPacket.encodeInt(0);
+        }
+        if ((mask & Unk20000000.getVal()) != 0) {
+            outPacket.encodeInt(0);
+        }
+        if ((mask & Unk40000000.getVal()) != 0) {
+            outPacket.encodeInt(0);
+        }
+        if ((mask & Unk80000000.getVal()) != 0) {
+            outPacket.encodeByte(0);
+        }
+        if ((mask & Unk1000000000.getVal()) != 0) {
+            outPacket.encodeInt(0);
+        }
     }
 }

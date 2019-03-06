@@ -1,5 +1,3 @@
-# Portal & Balloon Msgs for Evan Intro | Dream World: Dream Forest Trail (900010100)
-# Author: Tiger
-
-# "Another strange noise? Is someone talking?"
-sm.avatarOriented("Effect/OnUserEff.img/guideEffect/evanTutorial/evanBalloon11")
+if not "mo11=o" in sm.getQRValue(22013):
+    sm.avatarOriented("Effect/OnUserEff.img/guideEffect/evanTutorial/evanBalloon11")
+    sm.addQRValue(22013, "mo11=o")

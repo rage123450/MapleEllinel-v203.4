@@ -335,7 +335,7 @@ public class CharacterStat {
         outPacket.encodeByte(getMixBaseHairColor());
         outPacket.encodeByte(getMixAddHairColor());
         outPacket.encodeByte(getMixHairBaseProb());
-        outPacket.encodeByte(getLevel());
+        outPacket.encodeInt(getLevel());// ?
         outPacket.encodeShort(getJob());
         outPacket.encodeShort(getStr());
         outPacket.encodeShort(getDex());
@@ -359,10 +359,10 @@ public class CharacterStat {
         outPacket.encodeByte(getPortal());
         outPacket.encodeInt(0); // TODO figure out
         outPacket.encodeShort(getSubJob());
-        if (JobConstants.isDemon(getJob()) || JobConstants.isXenon(getJob()) || JobConstants.isBeastTamer(getJob())) {
+        if (JobConstants.isDemon(getJob()) || JobConstants.isXenon(getJob()) || JobConstants.isBeastTamer(getJob()) || JobConstants.isArk(getJob())) {
             outPacket.encodeInt(getDefFaceAcc());
         }
-        outPacket.encodeByte(getFatigue());
+        outPacket.encodeShort(getFatigue());
         outPacket.encodeInt(getLastFatigueUpdateTime());
         outPacket.encodeInt(getCharismaExp());
         outPacket.encodeInt(getInsightExp());
@@ -381,12 +381,22 @@ public class CharacterStat {
 
         outPacket.encodeByte(getPvpModeType());
         outPacket.encodeInt(getEventPoint());
-        outPacket.encodeByte(getAlbaActivityID()); // part time job
+        /*outPacket.encodeByte(getAlbaActivityID()); // part time job
         outPacket.encodeFT(getAlbaStartTime());
         outPacket.encodeInt(getAlbaDuration());
-        outPacket.encodeByte(getAlbaSpecialReward());
+        outPacket.encodeByte(getAlbaSpecialRewagrd());*/
         getCharacterCard().encode(outPacket);
         outPacket.encodeFT(getLastLogout());
+        // sub_91A960
+        outPacket.encodeLong(0);
+        outPacket.encodeLong(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeByte(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
+        // end sub_91A960
         outPacket.encodeByte(isBurning()); // bBurning
     }
 

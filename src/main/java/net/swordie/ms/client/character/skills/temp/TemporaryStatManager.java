@@ -317,16 +317,29 @@ public class TemporaryStatManager {
         if (hasNewStat(HayatoStance)) {
             outPacket.encodeInt(getOption(HayatoStance).xOption);
         }
-        if (hasNewStat(Unk460)) {
-            outPacket.encodeInt(getOption(Unk460).xOption);
+        if (hasNewStat(Unk579)) {
+            outPacket.encodeInt(getOption(Unk579).xOption);
         }
         outPacket.encodeByte(getDefenseAtt());
         outPacket.encodeByte(getDefenseState());
         outPacket.encodeByte(getPvpDamage());
+        outPacket.encodeInt(0);//?
         if (hasNewStat(Dice)) {
             for (int i = 0; i < getDiceInfo().length; i++) {
                 outPacket.encodeInt(diceInfo[i]);
             }
+        }
+        if (hasNewStat(Unk526)) {
+            outPacket.encodeInt(getOption(Unk526).xOption);
+        }
+        if (hasNewStat(Unk527)) {
+            outPacket.encodeInt(getOption(Unk527).xOption);
+        }
+        if (hasNewStat(Unk558)) {
+            outPacket.encodeInt(getOption(Unk558).xOption);
+        }
+        if (hasNewStat(KeyDownMoving)) {
+            outPacket.encodeInt(getOption(KeyDownMoving).nOption);
         }
         if (hasNewStat(KillingPoint)) {
             outPacket.encodeByte(getOption(KillingPoint).nOption);
@@ -375,6 +388,13 @@ public class TemporaryStatManager {
                 outPacket.encodeInt(zoneState);
             }
             outPacket.encodeInt(0); // notify end
+        }
+        if (hasNewStat(Unk163)) {
+            int unk = 0;
+            outPacket.encodeInt(unk);
+            for (int i = 0; i < unk; i++) {
+                outPacket.encodeInt(0);
+            }
         }
         if (hasNewStat(Slow)) {
             outPacket.encodeByte(getOption(Slow).bOption);
@@ -439,6 +459,12 @@ public class TemporaryStatManager {
         if (hasNewStat(SpiritGuard)) {
             outPacket.encodeInt(getOption(SpiritGuard).nOption);
         }
+        if (hasNewStat(Unk379)) {
+            outPacket.encodeInt(getOption(Unk379).xOption);
+        }
+        if (hasNewStat(Unk425)) {
+            outPacket.encodeInt(getOption(Unk425).xOption);
+        }
         if (hasNewStat(KnockBack)) {
             outPacket.encodeInt(getOption(KnockBack).nOption);
             outPacket.encodeInt(getOption(KnockBack).bOption);
@@ -475,6 +501,13 @@ public class TemporaryStatManager {
         if (hasNewStat(RWCylinder)) {
             outPacket.encodeByte(getOption(RWCylinder).bOption);
             outPacket.encodeShort(getOption(RWCylinder).cOption);
+            outPacket.encodeByte(getOption(RWCylinder).bOption);
+        }
+        if (hasNewStat(Unk529)) {
+            outPacket.encodeInt(getOption(Unk529).xOption);
+        }
+        if (hasNewStat(Unk476)) {
+            outPacket.encodeInt(getOption(Unk476).xOption);
         }
         if (hasNewStat(RWMagnumBlow)) {
             outPacket.encodeShort(getOption(RWMagnumBlow).bOption);
@@ -486,9 +519,43 @@ public class TemporaryStatManager {
         }
         if (hasNewStat(DarkSight)) {
             outPacket.encodeInt(getOption(DarkSight).cOption);
+            outPacket.encodeInt(getOption(DarkSight).cOption);
         }
         if (hasNewStat(Stigma)) {
             outPacket.encodeInt(getOption(Stigma).bOption);
+        }
+        if (hasNewStat(Unk256)) {
+            outPacket.encodeInt(getOption(Unk256).xOption);
+        }
+        if (hasNewStat(CriticalGrowing)) {
+            outPacket.encodeInt(getOption(CriticalGrowing).xOption);
+        }
+        if (hasNewStat(Ember)) {
+            outPacket.encodeInt(getOption(Ember).xOption);
+        }
+        if (hasNewStat(PickPocket)) {
+            outPacket.encodeInt(getOption(PickPocket).xOption);
+        }
+        if (hasNewStat(Unk422)) {
+            outPacket.encodeShort(getOption(Unk422).xOption);
+        }
+        if (hasNewStat(Unk423)) {
+            outPacket.encodeShort(getOption(Unk423).xOption);
+        }
+        if (hasNewStat(Unk424)) {
+            outPacket.encodeShort(getOption(Unk424).xOption);
+        }
+        if (hasNewStat(Unk503)) {
+            outPacket.encodeInt(getOption(Unk503).xOption);
+            outPacket.encodeInt(getOption(Unk503).bOption);
+            outPacket.encodeInt(getOption(Unk503).cOption);
+            outPacket.encodeInt(getOption(Unk503).yOption);
+        }
+        if (hasNewStat(VampDeath)) {
+            outPacket.encodeInt(getOption(VampDeath).xOption);
+        }
+        if (hasNewStat(HolyMagicShell)) {
+            outPacket.encodeInt(getOption(HolyMagicShell).xOption);
         }
         for (int i = 0; i < 7; i++) {
             if(hasNewStat(TSIndex.getCTSFromTwoStatIndex(i))) {
@@ -500,29 +567,94 @@ public class TemporaryStatManager {
             outPacket.encodeInt(getOption(UsingScouter).nOption);
             outPacket.encodeInt(getOption(UsingScouter).xOption);
         }
-        // from here on: new stats found in 176 idb
+        if (hasNewStat(Unk517)) {
+            outPacket.encodeInt(getOption(Unk517).xOption);
+        }
+        if (hasNewStat(Unk520)) {
+            outPacket.encodeInt(getOption(Unk520).nOption);
+            outPacket.encodeInt(getOption(Unk520).xOption);
+        }
+        if (hasNewStat(Unk255)) {
+            outPacket.encodeInt(getOption(Unk255).nOption);
+            outPacket.encodeInt(getOption(Unk255).xOption);
+        }
+        if (hasNewStat(Unk521)) {
+            outPacket.encodeInt(getOption(Unk521).xOption);
+        }
+        if (hasNewStat(Unk518)) {
+            outPacket.encodeInt(getOption(Unk518).xOption);
+        }
+        if (hasNewStat(CoreOverload)) {
+            outPacket.encodeInt(getOption(CoreOverload).xOption);
+        }
+        if (hasNewStat(SpecterEnergy)) {
+            outPacket.encodeInt(getOption(SpecterEnergy).xOption);
+        }
+        if (hasNewStat(BasicCast)) {
+            outPacket.encodeInt(getOption(BasicCast).xOption);
+            outPacket.encodeInt(getOption(BasicCast).xOption);
+        }
+        if (hasNewStat(ScarletCast)) {
+            outPacket.encodeInt(getOption(ScarletCast).xOption);
+            outPacket.encodeInt(getOption(ScarletCast).xOption);
+        }
+        if (hasNewStat(GustCast)) {
+            outPacket.encodeInt(getOption(GustCast).xOption);
+            outPacket.encodeInt(getOption(GustCast).xOption);
+        }
+        if (hasNewStat(AbyssalCast)) {
+            outPacket.encodeInt(getOption(AbyssalCast).xOption);
+            outPacket.encodeInt(getOption(AbyssalCast).xOption);
+        }
+        if (hasNewStat(Unk556)) {
+            outPacket.encodeInt(getOption(Unk556).xOption);
+        }
+        if (hasNewStat(Unk563)) {
+            outPacket.encodeInt(getOption(Unk563).xOption);
+        }
+        if (hasNewStat(Unk566)) {
+            outPacket.encodeInt(getOption(Unk566).xOption);
+        }
+        if (hasNewStat(Unk567)) {
+            outPacket.encodeInt(getOption(Unk567).xOption);
+        }
+        if (hasNewStat(Unk573)) {
+            outPacket.encodeInt(getOption(Unk573).xOption);
+        }
         if (hasNewStat(NewFlying)) {
             outPacket.encodeInt(getOption(NewFlying).xOption);
         }
-        if (hasNewStat(Unk485)) {
-            /* not exactly 2 bytes:
-            c = 0;
-            while(true) {
-                a = decode1();
-                b = (a & 0x7F) << c;
-                if(a >= 0) {
-                    break;
-                }
-                c += 7;
-            }
-             */
-            outPacket.encodeByte(getOption(Unk485).xOption);
-            outPacket.encodeByte(getOption(Unk485).yOption);
+        if (hasNewStat(BeastMode)) {
+            outPacket.encodeByte(getOption(BeastMode).bOption);
         }
-        if (hasNewStat(Unk486)) {
-            // 1st byte is normal, 2nd one is like in Unk485
-            outPacket.encodeByte(getOption(Unk486).xOption);
-            outPacket.encodeByte(getOption(Unk486).yOption);
+        if (hasNewStat(Unk612)) {
+            outPacket.encodeInt(getOption(Unk612).xOption);
+            outPacket.encodeInt(getOption(Unk612).cOption);
+            outPacket.encodeInt(getOption(Unk612).yOption);
+        }
+        if (hasNewStat(Unk615)) {
+            outPacket.encodeInt(getOption(Unk615).xOption);
+            outPacket.encodeInt(getOption(Unk615).cOption);
+            outPacket.encodeInt(getOption(Unk615).yOption);
+        }
+        if (hasNewStat(Unk616)) {
+            outPacket.encodeInt(getOption(Unk616).xOption);
+            outPacket.encodeInt(getOption(Unk616).cOption);
+            outPacket.encodeInt(getOption(Unk616).yOption);
+        }
+        if (hasNewStat(Unk617)) {
+            outPacket.encodeInt(getOption(Unk617).nOption);
+            outPacket.encodeInt(getOption(Unk617).xOption);
+            outPacket.encodeInt(getOption(Unk617).cOption);
+            outPacket.encodeInt(getOption(Unk617).yOption);
+        }
+        if (hasNewStat(Unk618)) {
+            outPacket.encodeInt(getOption(Unk618).xOption);
+            outPacket.encodeInt(getOption(Unk618).cOption);
+            outPacket.encodeInt(getOption(Unk618).yOption);
+        }
+        if (hasNewStat(Unk619)) {
+            outPacket.encodeInt(getOption(Unk619).xOption);
         }
         getNewStats().clear();
     }
@@ -542,7 +674,7 @@ public class TemporaryStatManager {
             if (cts.getRemoteOrder() != -1) {
                 Option o = getOption(cts);
                 switch (cts) {
-                    case Poison: // Why does this get encoded, then immediately overwritten?
+                    case Unk82: // Why does this get encoded, then immediately overwritten?
                         outPacket.encodeShort(o.nOption);
                         break;
                 }
@@ -564,14 +696,16 @@ public class TemporaryStatManager {
                         break;
                     case BladeStance:
                     case ImmuneBarrier:
-                    case Unk460:
+                    case Unk530:
+                    case Unk531:
+                    case Unk586:
                         outPacket.encodeInt(o.xOption);
                         break;
                     case FullSoulMP:
                         outPacket.encodeInt(o.rOption);
                         outPacket.encodeInt(o.xOption);
                         break;
-                    case AntiMagicShell:
+                    case AntiMagicShellBool:
                     case PoseTypeBool:
                         outPacket.encodeByte(o.bOption);
                         break;
@@ -581,7 +715,15 @@ public class TemporaryStatManager {
         outPacket.encodeByte(getDefenseAtt());
         outPacket.encodeByte(getDefenseState());
         outPacket.encodeByte(getPvpDamage());
+        outPacket.encodeInt(0);// unknown
+        outPacket.encodeInt(0);
         Set<CharacterTemporaryStat> ctsSet = collection.keySet();
+        if (ctsSet.contains(Unk526)) {
+            outPacket.encodeInt(collection.get(Unk526).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk527)) {
+            outPacket.encodeInt(collection.get(Unk527).get(0).xOption);
+        }
         if (ctsSet.contains(ZeroAuraStr)) {
             outPacket.encodeByte(collection.get(ZeroAuraStr).get(0).bOption);
         }
@@ -612,19 +754,59 @@ public class TemporaryStatManager {
         if (ctsSet.contains(Stigma)) {
             outPacket.encodeInt(collection.get(Stigma).get(0).bOption);
         }
+        if (ctsSet.contains(Unk422)) {
+            outPacket.encodeShort(collection.get(Unk422).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk423)) {
+            outPacket.encodeShort(collection.get(Unk423).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk424)) {
+            outPacket.encodeShort(collection.get(Unk424).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk503)) {
+            outPacket.encodeInt(collection.get(Unk503).get(0).xOption);
+            outPacket.encodeInt(collection.get(Unk503).get(0).bOption);
+            outPacket.encodeInt(collection.get(Unk503).get(0).cOption);
+            outPacket.encodeInt(collection.get(Unk503).get(0).yOption);
+        }
+        if (ctsSet.contains(VampDeath)) {
+            outPacket.encodeInt(collection.get(VampDeath).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk520)) {
+            outPacket.encodeInt(collection.get(Unk520).get(0).bOption);
+            outPacket.encodeInt(collection.get(Unk520).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk255)) {
+            outPacket.encodeInt(collection.get(Unk255).get(0).bOption);
+            outPacket.encodeInt(collection.get(Unk255).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk538)) {
+            outPacket.encodeInt(collection.get(Unk538).get(0).xOption);
+            outPacket.encodeInt(collection.get(Unk538).get(0).bOption);
+            outPacket.encodeInt(collection.get(Unk538).get(0).cOption);
+        }
         if (getStopForceAtom() != null) {
             getStopForceAtom().encode(outPacket);
         } else {
             new StopForceAtom().encode(outPacket);
         }
         outPacket.encodeInt(getViperEnergyCharge());
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {// 7=>8 v202 maybe more ts index ?
             if(hasNewStat(TSIndex.getCTSFromTwoStatIndex(i))) {
                 getTwoStates().get(i).encode(outPacket);
             }
         }
         if (ctsSet.contains(NewFlying)) {
             outPacket.encodeInt(collection.get(NewFlying).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk517)) {
+            outPacket.encodeInt(collection.get(Unk517).get(0).xOption);
+        }
+        if (ctsSet.contains(KeyDownMoving)) {
+            outPacket.encodeInt(collection.get(KeyDownMoving).get(0).xOption);
+        }
+        if (ctsSet.contains(Unk556)) {
+            outPacket.encodeInt(collection.get(Unk556).get(0).xOption);
         }
     }
 

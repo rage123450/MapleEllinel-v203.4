@@ -120,19 +120,11 @@ public class Mercedes extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         chr.getAvatarData().getAvatarLook().setDrawElfEar(true);
-        Item item = ItemData.getItemDeepCopy(1352000); // Secondary
-        chr.addItemToInventory(item);
-        chr.getAvatarData().getCharacterStat().setPosMap(910150000);
+        /*Item item = ItemData.getItemDeepCopy(1352000); // Secondary
+        chr.addItemToInventory(item);*/
 
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
-        cs.setLevel(10);
-        cs.setDex(49);
-        cs.setMaxHp(300);
-        cs.setMaxMp(200);
-        Map<Stat, Object> stats = new HashMap<>();
-        stats.put(Stat.mhp, chr.getStat(Stat.mhp));
-        stats.put(Stat.mmp, chr.getStat(Stat.mmp));
-        chr.write(WvsContext.statChanged(stats));
+        cs.setPosMap(910150000);
     }
 
 

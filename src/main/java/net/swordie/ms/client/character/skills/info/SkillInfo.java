@@ -3,6 +3,7 @@ package net.swordie.ms.client.character.skills.info;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.skills.SkillStat;
 import net.swordie.ms.enums.BaseStat;
+import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.enums.Stat;
 import net.swordie.ms.util.Rect;
 import net.swordie.ms.util.Util;
@@ -176,11 +177,16 @@ public class SkillInfo {
         return getValue(SkillStat.cooltime, 1) > 0 || getValue(SkillStat.cooltimeMS, 1) > 0;
     }
 
-    public Map<BaseStat, Integer> getBaseStatValues(Char chr, int slv) {
+    public Map<BaseStat, Integer> getBaseStatValues(Char chr, int slv, int skillID) {
         Map<BaseStat, Integer> stats = new HashMap<>();
+        chr.chatMessage(ChatType.Mob,"SkillID : " + skillID);
         for (SkillStat ss : getSkillStatInfo().keySet()) {
             Tuple<BaseStat, Integer> bs = getBaseStatValue(ss, slv, chr);
             stats.put(bs.getLeft(), bs.getRight());
+            chr.chatMessage(ChatType.Mob, ss.name() + " : " + bs.getRight());
+        }
+        if (skillID == 20010194) {
+            stats.put(BaseStat.mhpR, 15);
         }
         return stats;
     }

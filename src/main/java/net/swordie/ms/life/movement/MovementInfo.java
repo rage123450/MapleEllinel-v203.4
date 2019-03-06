@@ -4,6 +4,7 @@ import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.Encodable;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.OutPacket;
+import net.swordie.ms.life.Dragon;
 import net.swordie.ms.life.Life;
 import net.swordie.ms.util.Position;
 import org.apache.log4j.Logger;
@@ -45,6 +46,12 @@ public class MovementInfo implements Encodable {
         }
     }
 
+    public void applyTo(Dragon dragon) {
+        for (Movement m : getMovements()) {
+            m.applyTo(dragon);
+        }
+    }
+
     public void decode(InPacket inPacket) {
         encodedGatherDuration = inPacket.decodeInt();
         oldPos = inPacket.decodePosition();
@@ -78,9 +85,13 @@ public class MovementInfo implements Encodable {
                 case 15:
                 case 17:
                 case 19:
-                case 67:
-                case 68:
                 case 69:
+                case 70:
+                case 71:
+                case 72:
+                case 73:
+                case 74:
+                case 92:
                     res.add(new MovementNormal(inPacket, type));
                     break;
                 case 1:
@@ -89,10 +100,12 @@ public class MovementInfo implements Encodable {
                 case 21:
                 case 22:
                 case 24:
+                case 60:
                 case 62:
-                case 63:
                 case 64:
                 case 65:
+                case 66:
+                case 67:
                     res.add(new MovementJump(inPacket, type));
                     break;
                 case 3:
@@ -109,12 +122,13 @@ public class MovementInfo implements Encodable {
                 case 52:
                 case 53:
                 case 54:
-                case 61:
-                case 76:
-                case 77:
-                case 78:
-                case 80:
+                case 63:
+                case 81:
                 case 82:
+                case 83:
+                case 85:
+                case 87:
+                case 96:
                     res.add(new MovementTeleport(inPacket, type));
                     break;
                 case 12:
@@ -128,6 +142,8 @@ public class MovementInfo implements Encodable {
                     res.add(new MovementFlyingBlock(inPacket, type));
                     break;
                 case 29:
+                    res.add(new MovementUNK(inPacket, type));
+                    break;
                 case 30:
                 case 31:
                 case 32:
@@ -147,25 +163,28 @@ public class MovementInfo implements Encodable {
                 case 46:
                 case 47:
                 case 48:
-                case 49:
                 case 50:
                 case 51:
+                case 55:
                 case 57:
                 case 58:
                 case 59:
-                case 60:
-                case 70:
-                case 71:
-                case 72:
-                case 74:
+                case 61:
+                case 75:
+                case 76:
+                case 77:
                 case 79:
-                case 81:
-                case 83:
+                case 84:
+                case 86:
+                case 88:
+                case 89:
+                case 90:
+                case 91:
                     res.add(new MovementAction(inPacket, type));
                     break;
                 case 56:
-                case 66:
-                case 85:
+                case 68:
+                case 95:
                     res.add(new MovementAngle(inPacket, type)); // probably not a good name
                     break;
                 default:
@@ -174,10 +193,6 @@ public class MovementInfo implements Encodable {
             }
         }
         return res;
-    }
-
-    public byte getKeyPadState() {
-        return keyPadState;
     }
 
     public List<Movement> getMovements() {

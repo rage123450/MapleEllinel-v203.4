@@ -2,6 +2,7 @@ package net.swordie.ms.life.movement;
 
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.OutPacket;
+import net.swordie.ms.life.Dragon;
 import net.swordie.ms.life.Life;
 import net.swordie.ms.util.Position;
 
@@ -34,4 +35,6 @@ public interface Movement {
     void applyTo(Char chr);
 
     void applyTo(Life life);
+
+    void applyTo(Dragon dragon);
 }

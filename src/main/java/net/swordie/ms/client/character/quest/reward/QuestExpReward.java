@@ -1,7 +1,9 @@
 package net.swordie.ms.client.character.quest.reward;
 
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.info.ExpIncreaseInfo;
 import net.swordie.ms.loaders.DatSerializable;
+import net.swordie.ms.util.Util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -32,7 +34,11 @@ public class QuestExpReward implements QuestReward {
 
     @Override
     public void giveReward(Char chr) {
-        chr.addExp(getExp());
+        ExpIncreaseInfo eii = new ExpIncreaseInfo();
+        eii.setLastHit(true);
+        eii.setIncEXP(Util.maxInt(getExp()));
+        eii.setOnQuest(true);
+        chr.addExp(getExp(), eii);
     }
 
     @Override

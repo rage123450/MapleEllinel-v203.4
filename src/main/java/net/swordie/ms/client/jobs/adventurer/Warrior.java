@@ -221,7 +221,7 @@ public class Warrior extends Beginner {
                 tsm.putCharacterStatValue(Enrage, o1); // max mobs hit
                 o2.nOption = si.getValue(y, slv);
                 o2.rOption = skillID;
-                tsm.putCharacterStatValue(EnrageCrDamMin, o2);
+                tsm.putCharacterStatValue(EnrageCrDam, o2);
                 o3.nOption = si.getValue(x, slv);
                 o2.rOption = skillID;
                 tsm.putCharacterStatValue(EnrageCr, o3);
@@ -940,7 +940,7 @@ public class Warrior extends Beginner {
                     for (int i = 0; i < mai.damages.length; i++) {
                         dmg += mai.damages[i];
                     }
-                    c.write(MobPool.damaged(mob.getObjectId(), dmg, mob.getTemplateId(), (byte) 1, (int) mob.getHp(), (int) mob.getMaxHp()));
+                    c.write(MobPool.damaged(mob.getObjectId(), dmg, mob.getTemplateId(), (byte) 1, mob.getHp(), mob.getMaxHp()));
                 }
                 break;
             case EVIL_EYE:
@@ -1415,7 +1415,7 @@ public class Warrior extends Beginner {
                 if (mob.isBoss()) {
                     lowerFinalPactKillCount();
                 } else {
-                    int totaldmg = Arrays.stream(mai.damages).sum();
+                    long totaldmg = Arrays.stream(mai.damages).sum();
 
                     if (totaldmg >= mob.getHp()) {
                         lowerFinalPactKillCount();

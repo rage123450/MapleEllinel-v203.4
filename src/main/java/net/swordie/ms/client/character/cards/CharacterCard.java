@@ -52,7 +52,7 @@ public class CharacterCard {
         //CHARACTERCARD::Decode
         for(int i = 0; i < 9; i++) {
             outPacket.encodeInt(getCharacterId());
-            outPacket.encodeByte(getLevel());
+            outPacket.encodeInt(getLevel());
             outPacket.encodeInt(getJob());
         }
     }

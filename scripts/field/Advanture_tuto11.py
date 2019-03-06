@@ -1,12 +1,11 @@
 # Maple Road : Maple Tree Hill (4000011)  Map for Advanture Tutorial
 
-# NPC name - "???"
-UNK_NPC = 10300
+UNK_NPC = 10300# "???""
 
-VELLUM_STONE = 1064028
 if sm.hasQuest(32202):
     sm.dispose()
 else:
+    sm.createQuestWithQRValue(32217, "1", False)
     sm.lockInGameUI(True)
     sm.showFieldEffect("maplemap/enter/10000", 0)
     sm.sendDelay(1000)
@@ -20,9 +19,6 @@ else:
     sm.moveNpcByTemplateId(UNK_NPC, False, 1000, 100)
     sm.moveCamera(False, 200, 200, 200)
 
-    # The delay is for letting the Npc move
-    sm.sendDelay(3000)
-
     sm.moveCamera(True, 0, 0, 0)
 
     sm.sendDelay(900)
@@ -35,6 +31,6 @@ else:
     sm.sendNext("Maybe I'll follow her..")
 
     sm.removeNpc(UNK_NPC)
-    sm.completeQuestNoRewards(32202)
+    sm.startQuest(32202)
+    sm.completeQuest(32202)
     sm.lockInGameUI(False)
-    sm.dispose()

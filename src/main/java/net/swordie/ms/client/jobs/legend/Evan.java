@@ -121,10 +121,6 @@ public class Evan extends Job {
         }
     }
 
-    public void spawnMir() {
-        c.write(CField.createDragon(chr));
-    }
-
     public int getEvanSkill(int skillID) {
         switch (skillID) {
             case MANA_BURST_I:
@@ -276,7 +272,7 @@ public class Evan extends Job {
         }
         if(hasHitMobs) {
             // Partners
-            if (getEvanSkill(skillID) != 1) {
+            if (getEvanSkill(skillID) != 1 && chr.hasSkill(PARTNERS)) {
                 givePartnersBuff(skillID);
             }
 
@@ -512,27 +508,5 @@ public class Evan extends Job {
     @Override
     public void handleLevelUp() {
         super.handleLevelUp();
-        //TODO give sp to proper job advancement, now gives sp to the old one(probably not enough time inbetween setting job and sp)
-        if (chr.getLevel() == 10) {
-            chr.setJob(2210);
-            chr.setStatAndSendPacket(Stat.subJob, 2210);
-            chr.addSpToJobByCurrentLevel(3);
-        }
-        if (chr.getLevel() == 30) {
-            chr.setJob(2212);
-            chr.setStatAndSendPacket(Stat.subJob, 2212);
-            chr.addSpToJobByCurrentLevel(3);
-        }
-        if (chr.getLevel() == 60) {
-            chr.setJob(2214);
-            chr.setStatAndSendPacket(Stat.subJob, 2214);
-            chr.addSpToJobByCurrentLevel(3);
-        }
-        if (chr.getLevel() == 100) {
-            chr.setJob(2218);
-            chr.setStatAndSendPacket(Stat.subJob, 2218);
-            chr.addSpToJobByCurrentLevel(3);
-        }
-
     }
 }

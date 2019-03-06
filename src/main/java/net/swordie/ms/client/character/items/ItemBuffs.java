@@ -144,7 +144,7 @@ public class ItemBuffs {
                     tsm.putCharacterStatValue(IndieQrPointTerm, o);
                     break;
                 case indieWaterSmashBuff:
-                    tsm.putCharacterStatValue(IndieUNK1, o);
+                    tsm.putCharacterStatValue(IndieUnk1, o);
                     break;
                 case padRate:
                     tsm.putCharacterStatValue(IndiePADR, o);

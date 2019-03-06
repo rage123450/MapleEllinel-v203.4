@@ -88,11 +88,11 @@ public enum MobStat {
     Invincible(74),
     Explosion(75),
     HangOver(76),
-    BurnedInfo(77),
+    BurnedInfo(86),// v202.3
     InvincibleBalog(78),
     ExchangeAttack(79),
 
-    ExtraBuffStat(80),
+    ExtraBuffStat(89),// v200.3
     LinkTeam(81),
     SoulExplosion(82),
     SeperateSoulP(83),

@@ -711,7 +711,7 @@ public class Archer extends Beginner {
         Option o1 = new Option();
         long totalDamage = 0;
         for(MobAttackInfo mai : ai.mobAttackInfo) {
-            for(int dmg : mai.damages) {
+            for(long dmg : mai.damages) {
                 totalDamage += dmg;
             }
         }

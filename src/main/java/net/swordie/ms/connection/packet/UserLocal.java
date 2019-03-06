@@ -53,6 +53,14 @@ public class UserLocal {
         return outPacket;
     }
 
+    public static OutPacket videoByScript(String videoPath){
+        OutPacket outPacket = new OutPacket(OutHeader.VIDEO_BY_SCRIPT_2);
+
+        outPacket.encodeString(videoPath);
+
+        return outPacket;
+    }
+
     public static OutPacket jaguarActive(boolean active) {
         OutPacket outPacket = new OutPacket(OutHeader.JAGUAR_ACTIVE);
 
@@ -66,6 +74,16 @@ public class UserLocal {
 
         outPacket.encodeInt(skillID);
 
+        return outPacket;
+    }
+
+    public static OutPacket setFieldFloating(int fieldID, int x, int y, int term) {
+        OutPacket outPacket = new OutPacket(OutHeader.USER_SET_FIELD_FLOATING);
+
+        outPacket.encodeInt(fieldID);
+        outPacket.encodeInt(x);
+        outPacket.encodeInt(y);
+        outPacket.encodeInt(term);
         return outPacket;
     }
 
@@ -273,11 +291,15 @@ public class UserLocal {
             case COMBO: //Combo Kill Message
                 outPacket.encodeInt(comboCount); //count
                 outPacket.encodeInt(mobID); //mobID
+                outPacket.encodeInt(4);
+                outPacket.encodeInt(0);
                 break;
 
             case MULTI_KILL: //MultiKill Pop-up
                 outPacket.encodeLong(comboCount); //nBonus
+                outPacket.encodeInt(0);
                 outPacket.encodeInt(mobID); //count
+                outPacket.encodeInt(4);
                 break;
         }
 
@@ -407,13 +429,17 @@ public class UserLocal {
     }
 
     public static OutPacket setInGameDirectionMode(boolean lockUI, boolean blackFrame, boolean forceMouseOver) {
+        return setInGameDirectionMode(lockUI, blackFrame, forceMouseOver, !lockUI);
+    }
+
+    public static OutPacket setInGameDirectionMode(boolean lockUI, boolean blackFrame, boolean forceMouseOver, boolean showUI) {
         OutPacket outPacket = new OutPacket(OutHeader.SET_IN_GAME_DIRECTION_MODE);
 
         outPacket.encodeByte(lockUI); // Locks User's UI        - Is 'showUI' in IDA
         outPacket.encodeByte(blackFrame); // Usually 1 in gms? (@aviv)
         if(lockUI) {
             outPacket.encodeByte(forceMouseOver);
-            outPacket.encodeByte(!lockUI); // showUI
+            outPacket.encodeByte(showUI);
         }
 
         return outPacket;
@@ -562,6 +588,52 @@ public class UserLocal {
         }
         // indicate end
         outPacket.encodeByte(false);
+
+        return outPacket;
+    }
+
+    public static OutPacket cameraSwitchNormal(String targetName, int time) {
+        OutPacket outPacket = new OutPacket(OutHeader.CAMERA_SWITCH);
+        outPacket.encodeByte(CameraSwitchType.NORMAL.getVal());
+
+        outPacket.encodeString(targetName);
+        outPacket.encodeInt(time);
+        return outPacket;
+    }
+
+    public static OutPacket cameraSwitchByPosition(Position position, int time) {
+        OutPacket outPacket = new OutPacket(OutHeader.CAMERA_SWITCH);
+        outPacket.encodeByte(CameraSwitchType.POSITION.getVal());
+
+        outPacket.encodePositionInt(position);
+        outPacket.encodeInt(time);
+        return outPacket;
+    }
+
+    public static OutPacket cameraSwitchBack() {
+        OutPacket outPacket = new OutPacket(OutHeader.CAMERA_SWITCH);
+        outPacket.encodeByte(CameraSwitchType.BACK.getVal());
+        return outPacket;
+    }
+
+    public static OutPacket cameraSwitchPosByCID(int cid, boolean setCamera, int resetTime, String name) {
+        OutPacket outPacket = new OutPacket(OutHeader.CAMERA_SWITCH);
+        outPacket.encodeByte(CameraSwitchType.POSITION_BY_CID.getVal());
+
+        outPacket.encodeInt(cid);
+        outPacket.encodeByte(setCamera);
+        outPacket.encodeInt(resetTime);
+        outPacket.encodeString(name);
+        return outPacket;
+    }
+
+    public static OutPacket setPartner(boolean add, int npcID, int skillID, boolean hasScript){
+        OutPacket outPacket = new OutPacket(OutHeader.SET_PARTNER);
+
+        outPacket.encodeByte(add);
+        outPacket.encodeInt(npcID);
+        outPacket.encodeInt(skillID);
+        outPacket.encodeByte(hasScript);
 
         return outPacket;
     }

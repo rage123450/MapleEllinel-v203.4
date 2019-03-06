@@ -246,15 +246,15 @@ public class BattleMage extends Citizen {
                 o2.nOption = si.getValue(x, slv);
                 o2.rOption = skillID;
                 o2.tOption = 0;
-                tsm.putCharacterStatValue(DamR, o2);
+                tsm.putCharacterStatValue(IndieDamR, o2);
                 o3.nOption = si.getValue(z, slv);
                 o3.rOption = skillID;
                 o3.tOption = 0;
-                tsm.putCharacterStatValue(CriticalBuff, o3);
+                tsm.putCharacterStatValue(IndieCr, o3);
                 o4.nOption = si.getValue(y, slv);
                 o4.rOption = skillID;
                 o4.tOption = 0;
-                tsm.putCharacterStatValue(IncCriticalDamMin, o4);
+                tsm.putCharacterStatValue(EnrageCrDam, o4);
                 break;
             case MAPLE_WARRIOR_BAM:
                 o1.nReason = skillID;
@@ -269,11 +269,11 @@ public class BattleMage extends Citizen {
                 o1.tStart = (int) System.currentTimeMillis();
                 o1.tTerm = si.getValue(time, slv);
                 tsm.putCharacterStatValue(IndieDamR, o1);
-                o2.nReason = skillID;
+                /*o2.nReason = skillID;
                 o2.nValue = si.getValue(indieMaxDamageOverR, slv);
                 o2.tStart = (int) System.currentTimeMillis();
                 o2.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieMaxDamageOverR, o2);
+                tsm.putCharacterStatValue(IndieMaxDamageOverR, o2);*/
                 break;
             case MASTER_OF_DEATH:
                 o1.nOption = 1;
@@ -413,7 +413,7 @@ public class BattleMage extends Citizen {
         int killCount = tsm.getOption(BMageDeath).nOption;
         for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
             Mob mob = (Mob) field.getLifeByObjectID(mai.mobId);
-            int dmgOnMob = Arrays.stream(mai.damages).sum();
+            long dmgOnMob = Arrays.stream(mai.damages).sum();
             if (mob == null) {
                 continue;
             }
@@ -520,7 +520,7 @@ public class BattleMage extends Citizen {
         if ((tsm.getOptByCTSAndSkill(BMageAura, DRAINING_AURA) != null) && (drainAuraCD + duration < System.currentTimeMillis())) {
             for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                 drainAuraCD = System.currentTimeMillis();
-                int totaldmg = Arrays.stream(mai.damages).sum();
+                long totaldmg = Arrays.stream(mai.damages).sum();
                 int healingrate = si.getValue(x, slv);
                 int restoration = (int) (totaldmg / ((double) 100 / healingrate));
                 chr.heal(restoration);
@@ -540,7 +540,7 @@ public class BattleMage extends Citizen {
             if (mob == null) {
                 continue;
             }
-            int totaldmg = Arrays.stream(mai.damages).sum();
+            long totaldmg = Arrays.stream(mai.damages).sum();
             if(mob == null) {
                 return;
             }

@@ -17,7 +17,7 @@ sm.setSpeakerID(ARK_CHAT)
 sm.sendNext("You are rather powerful, aren't you? I think it's time we settled which of us is stronger. I've always wanted to test my magic against your Demon Fury. Of course, I know who will be victorious!")
 
 sm.chatScript("Press the Control key rapidly to block Arkarium's attack and counterattack.")
-sm.showEffectOnPosition("Effect/Direction6.img/effect/tuto/guide1/0", 5010, 150, -300)
+sm.showEffectOn("Effect/Direction6.img/effect/tuto/guide1/0", 5010, 150, -300)
 sm.showNpcSpecialActionByTemplateId(ARKARIUM, "alert", 0)
 sm.showEffect("Effect/Direction6.img/effect/tuto/arkyrimAttack", 0, 0, -7, 0, sm.getNpcObjectIdByTemplateId(ARKARIUM), False, 0)
 sm.sendDelay(2010)

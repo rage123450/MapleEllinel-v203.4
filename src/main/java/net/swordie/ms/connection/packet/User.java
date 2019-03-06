@@ -12,16 +12,23 @@ import net.swordie.ms.util.Position;
  */
 public class User {
 
-    public static OutPacket chat(int charID, ChatUserType type, String msg, boolean onlyBalloon, int idk, int worldID) {
+    public static OutPacket chat(int charID, String charName, ChatUserType type, String msg, boolean onlyBalloon, int idk, int worldID) {
         OutPacket outPacket = new OutPacket(OutHeader.CHAT);
 
         outPacket.encodeInt(charID);
         outPacket.encodeByte(type.getVal());
         outPacket.encodeString(msg);
+        outPacket.encodeString(charName);
+        outPacket.encodeString(msg);
+        outPacket.encodeInt(0);// ip of something (115.134.240.107)
+        outPacket.encodeShort(0);// port (5050)
         outPacket.encodeByte(onlyBalloon);
         outPacket.encodeByte(idk);
         outPacket.encodeByte(worldID);
-
+        outPacket.encodeInt(charID);
+        outPacket.encodeByte(3);
+        outPacket.encodeByte(0);
+        outPacket.encodeByte(worldID);
         return outPacket;
     }
 

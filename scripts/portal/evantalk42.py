@@ -1,5 +1,3 @@
-# Portal for Evan Intro | Hidden Street: Lost Forest Entrance (900020200)
-# Author: Tiger
-
-# "This looks just like the place in my dream"
-sm.avatarOriented("Effect/OnUserEff.img/guideEffect/evanTutorial/evanBalloon42")
+if not "mo42=o" in sm.getQRValue(22014):
+    sm.avatarOriented("Effect/OnUserEff.img/guideEffect/evanTutorial/evanBalloon42")
+    sm.addQRValue(22014, "mo42=o")

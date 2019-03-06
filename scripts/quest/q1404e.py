@@ -6,8 +6,8 @@ response = sm.sendAskYesNo("So you want to become a Thief?")
 if response:
     sm.completeQuestNoRewards(parentID)
     sm.jobAdvance(400) # Thief
-    sm.getChr().addStatAndSendPacket(Stat.str, -40)
-    sm.getChr().addStatAndSendPacket(Stat.luk, 40)
+    sm.addSP(5, True)
+    sm.resetStats()
     sm.sendSayOkay("You are now a #bThief#k.")
     sm.giveItem(2070000, 500)
     sm.giveItem(1472000, 1)

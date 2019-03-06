@@ -1,6 +1,5 @@
 package net.swordie.ms.connection.packet;
 
-import net.swordie.ms.client.Client;
 import net.swordie.ms.client.alliance.AllianceResult;
 import net.swordie.ms.client.character.*;
 import net.swordie.ms.client.character.cards.CharacterCard;
@@ -11,13 +10,13 @@ import net.swordie.ms.client.character.items.Item;
 import net.swordie.ms.client.character.items.MemorialCubeInfo;
 import net.swordie.ms.client.character.potential.CharacterPotential;
 import net.swordie.ms.client.character.quest.Quest;
+import net.swordie.ms.client.character.quest.QuestEx;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.TownPortal;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.friend.Friend;
 import net.swordie.ms.client.friend.result.FriendResult;
 import net.swordie.ms.client.guild.Guild;
-import net.swordie.ms.client.guild.GuildMember;
 import net.swordie.ms.client.guild.bbs.GuildBBSPacket;
 import net.swordie.ms.client.guild.result.GuildResult;
 import net.swordie.ms.client.jobs.resistance.WildHunterInfo;
@@ -25,13 +24,13 @@ import net.swordie.ms.client.party.Party;
 import net.swordie.ms.client.party.PartyMember;
 import net.swordie.ms.client.party.PartyResult;
 import net.swordie.ms.connection.OutPacket;
-import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.enums.*;
 import net.swordie.ms.enums.MessageType;
 import net.swordie.ms.handlers.header.OutHeader;
 import net.swordie.ms.util.AntiMacro;
 import net.swordie.ms.util.FileTime;
 import net.swordie.ms.util.Position;
+import net.swordie.ms.util.container.Tuple;
 import org.apache.log4j.LogManager;
 
 import java.util.*;
@@ -63,6 +62,7 @@ public class WvsContext {
         OutPacket outPacket = new OutPacket(OutHeader.STAT_CHANGED);
 
         outPacket.encodeByte(exclRequestSent);
+        outPacket.encodeByte(0);// unk
         // GW_CharacterStat::DecodeChangeStat
         int mask = 0;
         for (Stat stat : stats.keySet()) {
@@ -77,8 +77,6 @@ public class WvsContext {
             Object value = entry.getValue();
             switch (stat) {
                 case skin:
-                case level:
-                case fatigue:
                     outPacket.encodeByte((Byte) value);
                     break;
                 case face:
@@ -95,6 +93,7 @@ public class WvsContext {
                 case senseEXP:
                 case charmEXP:
                 case eventPoints:
+                case level:
                     outPacket.encodeInt((Integer) value);
                     break;
                 case str:
@@ -102,6 +101,7 @@ public class WvsContext {
                 case inte:
                 case luk:
                 case ap:
+                case fatigue:
                     outPacket.encodeShort((Short) value);
                     break;
                 case sp:
@@ -118,9 +118,6 @@ public class WvsContext {
                 case dayLimit:
                     ((NonCombatStatDayLimit) value).encode(outPacket);
                     break;
-                case albaActivity:
-                    //TODO
-                    break;
                 case characterCard:
                     ((CharacterCard) value).encode(outPacket);
                     break;
@@ -128,8 +125,9 @@ public class WvsContext {
                 case pvp2:
                     break;
                 case subJob:
-                    outPacket.encodeShort((Short) value);
-                    outPacket.encodeShort(0);
+                    Tuple<Short, Short> subJob = (Tuple<Short, Short>) value;
+                    outPacket.encodeShort(subJob.getLeft());
+                    outPacket.encodeShort(subJob.getRight());
             }
         }
 
@@ -162,6 +160,7 @@ public class WvsContext {
         outPacket.encodeByte(1); // size
         outPacket.encodeByte(notRemoveAddInfo);
 
+        boolean addMovementInfo = false;
         outPacket.encodeByte(type.getVal());
         outPacket.encodeByte(invType.getVal());
         outPacket.encodeShort(oldPos);
@@ -175,11 +174,13 @@ public class WvsContext {
             case MOVE:
                 outPacket.encodeShort(newPos);
                 if (invType == InvType.EQUIP && (oldPos < 0 || newPos < 0)) {
-                    outPacket.encodeByte(item.getCashItemSerialNumber() > 0);
+                    addMovementInfo = true;
                 }
                 break;
             case REMOVE:
-                outPacket.encodeByte(0);
+                if (invType == InvType.EQUIP && (oldPos < 0 || newPos < 0)) {
+                    addMovementInfo = true;
+                }
                 break;
             case ITEM_EXP:
                 outPacket.encodeLong(((Equip) item).getExp());
@@ -201,6 +202,13 @@ public class WvsContext {
             case UNK_3:
                 break;
         }
+        outPacket.encodeByte(0);// new
+        //if (bAddMovementInfo) {
+        outPacket.encodeByte(addMovementInfo);
+        //}
+        //if (invType == InvType.EQUIP && (oldPos < 0 || newPos < 0)) {
+        //    outPacket.encodeByte(item.getCashItemSerialNumber() > 0);// must be > 0
+        //}
         return outPacket;
     }
 
@@ -300,21 +308,32 @@ public class WvsContext {
         OutPacket outPacket = new OutPacket(OutHeader.MESSAGE);
 
         outPacket.encodeByte(DROP_PICKUP_MESSAGE.getVal());
+        outPacket.encodeInt(0);
+        outPacket.encodeByte(0);
+
+        if (internetCafeExtra > 0) type = 8;
         outPacket.encodeByte(type);
         // also error (?) codes -2, ,-3, -4, -5, <default>
         switch (type) {
-            case 1: // Mesos
-                outPacket.encodeByte(false); // boolean: portion was lost after falling to the ground
-                outPacket.encodeInt(i); // Mesos
-                outPacket.encodeShort(internetCafeExtra); // Internet cafe
-                outPacket.encodeShort(smallChangeExtra); // Spotting small change
+            case -10:
+                outPacket.encodeInt(100);// nItemID
                 break;
             case 0: // item
                 outPacket.encodeInt(i);
                 outPacket.encodeInt(quantity); // ?
                 break;
+            case 1: // Mesos
+                outPacket.encodeByte(false); // boolean: portion was lost after falling to the ground
+                outPacket.encodeInt(i); // Mesos
+                outPacket.encodeShort(smallChangeExtra); // Spotting small change
+                break;
             case 2: // ?
-                outPacket.encodeInt(100);
+                outPacket.encodeInt(100);// nItemID
+                outPacket.encodeLong(0);
+                break;
+            case 8:
+                outPacket.encodeInt(i); // Mesos
+                outPacket.encodeShort(internetCafeExtra); // Internet cafe
                 break;
         }
 
@@ -328,7 +347,17 @@ public class WvsContext {
         outPacket.encodeInt(qrKey);
         outPacket.encodeByte(true);
         outPacket.encodeByte(state);
-        // TODO probably missing something here
+        switch (state) {
+            case 1:
+                outPacket.encodeString("");
+                break;
+            case 2:
+                outPacket.encodeLong(0);
+                break;
+            case 0:
+                outPacket.encodeByte(0); // If quest is completed, but should never be true?
+                break;
+        }
 
         return outPacket;
     }
@@ -356,12 +385,20 @@ public class WvsContext {
         return outPacket;
     }
 
-    public static OutPacket questRecordExMessage(Quest quest) {
+    public static OutPacket questRecordExMessage(QuestEx quest) {
         OutPacket outPacket = new OutPacket(OutHeader.MESSAGE);
 
         outPacket.encodeByte(QUEST_RECORD_EX_MESSAGE.getVal());
-        outPacket.encodeInt(quest.getQRKey());
-        outPacket.encodeString(quest.getQRValue());
+        outPacket.encodeInt(quest.getQuestID());
+        String str = "";
+        for (Map.Entry<String, String> value : quest.getValues().entrySet()) {
+            if (str.isEmpty()) {
+                str = String.format("%s=%s", value.getKey(), value.getValue());
+            } else {
+                str = String.format("%s;%s=%s", str, value.getKey(), value.getValue());
+            }
+        }
+        outPacket.encodeString(str);
 
         return outPacket;
     }
@@ -390,7 +427,7 @@ public class WvsContext {
 
         outPacket.encodeByte(INC_MONEY_MESSAGE.getVal());
         outPacket.encodeInt(amount);
-        outPacket.encodeInt(amount > 0 ? 1 : -1);
+        outPacket.encodeInt(amount > 0 ? 1 : -1);// 24 for using extractor
 
         return outPacket;
     }
@@ -1051,7 +1088,7 @@ public class WvsContext {
     }
 
     public static OutPacket platformarEnterResult(boolean wrap) {
-        OutPacket outPacket = new OutPacket(OutHeader.PLATFORMAR_ENTER_RESULT);
+        OutPacket outPacket = new OutPacket(OutHeader.PLAT_FORMAR_ENTER_RESULT);
 
         outPacket.encodeByte(wrap);
 
@@ -1059,10 +1096,68 @@ public class WvsContext {
     }
 
     public static OutPacket platformarOxyzen(int oxyzen) {
-        OutPacket outPacket = new OutPacket(OutHeader.PLATFORMAR_OXYZEN);
+        OutPacket outPacket = new OutPacket(OutHeader.PLAT_FORMAR_OXYZEN);
 
         outPacket.encodeInt(oxyzen); // casted to long in client side
 
         return outPacket;
     }
+
+    public static OutPacket updateVMatrix(Char chr, boolean update, MatrixUpdateType updateType, int pos) {
+        OutPacket outPacket = new OutPacket(OutHeader.VMATRIX_UPDATE);
+        chr.getMatrixInventory().encode(outPacket);
+        outPacket.encodeByte(update);
+        if (update) {
+            outPacket.encodeInt(updateType.getVal());
+            // according to IDA pos applied only for enable
+            if (updateType == MatrixUpdateType.ENABLE || updateType == MatrixUpdateType.DISABLE) {
+                outPacket.encodeInt(pos);
+            }
+        }
+        return outPacket;
+    }
+
+    public static OutPacket nodeShardResult(int shard) {
+        OutPacket outPacket = new OutPacket(OutHeader.NODE_SHARD_RESULT);
+
+        outPacket.encodeInt(shard);
+
+        return outPacket;
+    }
+
+    public static OutPacket nodeEnhanceResult(int recordID, int exp, int slv1, int slv2) {
+        OutPacket outPacket = new OutPacket(OutHeader.NODE_ENHANCE_RESULT);
+
+        outPacket.encodeInt(recordID);
+        outPacket.encodeInt(exp);
+        outPacket.encodeInt(slv1);
+        outPacket.encodeInt(slv2);
+
+        return outPacket;
+    }
+
+    public static OutPacket nodeCraftResult(int coreID, int skillID1, int skillID2, int skillID3) {
+        OutPacket outPacket = new OutPacket(OutHeader.NODE_CRAFT_RESULT);
+
+        outPacket.encodeInt(coreID);
+        outPacket.encodeInt(1);
+        outPacket.encodeInt(skillID1);
+        outPacket.encodeInt(skillID2);
+        outPacket.encodeInt(skillID3);
+
+        return outPacket;
+    }
+
+    public static OutPacket nodeStoneResult(int coreID, int skillID1, int skillID2, int skillID3) {
+        OutPacket outPacket = new OutPacket(OutHeader.NODE_STONE_RESULT);
+
+        outPacket.encodeInt(coreID);
+        outPacket.encodeInt(1);
+        outPacket.encodeInt(skillID1);
+        outPacket.encodeInt(skillID2);
+        outPacket.encodeInt(skillID3);
+        outPacket.encodeInt(0);// unk maybe skill4 ?
+        return outPacket;
+    }
+
 }

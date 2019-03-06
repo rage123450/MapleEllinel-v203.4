@@ -138,11 +138,11 @@ public class Mihile extends Job {
                 tsm.putCharacterStatValue(IndiePAD, o1);
                 break;
             case ENDURING_SPIRIT: // PDDR(DEF%) = x  |  AsrR & TerR = y & z
-                o1.nValue = si.getValue(indiePddR, slv);
+                o1.nValue = si.getValue(x, slv);
                 o1.nReason = skillID;
                 o1.tStart = (int) System.currentTimeMillis();
                 o1.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndiePDDR, o1);
+                tsm.putCharacterStatValue(DDR, o1);
                 o2.nOption = si.getValue(y, slv);
                 o2.rOption = skillID;
                 o2.tOption = si.getValue(time, slv);
@@ -161,6 +161,9 @@ public class Mihile extends Job {
                     o1.rOption = SOUL_LINK;
                     o1.cOption = chr.getId();
                     tsm.putCharacterStatValue(MichaelSoulLink, o1);
+                    o2.nOption = si.getValue(indieDamR, slv);
+                    o2.rOption = SOUL_LINK;
+                    tsm.putCharacterStatValue(IndieDamR, o2);
                 }
                 if(soulLinkBuffsTimer != null && !soulLinkBuffsTimer.isDone()) {
                     soulLinkBuffsTimer.cancel(true);
@@ -173,22 +176,22 @@ public class Mihile extends Job {
                 soulLinkHPRegen();
                 break;
             case ROILING_SOUL:
-                o1.nOption = 1;
+                o2.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
                 tsm.putCharacterStatValue(Enrage, o1);
-                o2.nOption = si.getValue(x, slv);
+                o2.nOption = si.getValue(z, slv);
                 o2.rOption = skillID;
-                tsm.putCharacterStatValue(DamR, o2);
+                tsm.putCharacterStatValue(EnrageCr, o2);
                 o3.nOption = si.getValue(y, slv);
                 o3.rOption = skillID;
-                tsm.putCharacterStatValue(IncCriticalDamMin, o3);
+                tsm.putCharacterStatValue(EnrageCrDam, o3);
                 break;
             case CALL_OF_CYGNUS_MIHILE:
                 o1.nValue = si.getValue(x, slv);
                 o1.nReason = skillID;
                 o1.tStart = (int) System.currentTimeMillis();
                 o1.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieStatR, o1);
+                tsm.putCharacterStatValue(BasicStatUp, o1);
                 break;
             case QUEEN_OF_TOMORROW:
                 o1.nReason = skillID;

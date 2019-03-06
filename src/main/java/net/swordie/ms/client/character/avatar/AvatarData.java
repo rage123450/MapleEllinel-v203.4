@@ -43,6 +43,10 @@ public class AvatarData {
 
     public void encode(OutPacket outPacket) {
         characterStat.encode(outPacket);
+        // sub_96B160
+        outPacket.encodeInt(0);
+        outPacket.encodeLong(0);
+        // end sub_96B160
         avatarLook.encode(outPacket);
         if(JobConstants.isZero(getCharacterStat().getJob())) {
             zeroAvatarLook.encode(outPacket);

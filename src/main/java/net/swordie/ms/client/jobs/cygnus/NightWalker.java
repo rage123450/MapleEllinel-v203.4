@@ -18,6 +18,7 @@ import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.enums.ForceAtomEnum;
 import net.swordie.ms.enums.LeaveType;
 import net.swordie.ms.enums.MoveAbility;
+import net.swordie.ms.enums.*;
 import net.swordie.ms.handlers.EventManager;
 import net.swordie.ms.life.Summon;
 import net.swordie.ms.life.mob.Mob;
@@ -167,7 +168,7 @@ public class NightWalker extends Noblesse {
         Option o2 = new Option();
         Option o3 = new Option();
         Summon summon;
-        Field field;
+        Field field = chr.getField();
         switch (skillID) {
             case DARK_ELEMENTAL:
                 o1.nOption = si.getValue(x, slv);
@@ -240,11 +241,6 @@ public class NightWalker extends Noblesse {
                 o1.tStart = (int) System.currentTimeMillis();
                 o1.tTerm = si.getValue(time, slv);
                 tsm.putCharacterStatValue(IndieDamR, o1);
-                o2.nReason = skillID;
-                o2.nValue = si.getValue(indieMaxDamageOverR, slv);
-                o2.tStart = (int) System.currentTimeMillis();
-                o2.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieMaxDamageOverR, o2);
                 break;
             case SHADOW_ILLUSION:
                 if(chr.getField().getSummons().stream()
@@ -260,10 +256,11 @@ public class NightWalker extends Noblesse {
                 tsm.putCharacterStatValue(ShadowIllusion, o1);
                 for(int i = skillID; i < skillID+3; i++) {
                     summon = Summon.getSummonBy(c.getChr(), i, slv);
-                    field = c.getChr().getField();
                     summon.setFlyMob(false);
                     summon.setAvatarLook(chr.getAvatarData().getAvatarLook());
-                    summon.setMoveAbility(MoveAbility.WalkClone);
+                    darkServant.setAvatarLook(chr.getAvatarData().getAvatarLook());
+                    darkServant.setMoveAbility(MoveAbility.WalkClone);
+                    darkServant.setAssistType(AssistType.None);
                     field.spawnSummon(summon);
                 }
                 if(chr.hasSkill(DARK_SERVANT)) {

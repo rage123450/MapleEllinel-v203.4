@@ -4,8 +4,8 @@ import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.util.Util;
 
 public class ForcedMobStat {
-    private long maxHP, maxMP, exp;
-    private int pad, mad, pdr, mdr, acc, eva, pushed, speed, level, userCount;
+    private long maxHP, maxMP, exp, pushed;
+    private int pad, mad, pdr, mdr, acc, eva, speed, level, userCount;
 
     public long getMaxHP() {
         return maxHP;
@@ -79,11 +79,11 @@ public class ForcedMobStat {
         this.eva = eva;
     }
 
-    public int getPushed() {
+    public long getPushed() {
         return pushed;
     }
 
-    public void setPushed(int pushed) {
+    public void setPushed(long pushed) {
         this.pushed = pushed;
     }
 
@@ -112,7 +112,7 @@ public class ForcedMobStat {
     }
 
     public void encode(OutPacket outPacket) {
-        outPacket.encodeInt(Util.maxInt(getMaxHP()));
+        outPacket.encodeLong(getMaxHP());
         outPacket.encodeInt(Util.maxInt(getMaxMP()));
         outPacket.encodeInt(Util.maxInt(getExp()));
         outPacket.encodeInt(getPad());
@@ -121,7 +121,7 @@ public class ForcedMobStat {
         outPacket.encodeInt(getMdr());
         outPacket.encodeInt(getAcc());
         outPacket.encodeInt(getEva());
-        outPacket.encodeInt(getPushed());
+        outPacket.encodeLong(getPushed());
         outPacket.encodeInt(getSpeed() > 0 ? -getSpeed() : getSpeed());
         outPacket.encodeInt(getLevel());
         outPacket.encodeInt(getUserCount());

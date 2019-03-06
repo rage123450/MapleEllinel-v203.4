@@ -321,6 +321,8 @@ public class NpcScriptInfo {
 		BoxChatNoEndChat(0x21),
 		BoxChatAsPlayer(0x22),
 		BoxChatAsPlayerNoEndChat(0x23),
+		BoxChatOverrideSpeaker(0x24),
+		BoxChatOverrideSpeakerNoEndChat(0x25),
 		FlipBoxChat(0x28),
 		FlipBoxChatNoEscape(0x29),
 		FlipBoxChatAsPlayer(0x30),

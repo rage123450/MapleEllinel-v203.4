@@ -24,9 +24,8 @@ public class ScriptMan {
             outPacket.encodeInt(overrideTemplate);
         }
         outPacket.encodeByte(nmt.getVal());
-        outPacket.encodeByte(nsi.getParam());
+        outPacket.encodeShort(nsi.getParam());
         outPacket.encodeByte(nsi.getColor());
-
         switch(nmt) {
             case Say:
             case SayOk:
@@ -40,13 +39,14 @@ public class ScriptMan {
                 outPacket.encodeByte(nmt.isNextPossible());
                 outPacket.encodeInt(nmt.getDelay());
                 break;
-            case AskMenu:
-            case AskAccept:
-            case AskYesNo:
-                if((nsi.getParam() & 4) != 0) {
-                    outPacket.encodeInt(nsi.getOverrideSpeakerTemplateID());
-                }
+            case Say_2:
+            case SayOk_2:
+            case SayNext_2:
+            case SayPrev_2:
                 outPacket.encodeString(nsi.getText());
+                outPacket.encodeByte(nmt.isPrevPossible());
+                outPacket.encodeByte(nmt.isNextPossible());
+                outPacket.encodeInt(nmt.getDelay());
                 break;
             case SayImage:
                 String[] images = nsi.getImages();
@@ -55,7 +55,16 @@ public class ScriptMan {
                     outPacket.encodeString(image);
                 }
                 break;
+            case AskMenu:
+            case AskAccept:
+            case AskYesNo:
+                if((nsi.getParam() & 4) != 0) {
+                    outPacket.encodeInt(nsi.getOverrideSpeakerTemplateID());
+                }
+                outPacket.encodeString(nsi.getText());
+                break;
             case AskText:
+            case AskBoxtext:
                 if((nsi.getParam() & 4) != 0) {
                     outPacket.encodeInt(nsi.getOverrideSpeakerTemplateID());
                 }
@@ -104,6 +113,7 @@ public class ScriptMan {
                 outPacket.encodeByte(nsi.isAngelicBuster());
                 outPacket.encodeByte(nsi.isZeroBeta());
                 outPacket.encodeString(nsi.getText());
+                outPacket.encodeInt(0);// unk
                 outPacket.encodeByte(options.length);
                 for (int option : options) {
                     outPacket.encodeInt(option);

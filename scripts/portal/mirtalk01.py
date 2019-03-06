@@ -1,5 +1,3 @@
-# Portal & Effect for Evan Intro | Dream World: Dream Forest Entrance (900010000)
-# Author: Tiger
-
-# "You who are seeking a Pact..."
-sm.showEffect("Map/Effect.img/evan/dragonTalk01", 3000)
+if not "dt01=o" in sm.getQRValue(22013):
+    sm.showFieldEffect("evan/dragonTalk01")
+    sm.addQRValue(22013, "dt01=o")

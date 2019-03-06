@@ -4,6 +4,7 @@ package net.swordie.ms.life.movement;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.OutPacket;
+import net.swordie.ms.life.Dragon;
 import net.swordie.ms.life.Life;
 import net.swordie.ms.util.Position;
 
@@ -54,5 +55,13 @@ public class MovementAngle extends MovementBase {
         life.setvPosition(getVPosition());
         life.setFh(getFh());
         life.setMoveAction(getMoveAction());
+    }
+
+    @Override
+    public void applyTo(Dragon dragon) {
+        dragon.setPosition(getPosition());
+        dragon.setvPosition(getVPosition());
+        dragon.setFh(getFh());
+        dragon.setMoveAction(getMoveAction());
     }
 }

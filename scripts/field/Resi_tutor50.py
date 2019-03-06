@@ -1,4 +1,5 @@
 # 931000012
+sm.lockInGameUI(False)
 sm.removeEscapeButton()
 
 sm.setSpeakerID(2159006)

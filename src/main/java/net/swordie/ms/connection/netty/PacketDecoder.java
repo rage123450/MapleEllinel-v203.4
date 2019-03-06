@@ -18,10 +18,11 @@
 package net.swordie.ms.connection.netty;
 
 import net.swordie.ms.connection.InPacket;
-import net.swordie.ms.connection.crypto.MapleCrypto;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import net.swordie.ms.connection.crypto.AESCipher;
+import net.swordie.ms.connection.crypto.CIGCipher;
 import org.apache.log4j.LogManager;
 
 import java.util.List;
@@ -39,33 +40,51 @@ public class PacketDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext chc, ByteBuf in, List<Object> out) {
         NettyClient c = chc.channel().attr(NettyClient.CLIENT_KEY).get();
-        MapleCrypto mCr = chc.channel().attr(NettyClient.CRYPTO_KEY).get();
-        if (c != null) {
-            byte[] iv = c.getRecvIV();
-            if (c.getStoredLength() == -1) {
-                if (in.readableBytes() >= 4) {
-                    int h = in.readInt();
-                    if (!MapleCrypto.checkPacket(h, iv)) {
+        if (false) {
+            byte[] dec = new byte[in.readableBytes()];
+            in.readBytes(dec);
+            InPacket inPacket = new InPacket(dec);
+            inPacket.decodeShort();
+            out.add(inPacket);
+        } else {
+            boolean bEncryptData = true;
+            if (c != null) {
+                int uSeqRcv = c.getRecvIV();
+                if (c.getStoredLength() == -1) {
+                    if (in.readableBytes() < 4) {
+                        return;
+                    }
+                    int uRawSeq = in.readShortLE();
+                    int uDataLen = in.readShortLE();
+                    if (bEncryptData) {
+                        uDataLen ^= uRawSeq;
+                    }
+                    if (uDataLen > 0x50000) {
+                        log.error("Recv packet length overflow.");
+                        return;
+                    }
+                    short uSeqBase = (short) ((uSeqRcv >> 16) ^ uRawSeq);
+                    if (uSeqBase != AESCipher.nVersion) {
                         log.error(String.format("[PacketDecoder] | Incorrect packet seq! Dropping client %s.", c.getIP()));
                         c.close();
                         return;
                     }
-                    c.setStoredLength(MapleCrypto.getLength(h));
-                } else {
-                    return;
+                    c.setStoredLength(uDataLen);
                 }
-            }
-            if (in.readableBytes() >= c.getStoredLength()) {
-                byte[] dec = new byte[c.getStoredLength()];
-                in.readBytes(dec);
-                c.setStoredLength(-1);
-                
-                dec = mCr.crypt(dec, iv);
-                c.setRecvIV(MapleCrypto.getNewIv(iv));
+                if (in.readableBytes() >= c.getStoredLength()) {
+                    byte[] dec = new byte[c.getStoredLength()];
+                    in.readBytes(dec);
 
+                    if (bEncryptData) {
+                        AESCipher.Crypt(dec, uSeqRcv);
+                    }
+
+                    c.setRecvIV(CIGCipher.InnoHash(uSeqRcv, 4, 0));
+                    c.setStoredLength(-1);
 //                dec = ShandaCrypto.decrypt(dec); // pre-149
-                InPacket inPacket = new InPacket(dec);
-                out.add(inPacket);
+                    InPacket inPacket = new InPacket(dec);
+                    out.add(inPacket);
+                }
             }
         }
     }

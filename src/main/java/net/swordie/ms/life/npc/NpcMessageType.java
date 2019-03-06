@@ -4,63 +4,73 @@ package net.swordie.ms.life.npc;
  * Created on 2/19/2018.
  */
 public enum NpcMessageType {
-    SayOk(0, false, false, ResponseType.Response),
-    SayNext(0, false, true, ResponseType.Response),
-    SayPrev(0, true, false, ResponseType.Response),
-    Say(0, true, true, ResponseType.Response),
-    SayImage(1, ResponseType.Response),
-    AskYesNo(2, ResponseType.Response),
-    AskText(3, ResponseType.Text),
-    AskNumber(4, ResponseType.Answer),
-    AskMenu(5, ResponseType.Answer),
-    InitialQuiz(6, ResponseType.Answer),
-    InitialSpeedQuiz(7, ResponseType.Answer),
-    ICQuiz(8, ResponseType.Answer),
-    AskAvatar(9, ResponseType.Answer),
-    AskAndroid(10, ResponseType.Answer),
-    // 11
-    AskPet(12, ResponseType.Answer),
-    AskPetAll(13, ResponseType.Answer),
-    AskActionPetEvolution(14, ResponseType.Answer),
-    Script(15, ResponseType.Answer),
-    AskAccept(16, ResponseType.Response),
-    AskBoxtext(17, ResponseType.Answer),
-    AskSlideMenu(18, ResponseType.Answer),
-    AskIngameDirection(19, ResponseType.Response),
-    PlayMovieClip(20, ResponseType.Response),
-    AskCenter(21, ResponseType.Answer),
-    AskAvatar2(22, ResponseType.Answer),
-    AskSelectMenu(23, ResponseType.Answer),
-    AskAngelicBuster(24, ResponseType.Answer),
-    SayIllustration(25, ResponseType.Answer),
-    SayDualIllustration(26, ResponseType.Answer),
-    AskYesNoIllustration(27, ResponseType.Answer),
-    AskAcceptIllustration(28, ResponseType.Answer),
-    AskMenuIllustration(29, ResponseType.Answer),
-    AskYesNoDualIllustration(30, ResponseType.Answer),
-    AskAcceptDualIllustration(31, ResponseType.Answer),
-    AskMenuDualIllustration(32, ResponseType.Answer),
-    AskSNN2(33, ResponseType.Answer),
-    // 34
-    // 35
-    AskAvatarZero(36, ResponseType.Answer),
-    Monologue(37, ResponseType.Response),
-    AskWeaponBox(38, ResponseType.Answer),
-    AskBoxTextBgImg(39, ResponseType.Answer),
-    AskUserSurvey(40, ResponseType.Answer),
-    SuccessCamera(41, ResponseType.Answer),
-    AskMixHair(42, ResponseType.Answer),
-    AskMixHairExZero(43, ResponseType.Answer),
-    OnAskCustomMixHair(44, ResponseType.Answer),
-    OnAskCustomMixHairAndProb(45, ResponseType.Answer),
-    OnAskMixHairNew(46, ResponseType.Answer),
-    OnAskMixHairNewExZero(47, ResponseType.Answer),
-    NpcAction(48, ResponseType.Answer),
-    OnAskScreenShinningStarMsg(49, ResponseType.Answer),
-    InputUI(50, ResponseType.Answer),
-    OnAskNumberUseKeyPad(51, ResponseType.Answer),
-    OnSpinOffGuitarRhythmGame(52, ResponseType.Answer),
-    OnGhostParkEnter(53, ResponseType.Answer),
+    SayOk(0, false, false, ResponseType.Response),// v202.3
+    SayNext(0, false, true, ResponseType.Response),// v202.3
+    SayPrev(0, true, false, ResponseType.Response),// v202.3
+    Say(0, true, true, ResponseType.Response),// v202.3
+    SayOk_2(1, false, false, ResponseType.Response),// v202.3
+    SayNext_2(1, false, true, ResponseType.Response),// v202.3
+    SayPrev_2(1, true, false, ResponseType.Response),// v202.3
+    Say_2(1, true, true, ResponseType.Response),// v202.3
+    SayImage(2, ResponseType.Response),// v202.3
+    AskYesNo(3, ResponseType.Response),// v202.3
+    AskText(4, ResponseType.Text),// v202.3
+    AskNumber(5, ResponseType.Answer),// v202.3
+    AskMenu(6, ResponseType.Answer),// v202.3
+    InitialQuiz(7, ResponseType.Answer),// v202.3
+    InitialSpeedQuiz(8, ResponseType.Answer),// v202.3
+    ICQuiz(9, ResponseType.Answer),// v202.3
+    AskAvatar(10, ResponseType.Answer),// v202.3
+    AskAndroid(11, ResponseType.Answer),// v202.3
+    // 12
+    AskPet(13, ResponseType.Answer),// v202.3
+    AskPetAll(14, ResponseType.Answer),// v202.3
+    AskActionPetEvolution(15, ResponseType.Answer),// v202.3
+    Script(16, ResponseType.Answer),
+    AskAccept(17, ResponseType.Response),// v202.3
+    // 18
+    AskBoxtext(19, ResponseType.Answer),// v202.3
+    AskSlideMenu(20, ResponseType.Answer),// v202.3
+    AskIngameDirection(21, ResponseType.Response),// v202.3
+    // 22
+    PlayMovieClip(23, ResponseType.Response),// v202.3
+    AskCenter(24, ResponseType.Answer),// v202.3
+    AskAvatar2(25, ResponseType.Answer),// v202.3
+    AskSelectMenu(26, ResponseType.Answer),// v202.3
+    AskAngelicBuster(27, ResponseType.Answer),// v202.3
+    SayIllustration(28, ResponseType.Answer),// v202.3
+    SayDualIllustration(29, ResponseType.Answer),// v202.3
+    AskYesNoIllustration(30, ResponseType.Answer),// v202.3
+    AskAcceptIllustration(31, ResponseType.Answer),// v202.3
+    AskMenuIllustration(32, ResponseType.Answer),// v202.3
+    AskYesNoDualIllustration(33, ResponseType.Answer),// v202.3
+    AskAcceptDualIllustration(34, ResponseType.Answer),// v202.3
+    AskMenuDualIllustration(35, ResponseType.Answer),// v202.3
+    AskSNN2(36, ResponseType.Answer),// v202.3
+    AskAvatarZero(37, ResponseType.Answer),// v202.3
+    // 38
+    // 39
+    Monologue(40, ResponseType.Response),// v202.3
+    AskWeaponBox(41, ResponseType.Answer),// v202.3
+    AskBoxTextBgImg(42, ResponseType.Answer),// v202.3
+    AskUserSurvey(43, ResponseType.Answer),// v202.3
+    SuccessCamera(44, ResponseType.Answer),// v202.3
+    AskMixHair(45, ResponseType.Answer),// v202.3
+    AskMixHairExZero(46, ResponseType.Answer),// v202.3
+    OnAskCustomMixHair(47, ResponseType.Answer),// v202.3
+    OnAskCustomMixHairAndProb(48, ResponseType.Answer),// v202.3
+    OnAskMixHairNew(49, ResponseType.Answer),// v202.3
+    OnAskMixHairNewExZero(50, ResponseType.Answer),// v202.3
+    NpcAction(51, ResponseType.Answer),// v202.3
+    OnAskScreenShinningStarMsg(52, ResponseType.Answer),// v202.3
+    InputUI(53, ResponseType.Answer),
+    // 54 ~ or inputui :P
+    OnAskNumberUseKeyPad(55, ResponseType.Answer),// v202.3
+    OnSpinOffGuitarRhythmGame(56, ResponseType.Answer),// v202.3
+    OnGhostParkEnter(57, ResponseType.Answer),// v202.3
+    // 64
+    // 65
+    // 66
     None(-1, ResponseType.Answer),
     ;
 

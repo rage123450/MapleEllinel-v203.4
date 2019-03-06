@@ -36,7 +36,7 @@ import static net.swordie.ms.client.character.skills.SkillStat.*;
  */
 public class Kinesis extends Job {
     public static final int RETURN_KINESIS = 140001290;
-
+    public static final int PSYCHIC_ATTACK = 140001289;
     public static final int PSYCHIC_FORCE = 142001000;
     public static final int MENTAL_SHIELD = 142001007;
     public static final int ESP_BOOSTER = 142001003;
@@ -65,7 +65,7 @@ public class Kinesis extends Job {
     public static final int MENTAL_OVERDRIVE = 142121032;
 
 
-    private static final int MAX_PP = 30;
+    public static final int MAX_PP = 30;
 
     private final int[] buffs = new int[]{
             ESP_BOOSTER,
@@ -93,47 +93,68 @@ public class Kinesis extends Job {
 
     public Kinesis(Char chr) {
         super(chr);
-        pp = 0;
     }
 
-    private int pp;
+    public void updatePsychicPoints(int points) {
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        Option o = new Option();
+        o.nOption = Math.min(MAX_PP, Math.max(0, points));
+        o.rOption = chr.getJob();
+        chr.chatMessage(String.format("Psychic Points : n[%d] r[%d]", o.nOption, o.rOption));
+        tsm.putCharacterStatValue(KinesisPsychicPoint, o);
+        tsm.sendSetStatPacket();
+    }
+
+    public int getPsychicPoints() {
+        return chr.getTemporaryStatManager().getOption(KinesisPsychicPoint).nOption;
+    }
+
+    public void incPsychicPoints(int amount) {
+        updatePsychicPoints(getPsychicPoints() + amount);
+    }
+
+    public boolean consumePsychicPoints(int skillID) {
+        Skill skill = chr.getSkill(skillID);
+        if (skill == null) {
+            chr.chatMessage("[Kinesis] Character don't have " + skillID + " consume PP canceled");
+            return false;
+        }
+        SkillInfo si = SkillData.getSkillInfoById(skillID);
+        if (si != null) {
+            int amount = 0;
+
+            int req = si.getValue(SkillStat.ppReq, skill.getCurrentLevel());
+            int con = si.getValue(SkillStat.ppCon, skill.getCurrentLevel());
+            int inc = si.getValue(SkillStat.ppRecovery, skill.getCurrentLevel());
+            chr.chatMessage(String.format("PP Req [%d] | PP Con [%d] | PP Inc [%d]", req, con, inc));
+            if (req > getPsychicPoints()) {
+                return false;
+            }
+            amount -= req;
+
+            if (con > getPsychicPoints()) {
+                return false;
+            }
+            amount -= con;
+
+            amount += inc;
+
+            incPsychicPoints(amount);
+        }
+        return true;
+    }
 
     @Override
     public boolean isHandlerOfJob(short id) {
         return JobConstants.isKinesis(id);
     }
 
-    public int getPp() {
-        return pp;
-    }
-
-    public void setPp(int pp) {
-        this.pp = pp;
-    }
-
-    public void addPP(int amount) {
-        pp = pp + amount > MAX_PP ? MAX_PP : pp + amount;
-        sendPPPacket();
-    }
-
-    public void substractPP(int amount) {
-        pp = pp - amount < 0 ? 0 : pp - amount;
-        sendPPPacket();
-    }
-
-    private void sendPPPacket() {
-        Option o = new Option();
-        o.nOption = pp;
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        tsm.putCharacterStatValue(KinesisPsychicPoint, o);
-        tsm.sendSetStatPacket();
-    }
-
-
-
     // Buff related methods --------------------------------------------------------------------------------------------
 
     public void handleBuff(Client c, InPacket inPacket, int skillID, byte slv) {
+        if (!consumePsychicPoints(skillID)) {
+            return;
+        }
         Char chr = c.getChr();
         SkillInfo si = SkillData.getSkillInfoById(skillID);
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
@@ -150,9 +171,15 @@ public class Kinesis extends Job {
                 tsm.putCharacterStatValue(IndieBooster, o1);
                 break;
             case MENTAL_SHIELD:
-                o1.nOption = si.getValue(x, slv);
-                o1.nReason = skillID;
-                tsm.putCharacterStatValue(KinesisPsychicEnergeShield, o1);
+                // ON/OFF
+                if (tsm.hasStat(KinesisPsychicEnergeShield)) {
+                    tsm.removeStatsBySkill(skillID);
+                    tsm.sendResetStatPacket();
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    tsm.putCharacterStatValue(KinesisPsychicEnergeShield, o1);
+                }
                 break;
             case PSYCHIC_ARMOR:
             case PSYCHIC_BULWARK:
@@ -225,6 +252,9 @@ public class Kinesis extends Job {
 
     @Override
     public void handleAttack(Client c, AttackInfo attackInfo) {
+        if (!consumePsychicPoints(attackInfo.skillId)) {
+            return;
+        }
         Char chr = c.getChr();
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Skill skill = chr.getSkill(attackInfo.skillId);
@@ -253,7 +283,6 @@ public class Kinesis extends Job {
         Option o1 = new Option();
         Option o2 = new Option();
         Option o3 = new Option();
-        kinesisPPAttack(skillID, slv, si);
         switch (attackInfo.skillId) {
             case PSYCHIC_FORCE:
             case PSYCHIC_BLAST_FWD:
@@ -328,22 +357,10 @@ public class Kinesis extends Job {
         }
     }
 
-    private void kinesisPPAttack(int skillID, byte slv, SkillInfo si) {
-        if(si == null) {
-            return;
-        }
-        int ppRec = si.getValue(ppRecovery, slv);
-        addPP(ppRec);
-        int ppCons = si.getValue(ppCon, slv);
-        substractPP(ppCons);
-    }
-
     @Override
     public int getFinalAttackSkill() {
         return 0;
     }
-
-
 
     // Skill related methods -------------------------------------------------------------------------------------------
 
@@ -362,8 +379,8 @@ public class Kinesis extends Job {
             Option o1 = new Option();
             switch(skillID) {
                 case PSYCHIC_CHARGER:
-                    int add = (MAX_PP - getPp()) / 2;
-                    addPP(add);
+                    int add = (MAX_PP - getPsychicPoints()) / 2;
+                    incPsychicPoints(add);
                     break;
                 case RETURN_KINESIS:
                     o1.nValue = si.getValue(x, slv);
@@ -383,9 +400,9 @@ public class Kinesis extends Job {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if(tsm.hasStat(KinesisPsychicShield)) {
             hitInfo.hpDamage = (int) (hitInfo.hpDamage * (tsm.getOption(KinesisPsychicEnergeShield).nOption / 100D));
-            substractPP(1);
+            incPsychicPoints(-1);
         }
-        if(getPp() <= 0) {
+        if(getPsychicPoints() <= 0) {
             tsm.removeStat(KinesisPsychicShield, false);
         }
         super.handleHit(c, inPacket, hitInfo);
@@ -395,12 +412,16 @@ public class Kinesis extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
-        Item item = ItemData.getItemDeepCopy(1353200); // Pawn Chess Piece
-        item.setBagIndex(BodyPart.Shield.getVal());
-        chr.getEquippedInventory().addItem(item);
+        cs.setPosMap(331001100);
         cs.setLevel(10);
-        cs.setMaxHp(574);
-        cs.setHp(574);
-        cs.setInt(45);
+        cs.setStr(4);
+        cs.setDex(4);
+        cs.setInt(52);
+        cs.setLuk(4);
+        cs.setMaxHp(374);
+        cs.setHp(374);
+        cs.setMaxMp(5);
+        cs.setMp(5);
+        chr.addSkill(PSYCHIC_ATTACK, 1, 1);
     }
 }
