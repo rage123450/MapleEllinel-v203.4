@@ -31,6 +31,8 @@ public class NpcScriptInfo {
 	private int defaultSelect;
 	private String[] selectText;
 	private int templateID;
+	private int faceIndex;
+	private boolean isLeft;
 
 	public NpcScriptInfo deepCopy() {
 		NpcScriptInfo nsi = new NpcScriptInfo();
@@ -66,6 +68,8 @@ public class NpcScriptInfo {
 		nsi.defaultSelect = defaultSelect;
 		nsi.selectText = selectText;
 		nsi.templateID = templateID;
+		nsi.faceIndex = faceIndex;
+		nsi.isLeft = isLeft;
 		return nsi;
 	}
 
@@ -306,6 +310,20 @@ public class NpcScriptInfo {
 
 	public void setTemplateID(int templateID) {
 		this.templateID = templateID;
+	}
+
+	public int getFaceIndex() {return faceIndex;}
+
+	public void setFaceIndex(int faceIndex) {
+		this.faceIndex = faceIndex;
+	}
+
+	public boolean isLeft() {
+		return isLeft;
+	}
+
+	public void setLeft(boolean left) {
+		isLeft = left;
 	}
 
 	public enum Param {

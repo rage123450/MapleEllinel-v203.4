@@ -38,7 +38,10 @@ public enum NpcMessageType {
     AskAvatar2(25, ResponseType.Answer),// v202.3
     AskSelectMenu(26, ResponseType.Answer),// v202.3
     AskAngelicBuster(27, ResponseType.Answer),// v202.3
-    SayIllustration(28, ResponseType.Answer),// v202.3
+    SayIllustration(28, true, true, ResponseType.Response),// v202.3
+    SayIllustrationOk(28, false, false, ResponseType.Response),// v202.3
+    SayIllustrationNext(28, false, true, ResponseType.Response),// v202.3
+    SayIllustrationPrev(28, true, false, ResponseType.Response),// v202.3
     SayDualIllustration(29, ResponseType.Answer),// v202.3
     AskYesNoIllustration(30, ResponseType.Answer),// v202.3
     AskAcceptIllustration(31, ResponseType.Answer),// v202.3

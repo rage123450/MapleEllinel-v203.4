@@ -341,6 +341,18 @@ public class FieldEffect {
         return fieldEffect;
     }
 
+    // TODO: name the vars
+    public static FieldEffect tremble(int unk1, int unk2, int unk3) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.Tremble);
+
+        fieldEffect.setArg1(unk1);// type0
+        fieldEffect.setArg2(unk2);
+        fieldEffect.setArg3(unk3);
+
+        return fieldEffect;
+    }
+
     public FieldEffectType getFieldEffectType() {
         return fieldEffectType;
     }

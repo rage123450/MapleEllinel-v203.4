@@ -1534,6 +1534,25 @@ public class Char {
 			outPacket.encodeInt(0);
 		}
 
+		// new v203.2
+		if (mask.isInMask(DBChar.Unk)) {
+			outPacket.encodeByte(0);
+			outPacket.encodeByte(0);
+			for (int i = 0; i < 5; i++) {
+				boolean read = false;
+				outPacket.encodeByte(read);
+				if (read) {
+					outPacket.encodeByte(0);
+					outPacket.encodeByte(0);
+					outPacket.encodeByte(0);
+					outPacket.encodeInt(0);
+					outPacket.encodeByte(0);
+					outPacket.encodeByte(0);
+					outPacket.encodeByte(0);
+				}
+			}
+		}
+
 		if (mask.isInMask(DBChar.VisitorLog4)) {
 			// mushy
 			outPacket.encodeByte(1);
@@ -4832,4 +4851,68 @@ public class Char {
     public void setAndroid(Android android) {
         this.android = android;
     }
+
+    public void setDefaultQuestExValues() {
+    	// Quest ID : 18273
+		setQuestEx(18273, "count", "0");
+		setQuestEx(18273, "last", "19/03/07");
+		setQuestEx(18273, "state1", "0");
+		setQuestEx(18273, "state2", "0");
+
+		setQuestEx(18189, "eTime", "12/12/31/00/00");
+		setQuestEx(18101, "count", "0");
+		setQuestEx(18223, "state", "0");
+		setQuestEx(18373, "state", "0");
+
+		setQuestEx(18079, "index", "1");
+		setQuestEx(18079, "lastR", "14/06/13");
+		setQuestEx(18079, "sn1", "0");
+
+		setQuestEx(18443, "A", "0");
+		setQuestEx(18443, "B", "0");
+		setQuestEx(18443, "C", "0");
+		setQuestEx(18443, "D", "0");
+		setQuestEx(18443, "E", "0");
+		setQuestEx(18443, "F", "0");
+		setQuestEx(18443, "G", "0");
+		setQuestEx(18443, "H", "0");
+		setQuestEx(18443, "I", "0");
+		setQuestEx(18443, "J", "0");
+		setQuestEx(18443, "K", "0");
+		setQuestEx(18443, "L", "0");
+
+		setQuestEx(18265, "state", "0");
+
+		setQuestEx(18477, "M", "0");
+		setQuestEx(18477, "N", "0");
+		setQuestEx(18477, "O", "0");
+		setQuestEx(18477, "P", "0");
+		setQuestEx(18477, "Q", "0");
+		setQuestEx(18477, "R", "0");
+		setQuestEx(18477, "S", "0");
+		setQuestEx(18477, "T", "0");
+		setQuestEx(18477, "U", "0");
+		setQuestEx(18477, "V", "0");
+		setQuestEx(18477, "W", "0");
+		setQuestEx(18477, "X", "0");
+		setQuestEx(18477, "Y", "0");
+		setQuestEx(18477, "Z", "0");
+
+		setQuestEx(18267, "state", "0");
+
+		setQuestEx(18689, "addP", "5");
+		setQuestEx(18689, "addS", "5");
+
+		setQuestEx(18271, "PN", "0");
+		setQuestEx(18271, "BB", "0");
+		setQuestEx(18271, "CB", "0");
+		setQuestEx(18271, "P", "0");
+		setQuestEx(18271, "BL", "0");
+		setQuestEx(18271, "CL", "0");
+		setQuestEx(18271, "NC", "0");
+		setQuestEx(18271, "PC", "0");
+		setQuestEx(18271, "CP", "0");
+		setQuestEx(18271, "BQ", "0");
+		setQuestEx(18271, "CQ", "0");
+	}
 }

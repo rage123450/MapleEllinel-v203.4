@@ -16,7 +16,7 @@ public class PacketDefinitions {
 
     private static final int BUILD = ServerConstants.VERSION;
     private static final int LOCALE = 8;
-    private static final boolean out = true, in = false;
+    private static final boolean out = true, in = true;
     public static void main(String[] args) {
         try {
             PrintWriter writer = new PrintWriter(new FileWriter("PacketDefinitions.xml"));

@@ -142,6 +142,20 @@ public class ScriptMan {
                     }
                 }
                 break;
+            case SayIllustration:
+            case SayIllustrationOk:
+            case SayIllustrationNext:
+            case SayIllustrationPrev:
+                if((nsi.getParam() & 4) != 0) {
+                    outPacket.encodeInt(nsi.getOverrideSpeakerTemplateID());
+                }
+                outPacket.encodeString(nsi.getText());
+                outPacket.encodeByte(nmt.isPrevPossible());
+                outPacket.encodeByte(nmt.isNextPossible());
+                outPacket.encodeInt((nsi.getParam() & 4) != 0 ? nsi.getOverrideSpeakerTemplateID() : overrideTemplate != 0 ? overrideTemplate : nsi.getTemplateID());
+                outPacket.encodeInt(nsi.getFaceIndex());
+                outPacket.encodeByte(nsi.isLeft());
+                break;
         }
         if ((nsi.getParam() & 4) != 0) {
             nsi.setParam((byte) (nsi.getParam() ^ 4));

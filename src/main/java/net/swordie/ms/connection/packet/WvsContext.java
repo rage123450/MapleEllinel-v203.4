@@ -1160,4 +1160,12 @@ public class WvsContext {
         return outPacket;
     }
 
+    public static OutPacket sendSessionValue(String key, String value) {
+        OutPacket outPacket = new OutPacket(OutHeader.SESSION_VALUE);
+
+        outPacket.encodeString(key);
+        outPacket.encodeString(key);
+
+        return outPacket;
+    }
 }

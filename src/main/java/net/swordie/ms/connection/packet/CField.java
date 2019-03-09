@@ -671,6 +671,12 @@ public class CField {
         return outpacket;
     }
 
+    public static OutPacket closeUI(int uiID){
+        OutPacket outpacket = new OutPacket(OutHeader.CLOSE_UI);
+        outpacket.encodeInt(uiID);
+        return outpacket;
+    }
+
     public static OutPacket closeUI(UIType uiType) {
         return null;//closeUI(uiType.getVal());
     }

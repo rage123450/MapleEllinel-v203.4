@@ -397,6 +397,15 @@ public class ScriptManagerImpl implements ScriptManager {
 		return sendGeneralSay(text, Say);
 	}
 
+	public int sendSayIllustration(String text, int faceIndex, boolean isLeft) {
+		if (getLastActiveScriptType() == ScriptType.None) {
+			return 0;
+		}
+		getNpcScriptInfo().setFaceIndex(faceIndex);
+		getNpcScriptInfo().setLeft(isLeft);
+		return sendGeneralSay(text, SayIllustration);
+	}
+
 	/**
 	 * Helper function that ensures that selections have the appropriate type (AskMenu).
 	 *
@@ -434,6 +443,24 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public int sendSayOkay(String text) {
 		return sendGeneralSay(text, SayOk);
+	}
+
+	public int sendSayNextIllustration(String text, int faceIndex, boolean isLeft) {
+		getNpcScriptInfo().setFaceIndex(faceIndex);
+		getNpcScriptInfo().setLeft(isLeft);
+		return sendGeneralSay(text, SayIllustrationNext);
+	}
+
+	public int sendSayPrevIllustration(String text, int faceIndex, boolean isLeft) {
+		getNpcScriptInfo().setFaceIndex(faceIndex);
+		getNpcScriptInfo().setLeft(isLeft);
+		return sendGeneralSay(text, SayIllustrationPrev);
+	}
+
+	public int sendSayOkayIllustration(String text, int faceIndex, boolean isLeft) {
+		getNpcScriptInfo().setFaceIndex(faceIndex);
+		getNpcScriptInfo().setLeft(isLeft);
+		return sendGeneralSay(text, SayIllustrationOk);
 	}
 
 	@Override
@@ -1147,6 +1174,10 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void setFieldGrey(GreyFieldType colorFieldType, boolean show) {
 		chr.write(CField.fieldEffect(FieldEffect.setFieldGrey(colorFieldType, show)));
+	}
+
+	public void tremble(int unk1, int unk2, int unk3) {
+		chr.write(CField.fieldEffect(FieldEffect.tremble(unk1, unk2, unk3)));
 	}
 
 	@Override
@@ -2324,6 +2355,10 @@ public class ScriptManagerImpl implements ScriptManager {
 		chr.write(CField.openUI(uiIDValue));
 	}
 
+	public void openUI(int uiID){
+		chr.write(CField.openUI(uiID));
+	}
+
 	public void openUIWithOption(UIType uiID, int option){
 		openUIWithOption(uiID, option, new int[0]);
 	}
@@ -2331,6 +2366,15 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void openUIWithOption(UIType uiID, int option, int[] minigameOptions){
 		int uiIDValue = uiID.getVal();
 		chr.write(CField.openUIWithOption(uiIDValue, option, minigameOptions));
+	}
+
+	public void closeUI(UIType uiID){
+		int uiIDValue = uiID.getVal();
+		chr.write(CField.closeUI(uiIDValue));
+	}
+
+	public void closeUI(int uiID){
+		chr.write(CField.closeUI(uiID));
 	}
 
 	public void showClearStageExpWindow(int expGiven) {
@@ -2784,6 +2828,10 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void setAnswerVal(int answerVal) {
 		this.answerVal = answerVal;
 	}
+
+    public void sendSessionValue(String key, int npcID) {
+        chr.write(WvsContext.sendSessionValue(key, Integer.toString(getNpcObjectIdByTemplateId(npcID))));
+    }
 
 	private ScriptMemory getMemory() {
 		return memory;

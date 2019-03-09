@@ -2,6 +2,12 @@
 # Author: Tiger
 
 if not sm.hasMobsInField():
-    sm.warpInstanceOut(807100002) # Honnou-ji Eastern Grounds
+    sm.removeSkill(40011183)
+    sm.removeSkill(40011184)
+    sm.removeSkill(40011185)
+    sm.warpInstanceOut(807100002, 1) # Honnou-ji Eastern Grounds
 else:
-    sm.chat("You must clear the gate!") # TODO: gms-like convo (Don't even think there is a msg here...)
+    sm.setSpeakerID(9131009)
+    sm.setPlayerAsSpeaker()
+    sm.boxChatPlayerAsSpeaker()
+    sm.sendSayOkay("Take down all enemies! Open the Eastern Door!")

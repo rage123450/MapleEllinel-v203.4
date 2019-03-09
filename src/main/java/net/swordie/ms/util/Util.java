@@ -435,4 +435,9 @@ public class Util {
 
         return -1;
     }
+
+    public static String quotes(String var)
+    {
+        return String.format("\"%s\"", var);
+    }
 }
