@@ -317,7 +317,7 @@ public class MobTemporaryStat {
 	}
 
 	private int[] getMaskByCollection(Map<MobStat, Option> map) {
-		int[] res = new int[4];
+		int[] res = new int[5];
 		for (MobStat mobStat : map.keySet()) {
 			res[mobStat.getPos()] |= mobStat.getVal();
 		}

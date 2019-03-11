@@ -13,7 +13,7 @@ public class AttackInfo {
     public byte hits;
     public int mobCount;
     public int skillId;
-    public byte slv;
+    public int slv;
     public int keyDown;
     public byte idk;
     public boolean left;

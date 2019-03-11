@@ -754,7 +754,7 @@ public class JobConstants {
         XENON(14, JobFlag.ENABLED, JobEnum.XENON),
         ZERO(15, JobFlag.ENABLED, JobEnum.ZERO),
         SHADE(16, JobFlag.ENABLED, JobEnum.SHADE),
-        JETT(17, JobFlag.ENABLED, JobEnum.BEGINNER),
+        JETT(17, JobFlag.ENABLED, JobEnum.JETT1),
         HAYATO(18, JobFlag.ENABLED, JobEnum.HAYATO),
         KANNA(19, JobFlag.ENABLED, JobEnum.KANNA),
         CHASE(20, JobFlag.ENABLED, JobEnum.BEAST_TAMER),

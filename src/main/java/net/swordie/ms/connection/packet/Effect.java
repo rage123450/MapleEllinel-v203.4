@@ -42,6 +42,7 @@ public class Effect {
     private int arg8;
     private int arg9;
     private int arg10;
+    private int arg11;
 
     public void encode(OutPacket outPacket) {
         outPacket.encodeByte(getUserEffectType().getVal());
@@ -192,6 +193,22 @@ public class Effect {
                     outPacket.encodeInt(0);
                 }
                 break;
+            case SpeechBalloon:
+                outPacket.encodeByte(getArg1());// bNormal
+                outPacket.encodeInt(getArg2());// nRange
+                outPacket.encodeInt(getArg3());// nNameHeight
+                outPacket.encodeString(getString());// sSpeech
+                outPacket.encodeInt(getArg4());// tTime
+                outPacket.encodeInt(getArg5());// pOrigin
+                outPacket.encodeInt(getArg6());// x
+                outPacket.encodeInt(getArg7());// y
+                outPacket.encodeInt(getArg8());// z
+                outPacket.encodeInt(getArg9());// nLineSpace
+                if (getString() != null && !getString().isEmpty()) {
+                    outPacket.encodeInt(getArg10());// nTemplateID
+                }
+                outPacket.encodeInt(getArg11());// nCharID
+                break;
         }
     }
 
@@ -277,6 +294,27 @@ public class Effect {
         }
     }
 
+
+    public static Effect createFieldTextEffect(String msg, int letterDelay, int showTime, int clientPosition,
+                                               Position boxPos, int align, int lineSpace, int type,
+                                               int enterType, int leaveType) {
+        Effect effect = new Effect();
+        effect.setUserEffectType(TextEffect);
+
+        effect.setString(msg);
+        effect.setArg1(letterDelay);
+        effect.setArg2(showTime);
+        effect.setArg3(clientPosition);
+        effect.setArg4(boxPos.getX());
+        effect.setArg5(boxPos.getY());
+        effect.setArg6(align);
+        effect.setArg7(lineSpace);
+        effect.setArg8(type);
+        effect.setArg9(enterType);
+        effect.setArg10(leaveType);
+
+        return effect;
+    }
 
     public static Effect createFieldTextEffect(String msg, int letterDelay, int showTime, int clientPosition,
                                                Position boxPos, int align, int lineSpace, TextEffectType type,
@@ -475,7 +513,7 @@ public class Effect {
         return effect;
     }
 
-    public static Effect skillAffected(int skillID, byte slv, int hpGain) {
+    public static Effect skillAffected(int skillID, int slv, int hpGain) {
         Effect effect = new Effect();
 
         effect.setUserEffectType(SkillAffected);
@@ -670,6 +708,26 @@ public class Effect {
         return effect;
     }
 
+    public static Effect speechBalloon(boolean normal, int range, int nameHeight, String speech, int time, int origin, int x, int y, int z, int lineSpace, int templateID, int charID) {
+        Effect effect = new Effect();
+        effect.setUserEffectType(SpeechBalloon);
+
+        effect.setString(speech);
+        effect.setArg1(normal ? 1 : 0);
+        effect.setArg2(range);
+        effect.setArg3(nameHeight);
+
+        effect.setArg4(time);
+        effect.setArg5(origin);
+        effect.setArg6(x);
+        effect.setArg7(y);
+        effect.setArg8(z);
+        effect.setArg9(lineSpace);
+        effect.setArg10(templateID);
+        effect.setArg11(charID);
+        return effect;
+    }
+
     public void setUserEffectType(UserEffectType userEffectType) {
         this.userEffectType = userEffectType;
     }
@@ -768,5 +826,13 @@ public class Effect {
 
     public void setArg10(int arg10) {
         this.arg10 = arg10;
+    }
+
+    public int getArg11() {
+        return arg11;
+    }
+
+    public void setArg11(int arg11) {
+        this.arg11 = arg11;
     }
 }

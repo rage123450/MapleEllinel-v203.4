@@ -93,7 +93,8 @@ public class ScriptManagerImpl implements ScriptManager {
 	private static final String INTENDED_NPE_MSG = "Intended NPE by forceful script stop.";
 	private static final org.apache.log4j.Logger log = LogManager.getRootLogger();
 	private static final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName(SCRIPT_ENGINE_NAME);
-
+	private static final Map<Integer, Npc> npcs = new HashMap<>();
+	private static int objectID = 50000;
 	private Char chr;
 	private Field field;
 	private final boolean isField;
@@ -868,7 +869,7 @@ public class ScriptManagerImpl implements ScriptManager {
 		for (int i = curLevel + 1; i <= curLevel + level; i++) {
 			chr.setStat(Stat.level, i);
 			Map<Stat, Object> stats = new HashMap<>();
-			stats.put(Stat.level, (byte) i);
+			stats.put(Stat.level, i);
 			stats.put(Stat.exp, (long) 0);
 			chr.getClient().write(WvsContext.statChanged(stats));
 			chr.getJobHandler().handleLevelUp();
@@ -1236,6 +1237,66 @@ public class ScriptManagerImpl implements ScriptManager {
 
 
 	// NPC methods
+	public void sendNpcLeaveField(int objectID) {
+		Npc npc = npcs.getOrDefault(objectID, null);
+		if (npc != null) {
+			chr.write(NpcPool.npcLeaveField(npc));
+			npcs.remove(objectID);
+		}
+	}
+
+	public int sendNpcEnterField(int templateID, int x, int y) {
+		Npc npc = NpcData.getNpcDeepCopyById(templateID);
+		if (npc != null) {
+			Position position = new Position(x, y);
+			npc.setPosition(position);
+			npc.setCy(y);
+			npc.setRx0(x + 50);
+			npc.setRx1(x - 50);
+			npc.setFh(chr.getField().findFootHoldBelow(new Position(x, y - 2)).getId());
+			npc.setNotRespawnable(true);
+			if (npc.getField() == null) {
+				npc.setField(field);
+			}
+			npc.setObjectId(objectID++);
+			chr.write(NpcPool.npcEnterField(npc));
+			npcs.put(objectID, npc);
+			return objectID;
+		}
+		return 0;
+	}
+
+	public void sendNpcController(int objectID, boolean controller) {
+		Npc npc = npcs.getOrDefault(objectID, null);
+		if (npc != null) {
+			chr.write(NpcPool.npcChangeController(npc, controller, !controller));
+			if (!controller) {
+				npcs.remove(objectID);
+			}
+		}
+	}
+
+	public int sendNpcController(int templateID, int x, int y) {
+		Npc npc = NpcData.getNpcDeepCopyById(templateID);
+		if (npc != null) {
+			Position position = new Position(x, y);
+			npc.setPosition(position);
+			npc.setCy(y);
+			npc.setRx0(x + 50);
+			npc.setRx1(x - 50);
+			npc.setFh(chr.getField().findFootHoldBelow(new Position(x, y - 2)).getId());
+			npc.setNotRespawnable(true);
+			if (npc.getField() == null) {
+				npc.setField(field);
+			}
+			npc.setObjectId(objectID++);
+			chr.write(NpcPool.npcChangeController(npc, true));
+			npcs.put(objectID, npc);
+			return objectID;
+		}
+		return 0;
+	}
+
 	@Override
 	public void spawnNpc(int npcId, int x, int y) {
 		Npc npc = NpcData.getNpcDeepCopyById(npcId);
@@ -1330,11 +1391,17 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void hideNpcByObjectId(int npcObjId, boolean hideTemplate, boolean hideNameTag) {
 		Field field = chr.getField();
 		Life life = field.getLifeByObjectID(npcObjId);
+		Npc npc = null;
 		if(!(life instanceof Npc)) {
-			log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-			return;
+			npc = npcs.getOrDefault(npcObjId, null);
+			if (npc == null){
+				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+				return;
+			}
+		} else {
+			npc = (Npc) life;
 		}
-		chr.write(NpcPool.npcViewOrHide(life.getObjectId(), !hideTemplate, !hideNameTag));
+		chr.write(NpcPool.npcViewOrHide(npc.getObjectId(), !hideTemplate, !hideNameTag));
 	}
 
 	@Override
@@ -1352,11 +1419,17 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void moveNpcByObjectId(int npcObjId, boolean left, int distance, int speed) {
 		Field field = chr.getField();
 		Life life = field.getLifeByObjectID(npcObjId);
+		Npc npc = null;
 		if(!(life instanceof Npc)) {
-			log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-			return;
+			npc = npcs.getOrDefault(npcObjId, null);
+			if (npc == null){
+				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+				return;
+			}
+		} else {
+			npc = (Npc) life;
 		}
-		chr.write(NpcPool.npcSetForceMove(life.getObjectId(), left, distance, speed));
+		chr.write(NpcPool.npcSetForceMove(npc.getObjectId(), left, distance, speed));
 	}
 
 	@Override
@@ -1374,11 +1447,17 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void flipNpcByObjectId(int npcObjId, boolean left) {
 		Field field = chr.getField();
 		Life life = field.getLifeByObjectID(npcObjId);
+		Npc npc = null;
 		if(!(life instanceof Npc)) {
-			log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-			return;
+			npc = npcs.getOrDefault(npcObjId, null);
+			if (npc == null){
+				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+				return;
+			}
+		} else {
+			npc = (Npc) life;
 		}
-		chr.write(NpcPool.npcSetForceFlip(life.getObjectId(), left));
+		chr.write(NpcPool.npcSetForceFlip(npc.getObjectId(), left));
 	}
 
 	public void showNpcSpecialActionByTemplateId(int npcTemplateId, String effectName) {
@@ -1405,11 +1484,17 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void showNpcSpecialActionByObjectId(int npcObjId, String effectName, int duration) {
 		Field field = chr.getField();
 		Life life = field.getLifeByObjectID(npcObjId);
+		Npc npc = null;
 		if(!(life instanceof Npc)) {
-			log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-			return;
+			npc = npcs.getOrDefault(npcObjId, null);
+			if (npc == null){
+				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+				return;
+			}
+		} else {
+			npc = (Npc) life;
 		}
-		chr.write(NpcPool.npcSetSpecialAction(life.getObjectId(), effectName, duration));
+		chr.write(NpcPool.npcSetSpecialAction(npc.getObjectId(), effectName, duration));
 	}
 
 	public void stopNpcSpecialActionByTemplateId(int npcTemplateId) {
@@ -1432,7 +1517,17 @@ public class ScriptManagerImpl implements ScriptManager {
 		return life.getObjectId();
 	}
 
+	public Npc getIntroNpc(int objectID) {
+		return npcs.getOrDefault(objectID, null);
+	}
 
+	public int getIntroNpcObjectID(int templateID) {
+		Npc npc = npcs.values().stream().filter(n -> n.getTemplateId() == templateID).findFirst().orElse(null);
+		if (npc != null) {
+			return npc.getObjectId();
+		}
+		return -2;
+	}
 
 	// Mob methods
 	@Override
@@ -2434,6 +2529,11 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void createFieldTextEffect(String msg, int letterDelay, int showTime, int clientPosition, int boxPosX, int boxPosY, int align, int lineSpace, TextEffectType type, int enterType, int leaveType) {
 		chr.write(User.effect(Effect.createFieldTextEffect(msg, letterDelay, showTime, clientPosition, new Position(boxPosX, boxPosY), align, lineSpace, type, enterType, leaveType)));
 	}
+
+	public void createFieldTextEffect(String msg, int letterDelay, int showTime, int clientPosition, int boxPosX, int boxPosY, int align, int lineSpace, int type, int enterType, int leaveType) {
+		chr.write(User.effect(Effect.createFieldTextEffect(msg, letterDelay, showTime, clientPosition, new Position(boxPosX, boxPosY), align, lineSpace, type, enterType, leaveType)));
+	}
+
 	public void avatarOriented(String effectPath) {
 		chr.write(User.effect(Effect.avatarOriented(effectPath)));
 	}
@@ -2462,6 +2562,10 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void fadeInOut(int fadeIn, int delay, int fadeOut, int alpha) {
 		chr.write(User.effect(Effect.fadeInOut(fadeIn, delay, fadeOut, alpha)));
+	}
+
+	public void speechBalloon(boolean normal, int range, int nameHeight, String speech, int time, int origin, int x, int y, int z, int lineSpace, int templateID) {
+		chr.write(User.effect(Effect.speechBalloon(normal, range, nameHeight, speech, time, origin, x, y, z, lineSpace, templateID, chr.getId())));
 	}
 
 	public String formatNumber(String number) {
@@ -2555,7 +2659,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	}
 
 	public void levelUntil(int toLevel) {
-		short level = chr.getLevel();
+		int level = chr.getLevel();
 		if (level >= toLevel) {
 		    return;
         }
@@ -2832,6 +2936,34 @@ public class ScriptManagerImpl implements ScriptManager {
     public void sendSessionValue(String key, int npcID) {
         chr.write(WvsContext.sendSessionValue(key, Integer.toString(getNpcObjectIdByTemplateId(npcID))));
     }
+
+	public void setBGMVolume(int bgmVolume, int fadingDuration) {
+		chr.write(CField.fieldEffect(FieldEffect.setBGMVolume(bgmVolume, fadingDuration)));
+	}
+
+	public void offSpineScreenImmediate(String layer) {
+		chr.write(CField.fieldEffect(FieldEffect.offSpineScreenImmediate(layer)));
+	}
+
+	public void offSpineScreenAlpha(String layer, int alpha) {
+		chr.write(CField.fieldEffect(FieldEffect.offSpineScreenAlpha(layer, alpha)));
+	}
+
+	public void offSpineScreenAni(String layer, String path) {
+		chr.write(CField.fieldEffect(FieldEffect.offSpineScreenAni(layer, path)));
+	}
+
+	public void spineScreen(boolean binary, boolean loop, boolean postRender, int endDelay, String path, String animation, String keyName) {
+		chr.write(CField.fieldEffect(FieldEffect.spineScreen(binary, loop, postRender, endDelay, path, animation, keyName)));
+	}
+
+	public void setMapTaggedObjectAnimation(String tagName, int type) {
+		chr.write(MapLoadable.setMapTaggedObjectAnimation(tagName, type));
+	}
+
+	public void setMapTaggedObjectVisible(String tagName, boolean visible, int manual, int delay) {
+		chr.write(MapLoadable.setMapTaggedObjectVisible(tagName, visible, manual, delay));
+	}
 
 	private ScriptMemory getMemory() {
 		return memory;

@@ -2,6 +2,7 @@ package net.swordie.ms.connection.packet;
 
 import net.swordie.ms.Server;
 import net.swordie.ms.connection.OutPacket;
+import net.swordie.ms.enums.Gr2dAniType;
 import net.swordie.ms.enums.SpineMsgType;
 import net.swordie.ms.handlers.header.OutHeader;
 
@@ -18,6 +19,19 @@ public class MapLoadable {
         outPacket.encodeByte(1);// visible
         outPacket.encodeInt(0);// manual
         outPacket.encodeInt(0);// delay
+        return outPacket;
+    }
+
+    public static OutPacket setMapTaggedObjectVisible(String tagName, boolean visible, int manual, int delay) {
+        OutPacket outPacket = new OutPacket(OutHeader.SET_MAP_TAGGED_OBJECT_VISISBLE);
+
+        outPacket.encodeByte(1);// count
+
+        outPacket.encodeString(tagName);
+        outPacket.encodeByte(visible);
+        outPacket.encodeInt(manual);
+        outPacket.encodeInt(delay);
+
         return outPacket;
     }
 
@@ -81,6 +95,16 @@ public class MapLoadable {
         outPacket.encodeString(key);
         outPacket.encodeInt(SpineMsgType.STOP.getVal());
         outPacket.encodeByte(setupPose);
+
+        return outPacket;
+    }
+
+    public static OutPacket setMapTaggedObjectAnimation(String tagName, int type) {
+        OutPacket outPacket = new OutPacket(OutHeader.SET_MAP_TAGGED_OBJECT_ANIMATION);
+
+        outPacket.encodeInt(1);
+        outPacket.encodeString(tagName);
+        outPacket.encodeInt(type);// Gr2dAniType
 
         return outPacket;
     }

@@ -117,25 +117,11 @@ public class Pirate extends Beginner {
     public static final int HEROS_WILL_CANNON = 5321006;
     public static final int MEGA_MONKEY_MAGIC = 5320008;
 
-    //Jett
-    public static final int GALACTIC_MIGHT = 5081023; //Buff
-
-    public static final int BOUNTY_CHASER = 5701013; //Buff
-    public static final int STARLINE_TWO = 5701010; //Special Attack (Stun Debuff)
-
-    public static final int TURRET_DEPLOYMENT = 5711001; //Summon
-    public static final int SLIPSTREAM_SUIT = 5711024; //Buff
-
-    public static final int HIGH_GRAVITY = 5721066; //Buff
-    public static final int MAPLE_WARRIOR_JETT = 5721000; //Buff
-    public static final int HEROS_WILL_JETT = 5721002;
-
 
     //Hyper
     public static final int EPIC_ADVENTURER_BUCC = 5121053;
     public static final int EPIC_ADVENTURER_SAIR = 5221053;
     public static final int EPIC_ADVENTURER_CANNON = 5321053;
-    public static final int EPIC_ADVENTURER_JETT = 5721053;
 
     public static final int STIMULATING_CONVERSATION = 5121054;
     public static final int WHALERS_POTION = 5221054;
@@ -182,18 +168,9 @@ public class Pirate extends Beginner {
             MAPLE_WARRIOR_CANNON,
             MEGA_MONKEY_MAGIC,
 
-            GALACTIC_MIGHT,
-            BOUNTY_CHASER,
-            TURRET_DEPLOYMENT,
-            SLIPSTREAM_SUIT,
-            HIGH_GRAVITY,
-            MAPLE_WARRIOR_JETT,
-
-
             //Hyper
             EPIC_ADVENTURER_BUCC,
             EPIC_ADVENTURER_CANNON,
-            EPIC_ADVENTURER_JETT,
             EPIC_ADVENTURER_SAIR,
             STIMULATING_CONVERSATION,
             WHALERS_POTION,
@@ -221,8 +198,7 @@ public class Pirate extends Beginner {
 
     @Override
     public boolean isHandlerOfJob(short id) {
-        return JobConstants.isAdventurerPirate(id) ||
-                JobConstants.isJett(id);
+        return JobConstants.isAdventurerPirate(id);
     }
 
 
@@ -257,7 +233,6 @@ public class Pirate extends Beginner {
             case KNUCKLE_BOOSTER:
             case GUN_BOOSTER:
             case CANNON_BOOSTER:
-            case GALACTIC_MIGHT:
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
@@ -291,7 +266,6 @@ public class Pirate extends Beginner {
                 break;
             case MAPLE_WARRIOR_BUCC:
             case MAPLE_WARRIOR_CANNON:
-            case MAPLE_WARRIOR_JETT:
             case MAPLE_WARRIOR_SAIR:
                 o1.nReason = skillID;
                 o1.nValue = si.getValue(x, slv);
@@ -406,40 +380,6 @@ public class Pirate extends Beginner {
                 giveBarrelRouletteBuff(roulette);
                 chr.reduceSkillCoolTime(NAUTILUS_STRIKE_CANNON, (long) (chr.getRemainingCoolTime(NAUTILUS_STRIKE_CANNON) * 0.5F));
                 break;
-            case BOUNTY_CHASER:
-                o1.nOption = si.getValue(dexX, slv);
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(DEX, o1);
-                o2.nOption = si.getValue(strX, slv);
-                o2.rOption = skillID;
-                o2.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(STR, o2);
-                o3.nReason = skillID;
-                o3.nValue = si.getValue(indieCr, slv);
-                o3.tStart = (int) System.currentTimeMillis();
-                o3.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieCr, o3);
-                o4.nReason = skillID;
-                o4.nValue = si.getValue(indieDamR, slv);
-                o4.tStart = (int) System.currentTimeMillis();
-                o4.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieDamR, o4);
-                break;
-            case SLIPSTREAM_SUIT:
-                o1.nOption = si.getValue(x, slv);
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(DEXR, o1);
-                o2.nOption = si.getValue(y, slv);
-                o2.rOption = skillID;
-                o2.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(EVAR, o2);
-                o3.nOption = si.getValue(y, slv);
-                o3.rOption = skillID;
-                o3.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(ACCR, o3);
-                break;
             case QUICKDRAW:
                 o1.nOption = 2;
                 o1.rOption = skillID;
@@ -449,22 +389,6 @@ public class Pirate extends Beginner {
                 o2.rOption = skillID;
                 o2.tOption = 10;
                 tsm.putCharacterStatValue(DamR, o2);
-                break;
-            case HIGH_GRAVITY:
-                o1.nOption = si.getValue(prop, slv);
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                tsm.putCharacterStatValue(Stance, o1);
-                o2.nReason = skillID;
-                o2.nValue = si.getValue(indieAllStat, slv);
-                o2.tStart = (int) System.currentTimeMillis();
-                o2.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieAllStat, o2);
-                o3.nReason = skillID;
-                o3.nValue = si.getValue(indieCr, slv);
-                o3.tStart = (int) System.currentTimeMillis();
-                o3.tTerm = si.getValue(time, slv);
-                tsm.putCharacterStatValue(IndieCr, o3);
                 break;
             case PIRATE_SPIRIT:
                 o1.nOption = si.getValue(prop, slv);
@@ -506,7 +430,6 @@ public class Pirate extends Beginner {
                 //Hyper
             case EPIC_ADVENTURER_BUCC:
             case EPIC_ADVENTURER_CANNON:
-            case EPIC_ADVENTURER_JETT:
             case EPIC_ADVENTURER_SAIR:
                 o1.nReason = skillID;
                 o1.nValue = si.getValue(indieDamR, slv);
@@ -587,14 +510,6 @@ public class Pirate extends Beginner {
                     summon.setMoveAbility(MoveAbility.Stop);
                     field.spawnSummon(summon);
                 }
-                break;
-            case TURRET_DEPLOYMENT: //Stationary, Attacks
-                summon = Summon.getSummonBy(c.getChr(), skillID, slv);
-                field = c.getChr().getField();
-                summon.setFlyMob(false);
-                summon.setMoveAction((byte) 0);
-                summon.setMoveAbility(MoveAbility.Stop);
-                field.spawnSummon(summon);
                 break;
             case ALL_ABOARD: //Moves, Attacks
                 tsm.removeStatsBySkill(AHOY_MATEYS);
@@ -809,11 +724,6 @@ public class Pirate extends Beginner {
                 }
             }
         }
-        if (JobConstants.isJett(chr.getJob())) {
-            if(hasHitMobs) {
-
-            }
-        }
 
         switch (attackInfo.skillId) {
             case BLAST_BACK:
@@ -857,23 +767,6 @@ public class Pirate extends Beginner {
                 o2.tOption = si.getValue(subTime, slv);
                 tsm.putCharacterStatValue(IncCriticalDamMax, o2);
                 tsm.sendSetStatPacket();
-                break;
-            case STARLINE_TWO:
-                for(MobAttackInfo mai : attackInfo.mobAttackInfo) {
-                    if (Util.succeedProp(si.getValue(hcProp, slv))) {
-                        Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
-                        if (mob == null) {
-                            continue;
-                        }
-                        if(!mob.isBoss()) {
-                            MobTemporaryStat mts = mob.getTemporaryStat();
-                            o1.nOption = 1;
-                            o1.rOption = skill.getSkillId();
-                            o1.tOption = si.getValue(hcTime, slv);
-                            mts.addStatOptionsAndBroadcast(MobStat.Stun, o1);
-                        }
-                    }
-                }
                 break;
             case POWER_UNITY:
                 powerUnity();
@@ -1126,7 +1019,6 @@ public class Pirate extends Beginner {
                 case HEROS_WILL_BUCC:
                 case HEROS_WILL_SAIR:
                 case HEROS_WILL_CANNON:
-                case HEROS_WILL_JETT:
                     tsm.removeAllDebuffs();
                     break;
             }

@@ -59,8 +59,9 @@ public class AdminCommands {
     public static class Test extends AdminCommand {
 
         public static void execute(Char chr, String[] args) {
+
            // chr.getMatrixInventory().setSlots(MatrixInventory.getDefaultSlots());
-            //chr.write(CField.openUI(Integer.parseInt(args[1])));
+            chr.write(CField.questClear(Integer.parseInt(args[1])));
         }
     }
 

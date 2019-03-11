@@ -449,7 +449,7 @@ public class WorldHandler {
             return;
         }
         if (summonedAttack || chr.checkAndSetSkillCooltime(skillID) || chr.hasSkillCDBypass() || multiAttack) {
-            byte slv = attackInfo.slv;
+            int slv = attackInfo.slv;
             chr.chatMessage(Mob, "SkillID: " + skillID);
             Job sourceJobHandler = chr.getJobHandler();
             SkillInfo si = SkillData.getSkillInfoById(skillID);
@@ -967,7 +967,7 @@ public class WorldHandler {
         }
 
         byte unkSize = inPacket.decodeByte();
-        for (int i = 0; i < randTimeForAreaAttackSize; i++) {
+        for (int i = 0; i < unkSize; i++) {
             int unk = inPacket.decodeInt();
             msai.unks.add(unk);
         }
@@ -4376,32 +4376,57 @@ public class WorldHandler {
         byte oneTimeAction = inPacket.decodeByte();
         byte chatIdx = inPacket.decodeByte();
         int duration = inPacket.decodeInt();
-        Life life = chr.getField().getLifeByObjectID(objectID);
-        if (life instanceof Npc && ((Npc) life).isMove()) {
-            Npc npc = (Npc) chr.getField().getLifeByObjectID(objectID);
-            boolean move = npc.isMove();
-            MovementInfo movementInfo = new MovementInfo(npc.getPosition(), npc.getVPosition());
+
+        Npc introNpc = chr.getScriptManager().getIntroNpc(objectID);
+        if (introNpc != null && introNpc.isMove()) {
+            MovementInfo movementInfo = new MovementInfo(introNpc.getPosition(), introNpc.getVPosition());
             byte keyPadState = 0;
-            if (move) {
-                movementInfo.decode(inPacket);
-                for (Movement m : movementInfo.getMovements()) {
-                    Position pos = m.getPosition();
-                    Position vPos = m.getVPosition();
-                    if (pos != null) {
-                        npc.setPosition(pos);
-                    }
-                    if (vPos != null) {
-                        npc.setvPosition(vPos);
-                    }
-                    npc.setMoveAction(m.getMoveAction());
-                    npc.setFh(m.getFh());
+            movementInfo.decode(inPacket);
+            for (Movement m : movementInfo.getMovements()) {
+                Position pos = m.getPosition();
+                Position vPos = m.getVPosition();
+                if (pos != null) {
+                    introNpc.setPosition(pos);
                 }
-                if (inPacket.getUnreadAmount() > 0) {
-                    keyPadState = inPacket.decodeByte(); // not always encoded?
+                if (vPos != null) {
+                    introNpc.setvPosition(vPos);
                 }
+                introNpc.setMoveAction(m.getMoveAction());
+                introNpc.setFh(m.getFh());
             }
-            chr.getField().broadcastPacket(NpcPool.npcMove(objectID, oneTimeAction, chatIdx, duration, move,
+            if (inPacket.getUnreadAmount() > 0) {
+                keyPadState = inPacket.decodeByte(); // not always encoded?
+            }
+            chr.getField().broadcastPacket(NpcPool.npcMove(objectID, oneTimeAction, chatIdx, duration, introNpc.isMove(),
                     movementInfo, keyPadState));
+        } else {
+            Life life = chr.getField().getLifeByObjectID(objectID);
+            if (life instanceof Npc && ((Npc) life).isMove()) {
+                Npc npc = (Npc) chr.getField().getLifeByObjectID(objectID);
+                boolean move = npc.isMove();
+                MovementInfo movementInfo = new MovementInfo(npc.getPosition(), npc.getVPosition());
+                byte keyPadState = 0;
+                if (move) {
+                    movementInfo.decode(inPacket);
+                    for (Movement m : movementInfo.getMovements()) {
+                        Position pos = m.getPosition();
+                        Position vPos = m.getVPosition();
+                        if (pos != null) {
+                            npc.setPosition(pos);
+                        }
+                        if (vPos != null) {
+                            npc.setvPosition(vPos);
+                        }
+                        npc.setMoveAction(m.getMoveAction());
+                        npc.setFh(m.getFh());
+                    }
+                    if (inPacket.getUnreadAmount() > 0) {
+                        keyPadState = inPacket.decodeByte(); // not always encoded?
+                    }
+                }
+                chr.getField().broadcastPacket(NpcPool.npcMove(objectID, oneTimeAction, chatIdx, duration, move,
+                        movementInfo, keyPadState));
+            }
         }
     }
 
@@ -4835,7 +4860,7 @@ public class WorldHandler {
         ai.hits = (byte) (mask & 0xF);
         ai.mobCount = (mask >>> 4) & 0xF;
         ai.skillId = inPacket.decodeInt();
-        ai.slv = inPacket.decodeByte();
+        ai.slv = inPacket.decodeInt();
         if (header != InHeader.USER_MAGIC_ATTACK && header != InHeader.USER_BODY_ATTACK && header != InHeader.USER_AREA_DOT_ATTACK) {
             ai.addAttackProc = inPacket.decodeByte();
         }
@@ -6597,4 +6622,20 @@ public class WorldHandler {
         chr.getField().broadcastPacket(AndroidPacket.move(android, mi), chr);
     }
 
+    public static void handleBeastFormWingOnOff(Char chr, InPacket inPacket) {
+        int skillID = inPacket.decodeInt();
+        switch (skillID) {
+            case Ark.SPELL_BULLETS:
+                String value = chr.getQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID));
+                if (value == null || value.equals("0")) {
+                    chr.setQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID), "1");
+                } else if (value.equals("1")){
+                    chr.setQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID), "0");
+                }
+                break;
+            default:
+                chr.chatMessage("Unhandled auto on off skill " + skillID);
+                break;
+        }
+    }
 }

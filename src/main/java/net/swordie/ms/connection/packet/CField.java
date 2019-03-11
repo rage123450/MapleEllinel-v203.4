@@ -620,9 +620,19 @@ public class CField {
 
     public static OutPacket teleport(Position position, Char chr) {
         OutPacket outPacket = new OutPacket(OutHeader.TELEPORT);
-        outPacket.encodeByte(false);
-        outPacket.encodeByte(6);
+        outPacket.encodeByte(false);// excl request
 
+        outPacket.encodeByte(6);// calling type
+        /*
+        TODO: import the enum
+        enum USER_TELEPORT_CALLING_TYPE
+        {
+          TELEPORT_CALLING_TYPE_DEFAULT = 0x0,
+          TELEPORT_CALLING_TYPE_GUILD = 0x1,
+          TELEPORT_CALLING_TYPE_FLAMEWIZARD_FLAREBLINK = 0x2,
+          TELEPORT_CALLING_TYPE_BYSCRIPT = 0x3,
+        };
+         */
         outPacket.encodeInt(chr.getId());
         outPacket.encodePosition(position);
 

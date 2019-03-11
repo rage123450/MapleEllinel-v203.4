@@ -38,7 +38,7 @@ public class AffectedArea extends Life {
     private int option;
     private int elemAttr;
     private int idk;
-    private byte slv;
+    private int slv;
     private byte mobOrigin;
     private short delay;
     private boolean flip;
@@ -109,11 +109,11 @@ public class AffectedArea extends Life {
         this.idk = idk;
     }
 
-    public byte getSlv() {
+    public int getSlv() {
         return slv;
     }
 
-    public void setSlv(byte slv) {
+    public void setSlv(int slv) {
         this.slv = slv;
     }
 
@@ -178,7 +178,7 @@ public class AffectedArea extends Life {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         int skillID = getSkillID();
         Skill skill = chr.getSkill(getSkillID());
-        byte slv = getSlv();
+        int slv = getSlv();
         SkillInfo si = SkillData.getSkillInfoById(skillID);
         MobTemporaryStat mts = mob.getTemporaryStat();
         Option o = new Option();
@@ -233,7 +233,7 @@ public class AffectedArea extends Life {
         }
         tsm.addAffectedArea(this);
         int skillID = getSkillID();
-        byte slv = getSlv();
+        int slv = getSlv();
         SkillInfo si = SkillData.getSkillInfoById(skillID);
         Option o = new Option();
         Option o1 = new Option();

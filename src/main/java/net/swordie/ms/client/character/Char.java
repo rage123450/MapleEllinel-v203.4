@@ -4477,7 +4477,7 @@ public class Char {
 	 * @param slv the current skill level
 	 * @return whether the consumption was successful (unsuccessful = not enough mp)
 	 */
-	public boolean applyMpCon(int skillID, byte slv) {
+	public boolean applyMpCon(int skillID, int slv) {
 		int curMp = getStat(Stat.mp);
 		SkillInfo si = SkillData.getSkillInfoById(skillID);
 		if (si == null) {

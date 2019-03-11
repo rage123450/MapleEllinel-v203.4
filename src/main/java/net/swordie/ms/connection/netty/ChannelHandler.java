@@ -712,6 +712,9 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             case UNITY_PORTAL_REQUEST:
                 WorldHandler.handleUnityPortalRequest(chr, inPacket);
                 break;
+            case BEAST_FORM_WING_OFF:
+                WorldHandler.handleBeastFormWingOnOff(chr, inPacket);
+                break;
             default:
                 handleUnknown(inPacket, op);
                 break;

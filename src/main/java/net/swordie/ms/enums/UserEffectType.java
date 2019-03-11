@@ -70,8 +70,9 @@ public enum UserEffectType {
     Point(61),// v202.3
     SpeechBalloon(62),// v202.3
     TextEffect(63),// v202.3
-    SkillPreLoopEnd(62),
-    Aiming(63),
+    SkillPreLoopEnd(64),
+    Aiming(65),
+    // 66
     PickUpItem(67),// v202.3
     BattlePvP_IncDecHp(68),// v202.3
     BiteAttack_ReceiveSuccess(69),// v202.3

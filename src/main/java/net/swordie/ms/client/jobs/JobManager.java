@@ -33,6 +33,7 @@ public class JobManager {
             Pirate.class,
             Thief.class,
             Warrior.class,
+            Jett.class,
 
             BlazeWizard.class,
             DawnWarrior.class,

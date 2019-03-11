@@ -8,8 +8,8 @@ public class ServerConfig {
     public static final int USER_LIMIT = 500;
     public static final byte WORLD_ID = 1; // bera
     public static final String RECOMMEND_MSG = "I recommend this world to you.";
-    public static final String SERVER_NAME = "SwordieMS";
-    public static final String EVENT_MSG = "Scratchy";
+    public static final String SERVER_NAME = "MapleEllinel";
+    public static final String EVENT_MSG = String.format("#rMapleEllinel v%d.%s", ServerConstants.VERSION, ServerConstants.MINOR_VERSION);
     public static final String LOGIN_NOTICE_POPUP = "UI/UIWindow6.img/loginNoticePopup/sundayMaple_190127";
     public static final int MAX_CHARACTERS = 30;
 }

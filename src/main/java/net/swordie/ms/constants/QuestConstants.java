@@ -13,7 +13,7 @@ public class QuestConstants {
     public static final int QR_RecommendPartyQuestSave = 1216;
     public static final int QR_MonsterCarnival = 1301;
     public static final int QR_MonsterCarnivalS2 = 1302;
-    public static final int QR_BeastFormWing_On_Off = 1544;
+    public static final int BEAST_FORM_WING_ON_OFF = 1544;
     public static final int QR_CrossHunterUI_Alert = 1652;
     public static final int QR_MysticFieldTuto = 1676;
     public static final int QR_MysticFieldReward = 1683;
