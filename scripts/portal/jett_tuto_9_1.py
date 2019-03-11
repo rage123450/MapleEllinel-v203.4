@@ -15,18 +15,16 @@ sm.sendDelay(2000)
 
 
 sm.setSpeakerID(9270083)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendNext("We're en route. Can you really bring us down over Maple World?")
 
 
 sm.setSpeakerID(9201286)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendSay("Kshhhhh... Of course... Our power... is great... Kshhhhh... this...")
 
 

@@ -11,10 +11,9 @@ sm.sendDelay(1000)
 
 
 sm.setSpeakerID(9270085)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.setPlayerAsSpeaker()
-sm.boxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("I got it. Guess it's time to be going.")
 
 

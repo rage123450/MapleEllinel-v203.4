@@ -4,7 +4,7 @@ package net.swordie.ms.world.field.fieldeffect;
  * Created on 3/26/2018.
  */
 public enum FieldEffectType {
-    FromString(0),
+    Summon(0),
     Tremble(1),
     ObjectStateByString(2),
     DisableEffectObject(3),
@@ -33,9 +33,9 @@ public enum FieldEffectType {
     RemoveOverlapScreen(26),
     ChangeColor(27),
     StageClearExpOnly(28),
-    EvenMoreAnimation(29),
-    SkeletonAnimation(30),
-    OneTimeSkeletonAnimation(31),
+    TopScreen_WithOrigin(29),
+    SpineScreen(30),
+    OffSpineScreen(31),
 
 
     ;

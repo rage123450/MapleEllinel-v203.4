@@ -3,18 +3,16 @@
 # Spaceship : In Front of the Shuttle
 
 sm.setSpeakerID(9270083)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendNext("You found the #bMaster Key#k!")
 
 
 sm.setSpeakerID(9270083)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendSay("The ship's all prepped! Let's turn and burn!")
 
 

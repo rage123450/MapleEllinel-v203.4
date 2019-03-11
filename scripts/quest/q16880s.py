@@ -8,7 +8,7 @@ sm.sendSay("Last, you can buy#b Return Scrolls - Nearest Town#k#n from a#b#e Mer
 if sm.sendAskYesNo("Now I'm ready to hand it over.\r\nDo you want #i2030059##e#b Return Scroll - Nearest Town x10#k#n now?"):
     sm.giveItem(2030059, 10)
     sm.startQuest(parentID)
-    sm.completeQuest(parentID)
+    sm.completeQuestNoRewards(parentID)
     sm.sendSayOkay("I just gave you #i2030059##e#b Return Scroll - Nearest Town x10#k#n.\r\nHappy travels, #e#b#h0##k#n!")
 else:
     sm.sendSayOkay("If you want to accept the #i2030059##e#b Return Scroll - Nearest Town#k#n, please click the light bulb overhead.")

@@ -12,6 +12,7 @@ public class FieldEffect {
     private FieldEffectType fieldEffectType;
     private String string;
     private String string2;
+    private String string3;
     private int arg1;
     private int arg2;
     private int arg3;
@@ -25,10 +26,10 @@ public class FieldEffect {
     public void encode(OutPacket outPacket) {
         outPacket.encodeByte(getFieldEffectType().getVal());
         switch (getFieldEffectType()) {
-            case FromString:
-                outPacket.encodeByte(getArg1());
-                outPacket.encodeInt(getArg2());
-                outPacket.encodeInt(getArg3());
+            case Summon:
+                outPacket.encodeByte(getArg1());// nType
+                outPacket.encodeInt(getArg2());// x1
+                outPacket.encodeInt(getArg3());// y1
                 break;
             case Tremble:
                 outPacket.encodeByte(getArg1());
@@ -36,11 +37,11 @@ public class FieldEffect {
                 outPacket.encodeShort(getArg3());
                 break;
             case ObjectStateByString:
-                outPacket.encodeString(getString());// String
+                outPacket.encodeString(getString());// sName
                 break;
             case DisableEffectObject:
-                outPacket.encodeString(getString());// String
-                outPacket.encodeByte(getArg1());    // boolean: ON/OFF
+                outPacket.encodeString(getString());// sName
+                outPacket.encodeByte(getArg1());    // bCheckPreWord
                 break;
             case Screen:
                 outPacket.encodeString(getString());// String
@@ -62,11 +63,11 @@ public class FieldEffect {
                 outPacket.encodeInt(getArg2());// unk
                 break;
             case BGMVolumeOnly:
-                outPacket.encodeByte(getArg1());
+                outPacket.encodeByte(getArg1());// m_bBGMVolumeOnly
                 break;
             case SetBGMVolume:
-                outPacket.encodeInt(getArg1());
-                outPacket.encodeInt(getArg2());
+                outPacket.encodeInt(getArg1());// m_uBGMVolume
+                outPacket.encodeInt(getArg2());// uFadingDuration
                 break;
             case RewardRoulette:
                 outPacket.encodeInt(getArg1());     // Reward Job ID
@@ -94,8 +95,8 @@ public class FieldEffect {
                 outPacket.encodeByte(getArg2());
                 break;
             case Blind:
-                outPacket.encodeByte(getArg1());
-                outPacket.encodeShort(getArg2());
+                outPacket.encodeByte(getArg1());// bEnable
+                outPacket.encodeShort(getArg2());// x
                 outPacket.encodeShort(getArg3());
                 outPacket.encodeShort(getArg4());
                 outPacket.encodeShort(getArg5());
@@ -151,6 +152,34 @@ public class FieldEffect {
                 break;
             case StageClearExpOnly:
                 outPacket.encodeInt(getArg1());     // Exp Number given
+                break;
+            case SpineScreen:
+                outPacket.encodeByte(getArg1());// bBinary
+                outPacket.encodeByte(getArg2());// bLoop
+                outPacket.encodeByte(getArg3());// bPostRender
+                outPacket.encodeInt(getArg4());// tEndDelay
+                outPacket.encodeString(getString());// sPath
+                outPacket.encodeString(getString2());// Animation Name
+
+                outPacket.encodeByte(getString3() != null);
+                if (getString3() != null) {
+                    outPacket.encodeString(getString3());// sKeyName
+                }
+                break;
+            case OffSpineScreen:
+                /*enum $886F2E0581A468BCCA02C1C9C4415C7C
+                {
+                    OffSpineScr_Immediate = 0x0,
+                    OffSpineScr_Alpha = 0x1,
+                    OffSpineScr_Ani = 0x2,
+                };*/
+                outPacket.encodeString(getString());// pLayer
+                outPacket.encodeInt(getArg1());// nType
+                if (getArg1() == 1) {// PROCESS_HITPARTS
+                    outPacket.encodeInt(getArg2());// tAlpha
+                } else if (getArg1() == 2) {// PROCESS_SKELETON
+                    outPacket.encodeString(getString2());// Animation Name
+                }
                 break;
         }
     }
@@ -341,18 +370,72 @@ public class FieldEffect {
         return fieldEffect;
     }
 
-    // TODO: name the vars
-    public static FieldEffect tremble(int unk1, int unk2, int unk3) {
+    public static FieldEffect tremble(int bHeavyNShortTremble, int tDelay, int unk) {
         FieldEffect fieldEffect = new FieldEffect();
         fieldEffect.setFieldEffectType(FieldEffectType.Tremble);
 
-        fieldEffect.setArg1(unk1);// type0
-        fieldEffect.setArg2(unk2);
-        fieldEffect.setArg3(unk3);
+        fieldEffect.setArg1(bHeavyNShortTremble);
+        fieldEffect.setArg2(tDelay);
+        fieldEffect.setArg3(unk);
 
         return fieldEffect;
     }
 
+    public static FieldEffect spineScreen(boolean binary, boolean loop, boolean postRender, int endDelay, String path, String animation, String keyName) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.SpineScreen);
+
+        fieldEffect.setArg1(binary ? 1 : 0);
+        fieldEffect.setArg2(loop ? 1 : 0);
+        fieldEffect.setArg3(postRender ? 1 : 0);
+        fieldEffect.setArg4(endDelay);
+        fieldEffect.setString(path);
+        fieldEffect.setString2(animation);
+        fieldEffect.setString3(keyName);
+
+        return fieldEffect;
+    }
+
+    public static FieldEffect offSpineScreenImmediate(String layer) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.OffSpineScreen);
+
+        fieldEffect.setArg1(0);// OffSpineScr_Immediate = 0x0
+        fieldEffect.setString(layer);
+
+        return fieldEffect;
+    }
+
+    public static FieldEffect offSpineScreenAlpha(String layer, int alpha) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.OffSpineScreen);
+
+        fieldEffect.setArg1(1);// OffSpineScr_Alpha = 0x1
+        fieldEffect.setString(layer);
+        fieldEffect.setArg2(alpha);
+
+        return fieldEffect;
+    }
+
+    public static FieldEffect offSpineScreenAni(String layer, String path) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.OffSpineScreen);
+
+        fieldEffect.setArg1(2);// OffSpineScr_Ani = 0x2
+        fieldEffect.setString(layer);
+        fieldEffect.setString2(path);
+        return fieldEffect;
+    }
+
+    public static FieldEffect setBGMVolume(int bgmVolume, int fadingDuration) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.SetBGMVolume);
+
+        fieldEffect.setArg1(bgmVolume);// type0
+        fieldEffect.setArg2(fadingDuration);
+
+        return fieldEffect;
+    }
     public FieldEffectType getFieldEffectType() {
         return fieldEffectType;
     }
@@ -447,5 +530,13 @@ public class FieldEffect {
 
     public void setArg9(int arg9) {
         this.arg9 = arg9;
+    }
+
+    public String getString3() {
+        return string3;
+    }
+
+    public void setString3(String string3) {
+        this.string3 = string3;
     }
 }
