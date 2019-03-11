@@ -1,53 +1,48 @@
 # Created by MechAviv
 # Map ID :: 940001100
 # Heliseum : Heliseum Outskirts
+OBJECT_1 = sm.getIntroNpcObjectID(3000131)
 
-sm.showNpcSpecialActionByTemplateId(3000131, "fake", 0)
+sm.showNpcSpecialActionByObjectId(OBJECT_1, "fake", 0)
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("No... But what of you? Are you injured? You fought against Darmoor's army?")
 
 
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendSay("I am...unharmed. And the fight? What do you expect from someone who was exiled?")
 
 
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendSay("But... How did Darmoor's army get inside Heliseum? What did they do to the shield?")
 
 
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendSay("There was a traitor, of course. The traitor disabled the shield so the Specters could overrun Heliseum.")
 
 
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendSay("Magnus... Who would do such a thing?")
 
 
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendSay("Me.")
 
 

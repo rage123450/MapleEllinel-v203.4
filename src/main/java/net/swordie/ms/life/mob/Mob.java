@@ -1344,6 +1344,13 @@ public class Mob extends Life {
         }
         int fieldID = field.getId();
         switch (getTemplateId()) {
+            case 9300545:
+            case 9300546:
+                // Kaiser Introduction
+                if (fieldID == 940001010 && field.getMobs().size() == 0) {
+                    chr.getScriptManager().warp(940001050, 0);
+                }
+                break;
             case 9300811:
                 if (chr.hasQuestInProgress(38022)) {
                     chr.getScriptManager().setQRValue(38022, "clear");

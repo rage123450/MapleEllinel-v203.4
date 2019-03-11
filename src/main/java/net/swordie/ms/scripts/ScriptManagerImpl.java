@@ -2546,9 +2546,12 @@ public class ScriptManagerImpl implements ScriptManager {
 		String sceneNumber = splitted[splitted.length - 1];
 		String xmlPath = effectPath.replace("/" + sceneName, "").replace("/" + sceneNumber, "").replace("Effect/", "Effect.wz/");
 
-		int fieldID = new Scene(chr, xmlPath, sceneName, sceneNumber).getTransferField();
-		if (fieldID != 0) {
-			chr.setTransferField(fieldID);
+		Scene scene = new Scene(chr, xmlPath, sceneName, sceneNumber);
+		if (scene != null) {
+			int fieldID = scene.getTransferField();
+			if (fieldID != 0) {
+				chr.setTransferField(fieldID);
+			}
 		}
 	}
 
@@ -2933,8 +2936,8 @@ public class ScriptManagerImpl implements ScriptManager {
 		this.answerVal = answerVal;
 	}
 
-    public void sendSessionValue(String key, int npcID) {
-        chr.write(WvsContext.sendSessionValue(key, Integer.toString(getNpcObjectIdByTemplateId(npcID))));
+    public void sendSessionValue(String key, int objectID) {
+        chr.write(WvsContext.sendSessionValue(key, Integer.toString(objectID)));
     }
 
 	public void setBGMVolume(int bgmVolume, int fadingDuration) {

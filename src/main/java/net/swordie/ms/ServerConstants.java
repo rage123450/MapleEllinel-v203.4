@@ -8,7 +8,7 @@ import net.swordie.ms.constants.JobConstants;
 public class ServerConstants {
 	public static final String DIR = System.getProperty("user.dir");
 	public static final byte LOCALE = 8;
-	public static final String WZ_DIR = DIR + "/WZ";
+	public static final String WZ_DIR = DIR + "/wz";
 	public static final String DAT_DIR = DIR + "/dat";
 	public static final int MAX_CHARACTERS = JobConstants.LoginJob.values().length * 3;
 	public static final String SCRIPT_DIR = DIR + "/scripts";

@@ -2,7 +2,6 @@
 # Map ID :: 940001010
 # Hidden Street : East Pantheon
 
-from net.swordie.ms.enums import UIType
 sm.sendDelay(2000)
 
 
@@ -20,31 +19,31 @@ sm.sendDelay(30)
 sm.forcedInput(0)
 sm.sendDelay(1553)
 
-
+sm.spawnMob(9300545, -1600, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300546, -1500, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300545, -1400, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300546, -1300, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300545, -1200, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300546, -1100, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300545, -1000, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300546, -900, 29, False)
 sm.sendDelay(150)
 
-
+sm.spawnMob(9300546, -800, 29, False)
 sm.moveCamera(True, 0, 0, 0)
 
 
@@ -55,4 +54,3 @@ sm.sendDelay(0)
 sm.setTemporarySkillSet(0)
 sm.setInGameDirectionMode(False, True, False, False)
 sm.showFieldEffect("lightning/screenMsg/0", 0)
-# sm.warp(940001050, 0) ?

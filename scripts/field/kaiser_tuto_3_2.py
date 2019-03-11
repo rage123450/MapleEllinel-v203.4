@@ -2,13 +2,13 @@
 # Map ID :: 940001100
 # Heliseum : Heliseum Outskirts
 
-sm.showNpcSpecialActionByTemplateId(3000131, "summon", 0)
-sm.sendSessionValue("magnus", 3000131)
+OBJECT_1 = sm.sendNpcController(3000131, -390, 170)
+sm.showNpcSpecialActionByObjectId(OBJECT_1, "summon", 0)
+sm.sendSessionValue("magnus", OBJECT_1)
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipSpeaker()
-sm.flipBoxChat()
+sm.setSpeakerType(3)
 sm.sendNext("Kaiser...you're late.")
 
 
@@ -16,10 +16,9 @@ sm.moveCamera(False, 450, -600, 178)
 
 
 sm.setSpeakerID(3000131)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("Magnus! What are you doing here? What happened to Heliseum?")
 
 

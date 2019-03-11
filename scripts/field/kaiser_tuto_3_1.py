@@ -3,18 +3,16 @@
 # Heliseum : Heliseum Outskirts
 
 sm.setSpeakerID(0)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("Something feels wrong. Am I too late?")
 
 
 sm.setSpeakerID(0)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendSay("But even Darmoor himself can't break through the Shield of Heliseum. What happened here?")
 
 
@@ -24,10 +22,9 @@ sm.sendDelay(30)
 
 sm.forcedInput(0)
 sm.setSpeakerID(0)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("The boundary is unmarked...")
 
 
@@ -43,18 +40,16 @@ sm.sendDelay(2638)
 
 
 sm.setSpeakerID(0)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("The Eye of Protector Rock, which has never closed, is dark.")
 
 
 sm.setSpeakerID(0)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.flipBoxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendSay("Heliseum has already been captured? What about the shield?")
 
 
