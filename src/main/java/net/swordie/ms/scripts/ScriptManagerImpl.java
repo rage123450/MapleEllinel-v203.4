@@ -93,7 +93,6 @@ public class ScriptManagerImpl implements ScriptManager {
 	private static final String INTENDED_NPE_MSG = "Intended NPE by forceful script stop.";
 	private static final org.apache.log4j.Logger log = LogManager.getRootLogger();
 	private static final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName(SCRIPT_ENGINE_NAME);
-	private static final Map<Integer, Npc> npcs = new HashMap<>();
 	private static int objectID = 50000;
 	private Char chr;
 	private Field field;
@@ -956,6 +955,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	}
 
 	public void changeChannelAndWarp(int channel, int fieldID) {
+	    chr.getNpcs().clear();
 		Client c = chr.getClient();
 		c.setOldChannel(c.getChannel());
 		chr.changeChannelAndWarp((byte) channel, fieldID);
@@ -1034,6 +1034,7 @@ public class ScriptManagerImpl implements ScriptManager {
 		chr.setFieldInstanceType(in ? FieldInstanceType.SOLO : FieldInstanceType.CHANNEL);
 		if (!in) {
 			chr.getFields().clear();
+			chr.getNpcs().clear();
 		}
 		Field field = chr.getOrCreateFieldByCurrentInstanceType(id);
 		Portal portal = field.getPortalByID(portalID);
@@ -1238,11 +1239,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	// NPC methods
 	public void sendNpcLeaveField(int objectID) {
-		Npc npc = npcs.getOrDefault(objectID, null);
-		if (npc != null) {
-			chr.write(NpcPool.npcLeaveField(npc));
-			npcs.remove(objectID);
-		}
+		chr.removePersonalNpcByObjectId(objectID, true);
 	}
 
 	public int sendNpcEnterField(int templateID, int x, int y) {
@@ -1256,22 +1253,22 @@ public class ScriptManagerImpl implements ScriptManager {
 			npc.setFh(chr.getField().findFootHoldBelow(new Position(x, y - 2)).getId());
 			npc.setNotRespawnable(true);
 			if (npc.getField() == null) {
-				npc.setField(field);
+				npc.setField(chr.getField());
 			}
-			npc.setObjectId(objectID++);
+			npc.setObjectId(chr.getField().getNewObjectID());
 			chr.write(NpcPool.npcEnterField(npc));
-			npcs.put(objectID, npc);
-			return objectID;
+			chr.addNpc(npc);
+			return npc.getObjectId();
 		}
 		return 0;
 	}
 
 	public void sendNpcController(int objectID, boolean controller) {
-		Npc npc = npcs.getOrDefault(objectID, null);
+		Npc npc = chr.getPersonalNpcByObjectId(objectID);
 		if (npc != null) {
 			chr.write(NpcPool.npcChangeController(npc, controller, !controller));
 			if (!controller) {
-				npcs.remove(objectID);
+				chr.removePersonalNpcByObjectId(objectID, false);
 			}
 		}
 	}
@@ -1287,12 +1284,12 @@ public class ScriptManagerImpl implements ScriptManager {
 			npc.setFh(chr.getField().findFootHoldBelow(new Position(x, y - 2)).getId());
 			npc.setNotRespawnable(true);
 			if (npc.getField() == null) {
-				npc.setField(field);
+				npc.setField(chr.getField());
 			}
-			npc.setObjectId(objectID++);
+			npc.setObjectId(chr.getField().getNewObjectID());
 			chr.write(NpcPool.npcChangeController(npc, true));
-			npcs.put(objectID, npc);
-			return objectID;
+			chr.addNpc(npc);
+			return npc.getObjectId();
 		}
 		return 0;
 	}
@@ -1308,7 +1305,7 @@ public class ScriptManagerImpl implements ScriptManager {
 		npc.setFh(chr.getField().findFootHoldBelow(new Position(x, y -2)).getId());
 		npc.setNotRespawnable(true);
 		if (npc.getField() == null) {
-			npc.setField(field);
+			npc.setField(chr.getField());
 		}
 
 		chr.getField().spawnLife(npc, chr);
@@ -1368,6 +1365,16 @@ public class ScriptManagerImpl implements ScriptManager {
 		nsi.setSpeakerType(speakerType);
 	}
 
+	public Life getLifeByObjectId(int objectID) {
+	    Life life = null;
+        if (chr.getPersonalNpcByObjectId(objectID) != null) {
+            life = chr.getPersonalNpcByObjectId(objectID);
+        } else {
+            life = field.getLifeByObjectID(objectID);
+        }
+        return life;
+    }
+
 	public void hideNpcByTemplateId(int npcTemplateId, boolean hide) {
 		hideNpcByTemplateId(npcTemplateId, hide, hide);
 	}
@@ -1390,18 +1397,12 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public void hideNpcByObjectId(int npcObjId, boolean hideTemplate, boolean hideNameTag) {
 		Field field = chr.getField();
-		Life life = field.getLifeByObjectID(npcObjId);
-		Npc npc = null;
+		Life life = getLifeByObjectId(npcObjId);
 		if(!(life instanceof Npc)) {
-			npc = npcs.getOrDefault(npcObjId, null);
-			if (npc == null){
-				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-				return;
-			}
-		} else {
-			npc = (Npc) life;
+			log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+			return;
 		}
-		chr.write(NpcPool.npcViewOrHide(npc.getObjectId(), !hideTemplate, !hideNameTag));
+		chr.write(NpcPool.npcViewOrHide(life.getObjectId(), !hideTemplate, !hideNameTag));
 	}
 
 	@Override
@@ -1418,18 +1419,12 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public void moveNpcByObjectId(int npcObjId, boolean left, int distance, int speed) {
 		Field field = chr.getField();
-		Life life = field.getLifeByObjectID(npcObjId);
-		Npc npc = null;
-		if(!(life instanceof Npc)) {
-			npc = npcs.getOrDefault(npcObjId, null);
-			if (npc == null){
-				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-				return;
-			}
-		} else {
-			npc = (Npc) life;
-		}
-		chr.write(NpcPool.npcSetForceMove(npc.getObjectId(), left, distance, speed));
+        Life life = getLifeByObjectId(npcObjId);
+        if(!(life instanceof Npc)) {
+            log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+            return;
+        }
+		chr.write(NpcPool.npcSetForceMove(life.getObjectId(), left, distance, speed));
 	}
 
 	@Override
@@ -1446,18 +1441,12 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public void flipNpcByObjectId(int npcObjId, boolean left) {
 		Field field = chr.getField();
-		Life life = field.getLifeByObjectID(npcObjId);
-		Npc npc = null;
-		if(!(life instanceof Npc)) {
-			npc = npcs.getOrDefault(npcObjId, null);
-			if (npc == null){
-				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-				return;
-			}
-		} else {
-			npc = (Npc) life;
-		}
-		chr.write(NpcPool.npcSetForceFlip(npc.getObjectId(), left));
+        Life life = getLifeByObjectId(npcObjId);
+        if(!(life instanceof Npc)) {
+            log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+            return;
+        }
+		chr.write(NpcPool.npcSetForceFlip(life.getObjectId(), left));
 	}
 
 	public void showNpcSpecialActionByTemplateId(int npcTemplateId, String effectName) {
@@ -1483,18 +1472,12 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public void showNpcSpecialActionByObjectId(int npcObjId, String effectName, int duration) {
 		Field field = chr.getField();
-		Life life = field.getLifeByObjectID(npcObjId);
-		Npc npc = null;
-		if(!(life instanceof Npc)) {
-			npc = npcs.getOrDefault(npcObjId, null);
-			if (npc == null){
-				log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
-				return;
-			}
-		} else {
-			npc = (Npc) life;
-		}
-		chr.write(NpcPool.npcSetSpecialAction(npc.getObjectId(), effectName, duration));
+        Life life = getLifeByObjectId(npcObjId);
+        if(!(life instanceof Npc)) {
+            log.error(String.format("npc %d is null or not an instance of Npc", npcObjId));
+            return;
+        }
+		chr.write(NpcPool.npcSetSpecialAction(life.getObjectId(), effectName, duration));
 	}
 
 	public void stopNpcSpecialActionByTemplateId(int npcTemplateId) {
@@ -1518,11 +1501,11 @@ public class ScriptManagerImpl implements ScriptManager {
 	}
 
 	public Npc getIntroNpc(int objectID) {
-		return npcs.getOrDefault(objectID, null);
+		return chr.getPersonalNpcByObjectId(objectID);
 	}
 
 	public int getIntroNpcObjectID(int templateID) {
-		Npc npc = npcs.values().stream().filter(n -> n.getTemplateId() == templateID).findFirst().orElse(null);
+		Npc npc = chr.getNpcs().values().stream().filter(n -> n.getTemplateId() == templateID).findFirst().orElse(null);
 		if (npc != null) {
 			return npc.getObjectId();
 		}

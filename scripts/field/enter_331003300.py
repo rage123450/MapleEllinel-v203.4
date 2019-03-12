@@ -14,3 +14,10 @@ sm.setQuestEx(22700, "kinePro", "0")
 sm.playSound("Sound/Field.img/flowervioleta/wink")
 sm.cameraSwitchNormal("pt_DP", 1000)
 sm.addPopUpSay(JAY, 2000, "#face10#K, those are the stronger ones! Take them out first!", "")
+
+while sm.hasMobsInField():
+    sm.waitForMobDeath()
+
+if sm.getQuestEx(22700, "kinePro").equals("0"):
+    sm.setQRValue(22733, "001001001")
+    sm.showFieldEffect("monsterPark/clearF", 0)

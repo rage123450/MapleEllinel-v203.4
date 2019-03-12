@@ -3,6 +3,7 @@ package net.swordie.ms.client.character;
 import net.swordie.ms.client.character.quest.QuestEx;
 import net.swordie.ms.constants.*;
 import net.swordie.ms.life.*;
+import net.swordie.ms.life.npc.Npc;
 import net.swordie.ms.loaders.containerclasses.ItemInfo;
 import net.swordie.ms.util.container.Tuple;
 import net.swordie.ms.Server;
@@ -341,6 +342,8 @@ public class Char {
 	private FieldInstanceType fieldInstanceType;
 	@Transient
 	private Map<Integer, Field> fields = new HashMap<>();
+	@Transient
+	private Map<Integer, Npc> npcs = new HashMap<>();
 	@Transient
 	private int bulletIDForAttack;
 	@Transient
@@ -2581,6 +2584,7 @@ public class Char {
 		if (toField == null) {
 			return;
 		}
+		getNpcs().clear();
 		TemporaryStatManager tsm = getTemporaryStatManager();
 		for (AffectedArea aa : tsm.getAffectedAreas()) {
 			tsm.removeStatsBySkill(aa.getSkillID());
@@ -3532,7 +3536,27 @@ public class Char {
 		return getFields().get(id);
 	}
 
-	public int calculateBulletIDForAttack() {
+	public Map<Integer, Npc> getNpcs() {
+		return npcs;
+	}
+
+	public void addNpc(Npc npc) {
+		getNpcs().put(npc.getObjectId(), npc);
+	}
+
+	public Npc getPersonalNpcByObjectId(int id) {
+		return getNpcs().getOrDefault(id, null);
+	}
+
+	public void removePersonalNpcByObjectId(int objectID, boolean packet) {
+        Npc npc = getPersonalNpcByObjectId(objectID);
+        if (npc != null) {
+            if (packet) write(NpcPool.npcLeaveField(npc));
+            getNpcs().remove(objectID);
+        }
+    }
+
+    public int calculateBulletIDForAttack() {
 		Item weapon = getEquippedInventory().getFirstItemByBodyPart(Weapon);
 		if (weapon == null) {
 			return 0;

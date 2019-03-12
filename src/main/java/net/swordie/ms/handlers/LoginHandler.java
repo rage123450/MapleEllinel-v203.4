@@ -230,7 +230,7 @@ public class LoginHandler {
                 curSelectedSubJob, gender, skin, face, hair, items);
         JobManager.getJobById(job.getJobId(), chr).setCharCreationStats(chr);
         chr.setMatrixInventory(MatrixInventory.getDefault());
-        chr.setFuncKeyMap(FuncKeyMap.getDefaultMapping());
+        chr.setFuncKeyMap(FuncKeyMap.getDefaultMapping(keySettingType));
         c.getAccount().addCharacter(chr);
         DatabaseManager.saveToDB(c.getAccount());
 

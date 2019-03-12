@@ -1259,7 +1259,6 @@ public class Mob extends Life {
         for (Char chr : getDamageDone().keySet()) {
             chr.getQuestManager().handleMobKill(this);
             chr.getTemporaryStatManager().addSoulMPFromMobDeath();
-            handleCustomMobKill(chr);
             if (!chr.getAccount().getMonsterCollection().hasMob(getTemplateId())) {
                 chr.getAccount().getMonsterCollection().addMobAndUpdateClient(getTemplateId(), chr);
             }
@@ -1335,52 +1334,6 @@ public class Mob extends Life {
         int totalMesoRate = mesoRateMob + mostDamageCharMesoRate;
         int totalDropRate = dropRateMob + mostDamageCharDropRate;
         getField().drop(getDrops(), getField().getFootholdById(fhID), getPosition(), ownerID, totalMesoRate, totalDropRate);
-    }
-
-    private void handleCustomMobKill(Char chr) {
-        Field field = chr.getField();
-        if (field == null) {
-            return;
-        }
-        int fieldID = field.getId();
-        switch (getTemplateId()) {
-            case 9300545:
-            case 9300546:
-                // Kaiser Introduction
-                if (fieldID == 940001010 && field.getMobs().size() == 0) {
-                    chr.getScriptManager().warp(940001050, 0);
-                }
-                break;
-            case 9300811:
-                if (chr.hasQuestInProgress(38022)) {
-                    chr.getScriptManager().setQRValue(38022, "clear");
-                }
-                break;
-            case 2700300:
-                if (fieldID == 331001130 && field.getMobs().size() == 0) {
-                    if (chr.getScriptManager().getQuestEx(22700, "kinetuto2").equals("0")) {
-                        chr.getScriptManager().setQuestEx(22700, "kinetuto2", "1");
-                    }
-                    chr.getScriptManager().playSound("Party1/Clear");
-                    chr.getScriptManager().showFieldEffect("monsterPark/clear", 0);
-
-                }
-                break;
-            case 2700302:
-                if (chr.getScriptManager().getQuestEx(22700, "kinetuto").equals("0") && fieldID == 331001120) {
-                    chr.getScriptManager().setQuestEx(22700, "kinetuto", "1");
-                    chr.getScriptManager().playSound("Party1/Clear");
-                }
-                break;
-            case 2700306:
-            case 2700307:
-            case 2700308:
-                if (chr.getScriptManager().getQuestEx(22700, "kinePro").equals("0") && fieldID == 331003300) {
-                    chr.getScriptManager().setQRValue(22733, "001001001");
-                    chr.getScriptManager().showFieldEffect("monsterPark/clearF", 0);
-                }
-                break;
-        }
     }
 
     public Map<Char, Long> getDamageDone() {

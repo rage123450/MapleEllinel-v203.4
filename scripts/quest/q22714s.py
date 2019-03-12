@@ -38,3 +38,11 @@ sm.sendDelay(1000)
 
 sm.sendNext("#face9#Ultimate: Metal Press#g [END]#k will crush everything in its path, including targets high above you.")
 sm.unlockForIntro()
+
+while sm.hasMobsInField():
+    sm.waitForMobDeath()
+if sm.getQuestEx(22700, "kinetuto2").equals("0"):
+    sm.setQuestEx(22700, "kinetuto2", "1")
+
+sm.playSound("Party1/Clear")
+sm.showFieldEffect("monsterPark/clear", 0)

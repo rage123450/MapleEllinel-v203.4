@@ -51,4 +51,5 @@ else:
     sm.createQuestWithQRValue(38022, "")
     sm.lockInGameUI(False)
 
-
+    sm.waitForMobDeath(8920100)
+    sm.setQRValue(38022, "clear")

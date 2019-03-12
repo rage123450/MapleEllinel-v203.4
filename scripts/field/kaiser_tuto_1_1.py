@@ -54,3 +54,6 @@ sm.sendDelay(0)
 sm.setTemporarySkillSet(0)
 sm.setInGameDirectionMode(False, True, False, False)
 sm.showFieldEffect("lightning/screenMsg/0", 0)
+while sm.hasMobsInField():
+    sm.waitForMobDeath()
+sm.warp(940001050, 0)

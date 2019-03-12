@@ -18,3 +18,8 @@ sm.progressMessageFont(3, 20, 20, 0, "Defeat the target using basic attacks and 
 sm.unlockForIntro()
 sm.avatarOriented("UI/tutorial.img/kinesis/0")
 sm.playExclSoundWithDownBGM("Voice3.img/Kinesis/guide_06", 100)
+
+sm.waitForMobDeath(2700302)
+if sm.getQuestEx(22700, "kinetuto").equals("0"):
+    sm.setQuestEx(22700, "kinetuto", "1")
+    sm.playSound("Party1/Clear")
