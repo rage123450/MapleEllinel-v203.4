@@ -436,6 +436,16 @@ public class FieldEffect {
 
         return fieldEffect;
     }
+
+    public static FieldEffect objectStateByString(String name) {
+        FieldEffect fieldEffect = new FieldEffect();
+        fieldEffect.setFieldEffectType(FieldEffectType.ObjectStateByString);
+
+        fieldEffect.setString(name);
+
+        return fieldEffect;
+    }
+
     public FieldEffectType getFieldEffectType() {
         return fieldEffectType;
     }

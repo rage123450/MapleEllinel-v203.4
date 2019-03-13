@@ -215,7 +215,10 @@ public class LoginHandler {
             c.getAccount().getOffenseManager().addOffense("Tried to add items unavailable on char creation.");
             code = CharNameResult.Unavailable_CashItem;
         }
-
+        if (JobConstants.LoginJob.getLoginJobById(curSelectedRace).getFlag() == JobConstants.LoginJob.JobFlag.DISABLED.getFlag() && !c.getAccount().isManagerAccount()) {
+            c.getAccount().getOffenseManager().addOffense("Tried to create character with unavailable/disabled job.");
+            code = CharNameResult.Unavailable_CashItem;
+        }
         if (!GameConstants.isValidName(name)) {
             code = CharNameResult.Unavailable_Invalid;
         } else if (Char.getFromDBByName(name) != null){

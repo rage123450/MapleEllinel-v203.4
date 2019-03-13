@@ -32,10 +32,9 @@ sm.sendDelay(420)
 
 sm.forcedInput(0)
 sm.setSpeakerID(2159377)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.setPlayerAsSpeaker()
-sm.boxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("What was that memory? I cannot recall it... like it's covered in static...")
 
 
@@ -44,10 +43,9 @@ sm.sendDelay(1200)
 
 
 sm.setSpeakerID(2159377)
-sm.setSpeakerType(3)
 sm.removeEscapeButton()
 sm.setPlayerAsSpeaker()
-sm.boxChatPlayerAsSpeaker()
+sm.setSpeakerType(3)
 sm.sendNext("I need to talk to that woman before Professor Gelimer returns. She must be in a cell.")
 
 

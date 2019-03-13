@@ -737,32 +737,32 @@ public class JobConstants {
     }
 
     public enum LoginJob {
-        RESISTANCE(0, JobFlag.ENABLED, JobEnum.CITIZEN),
-        EXPLORER(1, JobFlag.ENABLED, JobEnum.BEGINNER),
-        CYGNUS(2, JobFlag.ENABLED, JobEnum.NOBLESSE),
-        ARAN(3, JobFlag.ENABLED, JobEnum.LEGEND),
-        EVAN(4, JobFlag.ENABLED, JobEnum.EVAN_NOOB),
-        MERCEDES(5, JobFlag.ENABLED, JobEnum.MERCEDES),
-        DEMON(6, JobFlag.ENABLED, JobEnum.DEMON_SLAYER),
-        PHANTOM(7, JobFlag.ENABLED, JobEnum.PHANTOM),
-        DUAL_BLADE(8, JobFlag.ENABLED, JobEnum.BEGINNER),
-        MIHILE(9, JobFlag.ENABLED, JobEnum.NAMELESS_WARDEN),
-        LUMINOUS(10, JobFlag.ENABLED, JobEnum.LUMINOUS),
+        RESISTANCE(0, JobFlag.DISABLED, JobEnum.CITIZEN),
+        EXPLORER(1, JobFlag.DISABLED, JobEnum.BEGINNER),
+        CYGNUS(2, JobFlag.DISABLED, JobEnum.NOBLESSE),
+        ARAN(3, JobFlag.DISABLED, JobEnum.LEGEND),
+        EVAN(4, JobFlag.DISABLED, JobEnum.EVAN_NOOB),
+        MERCEDES(5, JobFlag.DISABLED, JobEnum.MERCEDES),
+        DEMON(6, JobFlag.DISABLED, JobEnum.DEMON_SLAYER),
+        PHANTOM(7, JobFlag.DISABLED, JobEnum.PHANTOM),
+        DUAL_BLADE(8, JobFlag.DISABLED, JobEnum.BEGINNER),
+        MIHILE(9, JobFlag.DISABLED, JobEnum.NAMELESS_WARDEN),
+        LUMINOUS(10, JobFlag.DISABLED, JobEnum.LUMINOUS),
         KAISER(11, JobFlag.ENABLED, JobEnum.KAISER),
         ANGELIC(12, JobFlag.ENABLED, JobEnum.ANGELIC_BUSTER),
-        CANNONER(13, JobFlag.ENABLED, JobEnum.BEGINNER),
+        CANNONER(13, JobFlag.DISABLED, JobEnum.BEGINNER),
         XENON(14, JobFlag.ENABLED, JobEnum.XENON),
-        ZERO(15, JobFlag.ENABLED, JobEnum.ZERO),
-        SHADE(16, JobFlag.ENABLED, JobEnum.SHADE),
+        ZERO(15, JobFlag.DISABLED, JobEnum.ZERO),
+        SHADE(16, JobFlag.DISABLED, JobEnum.SHADE),
         JETT(17, JobFlag.ENABLED, JobEnum.JETT1),
         HAYATO(18, JobFlag.ENABLED, JobEnum.HAYATO),
         KANNA(19, JobFlag.ENABLED, JobEnum.KANNA),
-        CHASE(20, JobFlag.ENABLED, JobEnum.BEAST_TAMER),
-        PINK_BEAN(21, JobFlag.ENABLED, JobEnum.PINK_BEAN_0),
-        KINESIS(22, JobFlag.ENABLED, JobEnum.KINESIS_0),
-        CADENA(23, JobFlag.ENABLED, JobEnum.CADENA),
-        ILLIUM(24, JobFlag.ENABLED, JobEnum.ILLIUM),
-        ARK(25, JobFlag.ENABLED, JobEnum.ARK);
+        CHASE(20, JobFlag.DISABLED, JobEnum.BEAST_TAMER),
+        PINK_BEAN(21, JobFlag.DISABLED, JobEnum.PINK_BEAN_0),
+        KINESIS(22, JobFlag.DISABLED, JobEnum.KINESIS_0),
+        CADENA(23, JobFlag.DISABLED, JobEnum.CADENA),
+        ILLIUM(24, JobFlag.DISABLED, JobEnum.ILLIUM),
+        ARK(25, JobFlag.DISABLED, JobEnum.ARK);
 
         private final int jobType, flag;
         private JobEnum beginJob;
@@ -805,14 +805,14 @@ public class JobConstants {
         }
     }
 
-    public static void encode(OutPacket outPacket) {
+    public static void encode(OutPacket outPacket, boolean isManagerAccount) {
         outPacket.encodeByte(enableJobs);
         if (enableJobs) {
             // Job Order location: UI.wz/Login.img/RaceSelect_new/order/X
             outPacket.encodeByte(jobOrder);
             for (LoginJob loginJobId : LoginJob.values()) {
-                outPacket.encodeByte(loginJobId.getFlag());
-                outPacket.encodeShort(loginJobId.getFlag());
+                outPacket.encodeByte(isManagerAccount ? 1 : loginJobId.getFlag());
+                outPacket.encodeShort(isManagerAccount ? 1 : loginJobId.getFlag());
             }
         }
     }

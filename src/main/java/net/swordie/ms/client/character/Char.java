@@ -4405,7 +4405,7 @@ public class Char {
 		if (direction == null) {
 			currentDirectionNode.put(node, 0);
 		}
-		return currentDirectionNode.get(node);
+		return currentDirectionNode.getOrDefault(node, 0);
 	}
 
 	public void increaseCurrentDirectionNode(int node) {

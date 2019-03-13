@@ -1,5 +1,7 @@
-# Honnou-ji Eastern Gate | Honnou-ji Eastern grounds
-# Author: Tiger
+# Created by MechAviv
+# Map ID :: 807100001
+# NPC ID :: 9131009
+# Honnou-ji Eastern Door
 
 if not sm.hasMobsInField():
     sm.removeSkill(40011183)

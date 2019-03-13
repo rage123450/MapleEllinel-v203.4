@@ -1,8 +1,9 @@
 # Created by MechAviv
-# Map ID :: 807100110
-# Unknown : Unknown
+# Main kanna introduction script
 
-if sm.getFieldID() == 807100110:
+FIELD_ID = sm.getFieldID()
+
+if FIELD_ID == 807100110:
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(True, False, False, False)
@@ -14,11 +15,10 @@ if sm.getFieldID() == 807100110:
     sm.showFieldEffect("JPKanna/text0", 0)
     sm.sendDelay(7000)
 
-
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(False, True, False, False)
     sm.warp(807100100, 1)
-elif sm.getFieldID() == 807100100:
+elif FIELD_ID == 807100100:
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(True, False, False, False)
@@ -28,139 +28,99 @@ elif sm.getFieldID() == 807100100:
 
     sm.forcedInput(0)
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendNext("I can already feel the dark energy burning my skin.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.flipSpeaker()
     sm.flipDialoguePlayerAsSpeaker()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("This place gives me goosebumps.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.flipSpeaker()
     sm.flipDialoguePlayerAsSpeaker()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("There's a lot of noise.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("We may not be the only intruders.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.flipSpeaker()
     sm.flipDialoguePlayerAsSpeaker()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("Whatever's going on, I don't like it. Do you think someone else could have received the same orders?")
 
 
     sm.setSpeakerID(9131006)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("Leave the worrying to me, Kanna. You hurry and stop the ritual.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("The others have gone to the Northern Wing or the southwestern area. Kenshin's right. You need to focus on stopping the ritual.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("We think it's taking place in the Western Wing. If you can somehow disrupt it, the power flowing into the Temple will be cut off. You'll have to destroy the altar in the basement to fully stop the ritual.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.flipSpeaker()
     sm.flipDialoguePlayerAsSpeaker()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("Got it.")
 
 
     sm.setSpeakerID(9131003)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("You must hurry, Kanna!")
 
 
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(False, True, False, False)
-    # Unhandled Field Effect [ObjectStateByString] Packet: 02 06 00 67 75 69 64 65 31
-    # Unhandled Field Effect [ObjectStateByString] Packet: 02 06 00 67 75 69 64 65 32
-    # Unhandled Field Effect [ObjectStateByString] Packet: 02 06 00 67 75 69 64 65 33
-elif sm.getFieldID() == 807100111:
+    sm.objectStateByString("guide1")
+    sm.objectStateByString("guide2")
+    sm.objectStateByString("guide3")
+elif FIELD_ID == 807100111:
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(True, False, False, False)
@@ -171,20 +131,34 @@ elif sm.getFieldID() == 807100111:
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(False, True, False, False)
     sm.warp(807100101, 1)
-elif sm.getFieldID() == 807100111:
+elif FIELD_ID == 807100112:
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(True, False, False, False)
     sm.showFieldEffect("JPKanna/text2", 0)
     sm.sendDelay(7000)
 
+
+    sm.completeQuest(63363)
+    # [QUEST_RESULT] [0B 83 F7 00 00 50 7B 89 00 8A F7 00 00 00 ]
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(False, True, False, False)
-    sm.warp(807100102, 1)
-elif sm.getFieldID() == 807100102:
+    sm.warpInstanceIn(807100102, 1)
+elif FIELD_ID == 807100102:
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(True, False, False, False)
+    sm.spawnMob(9421572, -450, 32, False)
+    sm.spawnMob(9421572, -360, 32, False)
+    sm.spawnMob(9421572, -270, 32, False)
+    sm.spawnMob(9421572, -180, 32, False)
+    sm.spawnMob(9421572, -90, 32, False)
+    sm.spawnMob(9421572, 0, 32, False)
+    sm.spawnMob(9421572, 90, 32, False)
+    sm.spawnMob(9421572, 180, 32, False)
+    sm.spawnMob(9421572, 270, 32, False)
+    sm.spawnMob(9421572, 360, 32, False)
+    sm.spawnMob(9421572, 450, 32, False)
     sm.showEffect("Effect/DirectionJP3.img/effect/kannaTuto/balloonMsg/1", 0, 0, -120, -2, -2, False, 0)
     sm.sendDelay(2000)
 
@@ -199,14 +173,14 @@ elif sm.getFieldID() == 807100102:
 
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(False, True, False, False)
-    sm.addPopUpSay(9130081, 5000, "#eEliminate the enemies!#n\r\n", "")
+    sm.addPopUpSay(9130081, 5000, "#eEliminate the enemies!#n                                  ", "")
     sm.chatScript("Eliminate the enemies!")
     sm.showFieldEffect("aran/tutorialGuide2", 0)
     sm.removeSkill(40021183)
     sm.removeSkill(40021184)
     sm.removeSkill(40021185)
     sm.removeSkill(40021186)
-elif sm.getFieldID() == 807100103:
+elif FIELD_ID == 807100103:
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(True, False, False, False)
@@ -252,11 +226,12 @@ elif sm.getFieldID() == 807100103:
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(False, True, False, False)
     sm.warp(807100104, 0)
-elif sm.getFieldID() == 807100104:
+elif FIELD_ID == 807100104:
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(True, False, False, False)
-    sm.showNpcSpecialActionByTemplateId(9131004, "back", 0)
+    OBJECT_1 = sm.sendNpcController(9131004, 228, 71)
+    sm.showNpcSpecialActionByObjectId(OBJECT_1, "back", 0)
     sm.forcedInput(2)
     sm.sendDelay(3500)
 
@@ -295,24 +270,19 @@ elif sm.getFieldID() == 807100104:
     sm.setTemporarySkillSet(0)
     sm.setInGameDirectionMode(False, True, False, False)
     sm.warp(807100105, 0)
-elif sm.getFieldID() == 807100105:
+elif FIELD_ID == 807100105:
+    sm.curNodeEventEnd(True)
+    sm.setTemporarySkillSet(0)
+    sm.setInGameDirectionMode(True, False, False, False)
+    sm.sendDelay(1000)
     if "1" not in sm.getQRValue(57376):
-        sm.curNodeEventEnd(True)
-        sm.setTemporarySkillSet(0)
-        sm.setInGameDirectionMode(True, False, False, False)
-        sm.sendDelay(1000)
-
+        sm.levelUntil(10)
         sm.createQuestWithQRValue(57376, "1")
-        # Unhandled Stat Changed [MMP] Packet: 00 00 00 20 00 00 00 00 00 00 64 00 00 00 FF 00 00 00 00
         sm.setJob(4200)
-        # Unhandled Stat Changed [STR] Packet: 00 00 40 00 00 00 00 00 00 00 04 00 FF 00 00 00 00
-        # Unhandled Stat Changed [DEX] Packet: 00 00 80 00 00 00 00 00 00 00 04 00 FF 00 00 00 00
-        # Unhandled Stat Changed [INTE] Packet: 00 00 00 01 00 00 00 00 00 00 23 00 FF 00 00 00 00
-        # Unhandled Stat Changed [AP] Packet: 00 00 00 40 00 00 00 00 00 00 17 00 FF 00 00 00 00
+        sm.resetStats()
         # Unhandled Stat Changed [HP] Packet: 00 00 00 04 00 00 00 00 00 00 DF 00 00 00 FF 00 00 00 00
         # Unhandled Stat Changed [MHP] Packet: 00 00 00 08 00 00 00 00 00 00 C2 00 00 00 FF 00 00 00 00
-        sm.addSp(6, True)
-        # Unhandled Stat Changed [MHP] Packet: 00 00 00 08 00 00 00 00 00 00 EE 01 00 00 FF 00 00 00 00
+        sm.addSP(6, True)
         # [INVENTORY_GROW] [01 1C ]
         # [INVENTORY_GROW] [02 1C ]
         # [INVENTORY_GROW] [03 1C ]
@@ -323,7 +293,8 @@ elif sm.getFieldID() == 807100105:
         # Inventory Operation with 1 operations.
         # Unhandled Stat Changed [INSIGHT_EXP] Packet: 00 00 00 00 20 00 00 00 00 00 20 2B 00 00 FF 00 00 00 00
         # Unhandled Message [INC_NON_COMBAT_STAT_EXP_MESSAGE] Packet: 14 00 00 20 00 00 00 00 00 20 2B 00 00
-        sm.playURLVideoByScript("http://nxcache.nexon.net/maplestory/video/yt/JPKanna.html")
+
+    sm.playURLVideoByScript("http://nxcache.nexon.net/maplestory/video/yt/JPKanna.html")
 
 
     sm.setTemporarySkillSet(0)

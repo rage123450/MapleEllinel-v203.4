@@ -13,30 +13,22 @@ else:
 
 
     sm.setSpeakerID(9131010)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.flipSpeaker()
     sm.flipDialoguePlayerAsSpeaker()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendNext("It seems like the others have succeeded as well. The barrier is collapsing.")
 
 
     sm.setSpeakerID(9131010)
-    sm.setSpeakerType(3)
     sm.removeEscapeButton()
     sm.flipSpeaker()
     sm.flipDialoguePlayerAsSpeaker()
     sm.setBoxChat()
-    sm.boxChatPlayerAsSpeaker()
-    sm.setBoxOverrideSpeaker()
-    sm.flipBoxChat()
-    sm.flipBoxChatPlayerAsSpeaker()
     sm.setColor(1)
+    sm.setSpeakerType(3)
     sm.sendSay("I need to hurry to the basement and take care of the altar.")
 
 

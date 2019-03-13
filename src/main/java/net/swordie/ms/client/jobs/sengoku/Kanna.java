@@ -2,6 +2,7 @@ package net.swordie.ms.client.jobs.sengoku;
 
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
 import net.swordie.ms.client.character.items.Item;
 import net.swordie.ms.client.character.skills.Option;
@@ -375,5 +376,12 @@ public class Kanna extends Job {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         tsm.removeStat(FireBarrier, false);
         tsm.sendResetStatPacket();
+    }
+
+    @Override
+    public void setCharCreationStats(Char chr) {
+        super.setCharCreationStats(chr);
+        CharacterStat cs = chr.getAvatarData().getCharacterStat();
+        cs.setPosMap(807100110);
     }
 }

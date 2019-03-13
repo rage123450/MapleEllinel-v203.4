@@ -4,7 +4,7 @@
 
 OBJECT_1 = sm.sendNpcController(9270084, 143, -131)
 sm.showNpcSpecialActionByObjectId(OBJECT_1, "summon", 0)
-sm.sendSessionValue("mastema", 9270084)
+sm.sendSessionValue("mastema", OBJECT_1)
 sm.forcedInput(2)
 sm.showEffect("Effect/DirectionNewPirate.img/newPirate/balloonMsg1/16", 2000, 0, -100, -2, -2, False, 0)
 sm.sendDelay(1900)

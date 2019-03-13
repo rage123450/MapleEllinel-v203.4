@@ -9,7 +9,7 @@ sm.setStandAloneMode(True)
 sm.forcedInput(0)
 OBJECT_1 = sm.sendNpcController(9270083, 2415, -134)
 sm.showNpcSpecialActionByObjectId(OBJECT_1, "summon", 0)
-sm.sendSessionValue("Ade", 9270083)
+sm.sendSessionValue("Ade", OBJECT_1)
 sm.forcedInput(1)
 sm.sendDelay(1000)
 

@@ -1934,6 +1934,10 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	@Override
 	public void completeQuestNoRewards(int id) {
+		completeQuestNoRewards(id, true);
+	}
+
+	public void completeQuestNoRewards(int id, boolean automated) {
 		QuestManager qm = chr.getQuestManager();
 		Quest quest = qm.getQuests().get(id);
 		if (quest == null) {
@@ -1943,7 +1947,7 @@ public class ScriptManagerImpl implements ScriptManager {
 		quest.setStatus(QuestStatus.Completed);
 		qm.addQuest(quest);
 		chr.write(WvsContext.questRecordMessage(quest));
-		chr.chatMessage(String.format("Quest %d completed by completeQuestNoRewards", id));
+		if (automated) chr.chatMessage(String.format("Quest %d completed by completeQuestNoRewards", id));
 	}
 
 	@Override
@@ -2937,6 +2941,10 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void offSpineScreenAni(String layer, String path) {
 		chr.write(CField.fieldEffect(FieldEffect.offSpineScreenAni(layer, path)));
+	}
+
+	public void objectStateByString(String name) {
+		chr.write(CField.fieldEffect(FieldEffect.objectStateByString(name)));
 	}
 
 	public void spineScreen(boolean binary, boolean loop, boolean postRender, int endDelay, String path, String animation, String keyName) {

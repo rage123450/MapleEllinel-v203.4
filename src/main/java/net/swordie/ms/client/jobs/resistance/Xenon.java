@@ -2,6 +2,7 @@ package net.swordie.ms.client.jobs.resistance;
 
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
@@ -614,6 +615,13 @@ public class Xenon extends Job {
             }
         }
         super.handleHit(c, inPacket, hitInfo);
+    }
+
+    @Override
+    public void setCharCreationStats(Char chr) {
+        super.setCharCreationStats(chr);
+        CharacterStat cs = chr.getAvatarData().getCharacterStat();
+        cs.setPosMap(931060089);
     }
 }
 

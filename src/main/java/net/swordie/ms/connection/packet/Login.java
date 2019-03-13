@@ -7,10 +7,8 @@ import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.ServerConstants;
 import net.swordie.ms.enums.LoginType;
 import net.swordie.ms.ServerStatus;
-import net.swordie.ms.handlers.header.InHeader;
 import net.swordie.ms.handlers.header.OutHeader;
 import net.swordie.ms.util.Position;
-import net.swordie.ms.util.Util;
 import net.swordie.ms.util.container.Tuple;
 import net.swordie.ms.world.Channel;
 import net.swordie.ms.Server;
@@ -89,7 +87,7 @@ public class Login {
             outPacket.encodeLong(account.getChatUnblockDate());
             outPacket.encodeLong(account.getChatUnblockDate());
             outPacket.encodeInt(account.getCharacterSlots() + 3);
-            JobConstants.encode(outPacket);
+            JobConstants.encode(outPacket, account.isManagerAccount());
             outPacket.encodeByte(account.getGradeCode());
             outPacket.encodeInt(-1);
             outPacket.encodeByte(0); // idk
@@ -183,7 +181,7 @@ public class Login {
         outPacket.encodeInt(28);
         outPacket.encodeLong(0);
         outPacket.encodeString(""); //v25 = CInPacket::DecodeStr(iPacket_1, &nAge);
-        JobConstants.encode(outPacket);
+        JobConstants.encode(outPacket, account.isManagerAccount());
         outPacket.encodeByte(0);
         outPacket.encodeInt(-1);
 
