@@ -35,6 +35,8 @@ public class PartyResult implements Encodable {
                 PartyMember leader = party.getPartyLeader();
                 outPacket.encodeByte(leader.isOnline());
                 outPacket.encodeByte(party.isAppliable());
+                outPacket.encodeByte(0);
+                outPacket.encodeByte(0);// isDuoParty
                 outPacket.encodeString(party.getName());
                 break;
             case PartyReq_InviteIntrusion:
@@ -68,6 +70,8 @@ public class PartyResult implements Encodable {
             case PartyRes_JoinParty_Done:
                 outPacket.encodeInt(party.getId());
                 outPacket.encodeString(str); // sJoinerName
+                outPacket.encodeByte(0);// unknown
+                outPacket.encodeInt(0);// unknown
                 party.encode(outPacket);
                 break;
             case PartyRes_UserMigration:

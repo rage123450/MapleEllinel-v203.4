@@ -1,13 +1,18 @@
-# Hidden Street : Black Mage's Antechamber (927020060)  |  Used in Luminous' Tutorial
+# Created by MechAviv
+# ID :: [927020060]
+# Hidden Street : Black Mage's Antechamber
 
-sm.lockInGameUI(True)
 sm.curNodeEventEnd(True)
-
+sm.setTemporarySkillSet(0)
+sm.setInGameDirectionMode(True, True, False, False)
+sm.setSpeakerID(0)
 sm.removeEscapeButton()
 sm.flipDialoguePlayerAsSpeaker()
-sm.sendNext("Looks like Freud and Mercedes are already inside. "
-            "I hope I'm not too late.")
+sm.setSpeakerType(3)
+sm.sendNext("Looks like Freud and Mercedes are already inside. I hope I'm not too late.")
+
+
 sm.sendDelay(750)
 
-sm.curNodeEventEnd(True)
+
 sm.forcedInput(2)

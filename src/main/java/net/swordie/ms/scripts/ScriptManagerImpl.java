@@ -29,6 +29,7 @@ import net.swordie.ms.client.guild.result.GuildType;
 import net.swordie.ms.client.party.Party;
 import net.swordie.ms.client.party.PartyMember;
 import net.swordie.ms.client.trunk.TrunkOpen;
+import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.connection.packet.*;
 import net.swordie.ms.constants.*;
@@ -107,6 +108,8 @@ public class ScriptManagerImpl implements ScriptManager {
 	private boolean curNodeEventEnd;
 	private static final Lock fileReadLock = new ReentrantLock();
 	private int answerVal = 0;
+    private List<OutPacket> effects = new ArrayList<>();
+    private boolean isLockUI;
 
 	private ScriptManagerImpl(Char chr, Field field) {
 		this.chr = chr;
@@ -293,6 +296,7 @@ public class ScriptManagerImpl implements ScriptManager {
 			si.reset();
 		}
 		getMemory().clear();
+		getEffects().clear();
 		if (chr != null) {
 			WvsContext.dispose(chr);
 		}
@@ -420,6 +424,10 @@ public class ScriptManagerImpl implements ScriptManager {
 		getNpcScriptInfo().setMessageType(nmt);
 		chr.write(ScriptMan.scriptMessage(getNpcScriptInfo(), nmt));
 		getMemory().addMemoryInfo(getNpcScriptInfo());
+		for (OutPacket outPacket : getEffects()) {
+			chr.write(outPacket);
+		}
+		getEffects().clear();
 		Object response = null;
 		if (isActive(getLastActiveScriptType())) {
 			response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
@@ -658,6 +666,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void dispose(boolean stop) {
 		getNpcScriptInfo().reset();
 		getMemory().clear();
+		getEffects().clear();
 		stop(ScriptType.Npc);
 		stop(ScriptType.Portal);
 		stop(ScriptType.Item);
@@ -667,10 +676,12 @@ public class ScriptManagerImpl implements ScriptManager {
 			throw new NullPointerException(INTENDED_NPE_MSG); // makes the underlying script stop
 		}
 		setCurNodeEventEnd(false);
+		setLockUI(false);
 	}
 
 	public void dispose(ScriptType scriptType) {
 		getMemory().clear();
+        getEffects().clear();
 		stop(scriptType);
 	}
 
@@ -878,6 +889,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void setInGameDirectionMode(boolean lockUI, boolean blackFrame, boolean forceMouseOver, boolean showUI) {
 		if (chr != null) {
+		    setLockUI(lockUI);
 			chr.write(UserLocal.setInGameDirectionMode(lockUI, blackFrame, forceMouseOver, showUI));
 		}
 	}
@@ -887,9 +899,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	}
 
 	public void lockInGameUI(boolean lock, boolean blackFrame) {
-		if (chr != null) {
-			chr.write(UserLocal.setInGameDirectionMode(lock, blackFrame, false));
-		}
+	    setInGameDirectionMode(lock, blackFrame, false, false);
 	}
 
 	public void curNodeEventEnd(boolean enable) {
@@ -1859,6 +1869,14 @@ public class ScriptManagerImpl implements ScriptManager {
 		equip.updateToChar(chr);
 	}
 
+	public void unequip(int slot) {
+		Item equip = chr.getEquipInventory().getItemBySlot((short)slot);
+		if (equip != null) {
+			chr.unequip(equip);
+			equip.updateToChar(chr);
+		}
+	}
+
 	@Override
 	public boolean hasItem(int id) {
 		return hasItem(id, 1);
@@ -1973,6 +1991,16 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public boolean hasQuestCompleted(int id) {
 		return chr.getQuestManager().hasQuestCompleted(id);
+	}
+
+	// sends packet with the current data of quest ex (simply update the client)
+	public void sendQuestExUpdate(int questID, String key) {
+		String value = getQuestEx(questID, key);
+		if (value != null && !value.isEmpty()) {
+			chr.write(WvsContext.questRecordExMessage(chr.getQuestEx(questID)));
+		} else {
+			setQuestEx(questID, key, "0");// in most of cases it will be 0.
+		}
 	}
 
 	public void setQuestEx(int questID, String key, String value) {
@@ -2266,6 +2294,10 @@ public class ScriptManagerImpl implements ScriptManager {
 	public int sendDelay(int delay) {
 		getNpcScriptInfo().setMessageType(NpcMessageType.AskIngameDirection);
 		chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.delay(delay)));
+		for (OutPacket outPacket : getEffects()) {
+		    chr.write(outPacket);
+        }
+        getEffects().clear();
 		Object response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
 		if (response == null) {
 			throw new NullPointerException(INTENDED_NPE_MSG);
@@ -2352,6 +2384,10 @@ public class ScriptManagerImpl implements ScriptManager {
 	public int sayMonologue(String text, boolean isEnd) {
         getNpcScriptInfo().setMessageType(NpcMessageType.Monologue);
         chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.monologue(text, isEnd)));
+        for (OutPacket outPacket : getEffects()) {
+        	chr.write(outPacket);
+		}
+		getEffects().clear();
         Object response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
         if (response == null) {
             throw new NullPointerException(INTENDED_NPE_MSG);
@@ -2510,23 +2546,48 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	@Override
 	public void showEffect(String dir, int placement, int delay) {
-		chr.write(User.effect(Effect.effectFromWZ(dir, false, delay, placement, 0)));
+	    OutPacket outPacket = User.effect(Effect.effectFromWZ(dir, false, delay, placement, 0));
+	    if (isLockUI()) {
+	        effects.add(outPacket);
+        } else {
+	        chr.write(outPacket);
+        }
 	}
 
 	public void createFieldTextEffect(String msg, int letterDelay, int showTime, int clientPosition, int boxPosX, int boxPosY, int align, int lineSpace, TextEffectType type, int enterType, int leaveType) {
-		chr.write(User.effect(Effect.createFieldTextEffect(msg, letterDelay, showTime, clientPosition, new Position(boxPosX, boxPosY), align, lineSpace, type, enterType, leaveType)));
-	}
+        OutPacket outPacket = User.effect(Effect.createFieldTextEffect(msg, letterDelay, showTime, clientPosition, new Position(boxPosX, boxPosY), align, lineSpace, type, enterType, leaveType));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
+    }
 
 	public void createFieldTextEffect(String msg, int letterDelay, int showTime, int clientPosition, int boxPosX, int boxPosY, int align, int lineSpace, int type, int enterType, int leaveType) {
-		chr.write(User.effect(Effect.createFieldTextEffect(msg, letterDelay, showTime, clientPosition, new Position(boxPosX, boxPosY), align, lineSpace, type, enterType, leaveType)));
+        OutPacket outPacket = User.effect(Effect.createFieldTextEffect(msg, letterDelay, showTime, clientPosition, new Position(boxPosX, boxPosY), align, lineSpace, type, enterType, leaveType));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
 	}
 
 	public void avatarOriented(String effectPath) {
-		chr.write(User.effect(Effect.avatarOriented(effectPath)));
+        OutPacket outPacket = User.effect(Effect.avatarOriented(effectPath));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
 	}
 
 	public void reservedEffect(String effectPath) {
-		chr.write(User.effect(Effect.reservedEffect(effectPath)));
+        OutPacket outPacket = User.effect(Effect.reservedEffect(effectPath));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
 
 		String[] splitted = effectPath.split("/");
 		String sceneName = splitted[splitted.length - 2];
@@ -2542,20 +2603,51 @@ public class ScriptManagerImpl implements ScriptManager {
 		}
 	}
 
-	public void reservedEffectRepeat(String effectPath, boolean start) { chr.write(User.effect(Effect.reservedEffectRepeat(effectPath, start))); }
+	public void reservedEffectRepeat(String effectPath, boolean start) {
+	    OutPacket outPacket = User.effect(Effect.reservedEffectRepeat(effectPath, start));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
+	}
 
 	public void reservedEffectRepeat(String effectPath) { reservedEffectRepeat(effectPath, true); }
 
-	public void playExclSoundWithDownBGM(String soundPath, int volume) { chr.write(User.effect(Effect.playExclSoundWithDownBGM(soundPath, volume))); }
+	public void playExclSoundWithDownBGM(String soundPath, int volume) {
+	    OutPacket outPacket = User.effect(Effect.playExclSoundWithDownBGM(soundPath, volume));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
+	}
 
-	public void blindEffect(boolean blind) { chr.write(User.effect(Effect.blindEffect(blind))); }
+	public void blindEffect(boolean blind) {
+	    OutPacket outPacket = User.effect(Effect.blindEffect(blind));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
+	}
 
 	public void fadeInOut(int fadeIn, int delay, int fadeOut, int alpha) {
-		chr.write(User.effect(Effect.fadeInOut(fadeIn, delay, fadeOut, alpha)));
+		OutPacket outPacket = User.effect(Effect.fadeInOut(fadeIn, delay, fadeOut, alpha));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
 	}
 
 	public void speechBalloon(boolean normal, int range, int nameHeight, String speech, int time, int origin, int x, int y, int z, int lineSpace, int templateID) {
-		chr.write(User.effect(Effect.speechBalloon(normal, range, nameHeight, speech, time, origin, x, y, z, lineSpace, templateID, chr.getId())));
+		OutPacket outPacket = User.effect(Effect.speechBalloon(normal, range, nameHeight, speech, time, origin, x, y, z, lineSpace, templateID, chr.getId()));
+        if (isLockUI()) {
+            effects.add(outPacket);
+        } else {
+            chr.write(outPacket);
+        }
 	}
 
 	public String formatNumber(String number) {
@@ -2632,8 +2724,8 @@ public class ScriptManagerImpl implements ScriptManager {
 	}
 
 	public void setFuncKeyByScript(boolean add, int action, int key) {
-		chr.write(UserLocal.setFuncKeyByScript(add, action, key));
 		chr.getFuncKeyMap().putKeyBinding(key, add ? (byte) 1 : (byte) 0, action);
+		chr.write(UserLocal.setFuncKeyByScript(add, action, key));
 	}
 
 	public void addPopUpSay(int npcID, int duration, String message, String effect) {
@@ -2961,5 +3053,41 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	private ScriptMemory getMemory() {
 		return memory;
+	}
+
+	public void warpOutByUnityPortal() {
+		DimensionalMirror unityPortal = DimensionalMirror.getByMapId(chr.getFieldID());
+		if (unityPortal == null) {
+			warpInstanceOut(100000000);
+			return;
+		}
+		String qrValue = getQRValue(unityPortal.getQuestToSave());
+		if (!Util.isNumber(qrValue) || qrValue == null || qrValue.isEmpty()) {
+			warpInstanceOut(100000000);
+			setQRValue(unityPortal.getQuestToSave(), "");
+			return;
+		}
+		setQRValue(unityPortal.getQuestToSave(), "");
+		warpInstanceOut(Integer.parseInt(qrValue));
+	}
+
+    public List<OutPacket> getEffects() {
+        return effects;
+    }
+
+    public boolean isLockUI() {
+        return isLockUI;
+    }
+
+    public void setLockUI(boolean lockUI) {
+        isLockUI = lockUI;
+    }
+
+    public void sendRandomTeleportKey(int key) {
+		chr.write(UserLocal.randomTeleportKey(key));
+	}
+
+	public void sendLuminousChangedJob() {
+		chr.write(UserLocal.incLarknessReponse(-1, LarknessSkillType.NON_LARKNESS_SKILL));
 	}
 }

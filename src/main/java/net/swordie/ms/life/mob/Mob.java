@@ -1317,7 +1317,7 @@ public class Mob extends Life {
                 fhID = fhBelow.getId();
             }
         }
-        Set<DropInfo> dropInfoSet = getDrops();
+        //Set<DropInfo> dropInfoSet = getDrops();
         // Add consumable/equip drops based on min(charLv, mobLv)
         //int level = Math.min(mostDamageChar.getLevel(), getForcedMobStat().getLevel());
         //dropInfoSet.addAll(ItemConstants.getConsumableMobDrops(level));
@@ -1333,7 +1333,7 @@ public class Mob extends Life {
                 : 0); // Meso Drop Rate
         int totalMesoRate = mesoRateMob + mostDamageCharMesoRate;
         int totalDropRate = dropRateMob + mostDamageCharDropRate;
-        getField().drop(getDrops(), getField().getFootholdById(fhID), getPosition(), ownerID, totalMesoRate, totalDropRate);
+        getField().drop(getDrops(), getField().getFootholdById(fhID), getPosition(), ownerID, totalMesoRate, totalDropRate, getEliteType() > 0);
     }
 
     public Map<Char, Long> getDamageDone() {

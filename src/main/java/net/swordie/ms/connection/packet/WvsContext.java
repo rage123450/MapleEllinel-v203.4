@@ -27,6 +27,7 @@ import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.enums.*;
 import net.swordie.ms.enums.MessageType;
 import net.swordie.ms.handlers.header.OutHeader;
+import net.swordie.ms.life.drop.DropInfo;
 import net.swordie.ms.util.AntiMacro;
 import net.swordie.ms.util.FileTime;
 import net.swordie.ms.util.Position;
@@ -263,6 +264,7 @@ public class WvsContext {
         outPacket.encodeByte(0);
         outPacket.encodeByte(0);
         outPacket.encodeByte(0);
+        outPacket.encodeInt(0);
         if (hasMovingAffectingStat) {
             outPacket.encodeByte(0);
         }
@@ -1164,8 +1166,19 @@ public class WvsContext {
         OutPacket outPacket = new OutPacket(OutHeader.SESSION_VALUE);
 
         outPacket.encodeString(key);
-        outPacket.encodeString(key);
+        outPacket.encodeString(value);
 
+        return outPacket;
+    }
+
+    public static OutPacket sendMonsterBookCardData(int cardID, Set<DropInfo> drops) {
+        OutPacket outPacket = new OutPacket(OutHeader.MONSTER_BOOK_CARD_DATA);
+
+        outPacket.encodeInt(cardID);
+        outPacket.encodeShort(drops.size());
+        for(DropInfo drop : drops) {
+            outPacket.encodeInt(drop.getItemID());
+        }
         return outPacket;
     }
 }

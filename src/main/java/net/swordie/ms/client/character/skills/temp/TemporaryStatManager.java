@@ -9,6 +9,7 @@ import net.swordie.ms.client.character.skills.PartyBooster;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.client.jobs.adventurer.Warrior;
+import net.swordie.ms.client.jobs.legend.Luminous;
 import net.swordie.ms.client.jobs.resistance.Demon;
 import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.packet.Summoned;
@@ -51,7 +52,6 @@ public class TemporaryStatManager {
     private List<Integer> mobZoneStates;
     private int viperEnergyCharge;
     private StopForceAtom stopForceAtom;
-    private LarknessManager larknessManager;
     private Char chr;
     private List<TemporaryStatBase> twoStates = new ArrayList<>();
     private Set<AffectedArea> affectedAreas = new HashSet<>();
@@ -369,10 +369,7 @@ public class TemporaryStatManager {
             outPacket.encodeByte(getOption(AntiMagicShell).bOption);
         }
         if (hasNewStat(Larkness)) {
-            getLarknessManager().getDarkInfo().encode(outPacket);
-            getLarknessManager().getLightInfo().encode(outPacket);
-            getLarknessManager().encode(outPacket);
-
+            ((Luminous) chr.getJobHandler()).encodeLarkness(outPacket);
         }
         if (hasNewStat(IgnoreTargetDEF)) {
             outPacket.encodeInt(getOption(IgnoreTargetDEF).mOption);
@@ -993,10 +990,6 @@ public class TemporaryStatManager {
         this.stopForceAtom = stopForceAtom;
     }
 
-    public LarknessManager getLarknessManager() {
-        return larknessManager;
-    }
-
     public Char getChr() {
         return chr;
     }
@@ -1037,10 +1030,6 @@ public class TemporaryStatManager {
         removeStat(CharacterTemporaryStat.Slow, false);
         removeStat(CharacterTemporaryStat.Blind, false);
         sendResetStatPacket();
-    }
-
-    public void setLarknessManager(LarknessManager larknessManager) {
-        this.larknessManager = larknessManager;
     }
 
     public Set<AffectedArea> getAffectedAreas() {

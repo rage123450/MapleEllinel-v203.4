@@ -6,6 +6,7 @@ import java.util.Arrays;
  * Created on 3/21/2018.
  */
 public enum GuildType {
+    // TODO: update operations to v203
     Req_LoadGuild(0),
     Req_FindGuildByCid(1),
     Req_FindGuildByGID(2),

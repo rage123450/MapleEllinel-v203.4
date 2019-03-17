@@ -826,7 +826,7 @@ public class AdminCommands {
                 level++;
                 chr.setStat(Stat.level, level);
                 Map<Stat, Object> stats = new HashMap<>();
-                stats.put(Stat.level, (byte) level);
+                stats.put(Stat.level,  (int) level);
                 stats.put(Stat.exp, (long) 0);
                 chr.getClient().write(WvsContext.statChanged(stats));
                 chr.getJobHandler().handleLevelUp();

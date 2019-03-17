@@ -87,6 +87,7 @@ import net.swordie.ms.life.pet.PetSkill;
 import net.swordie.ms.loaders.*;
 import net.swordie.ms.loaders.containerclasses.*;
 import net.swordie.ms.loaders.containerclasses.ReactorInfo;
+import net.swordie.ms.scripts.ScriptManager;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.scripts.ScriptType;
 import net.swordie.ms.util.*;
@@ -1682,7 +1683,7 @@ public class WorldHandler {
                     function.updateToChar(chr);
                     break;
                 default:
-                    chr.chatMessage(Mob, String.format("Cash item %d is not implemented, notify Sjonnie pls.", itemID));
+                    chr.chatMessage(Mob, String.format("Cash item %d is not implemented.", itemID));
                     return;
             }
         }
@@ -4275,7 +4276,14 @@ public class WorldHandler {
         ItemInfo ii = ItemData.getItemInfoByID(cardID);
         Mob mob = MobData.getMobById(ii.getMobID());
         if (mob != null) {
+            if (chr.getAccount().isManagerAccount()) {
+                chr.write(WvsContext.sendMonsterBookCardData(cardID, mob.getDrops()));
+            } else {
+                chr.sendNoticeMsg("Disabled for security reason.");
+            }
             // TODO Figure out which packet to send
+            // MONSTER_BOOK_CARD_DATA
+            // [Card ID] [Size] [Items]
         }
     }
 
@@ -6025,7 +6033,9 @@ public class WorldHandler {
         int bookId = inPacket.decodeByte();
         if (chr.getQuestManager().hasQuestCompleted(32662)) {
             int questID = QuestConstants.DIMENSION_LIBRARY + bookId;
-            chr.getScriptManager().startScript(questID, "q" + Integer.toString(questID) + "s", ScriptType.Quest);
+            if (chr.getScriptManager().hasQuest(questID)) {
+                chr.getScriptManager().startScript(questID, "q" + Integer.toString(questID) + "s", ScriptType.Quest);
+            }
         }
     }
 
@@ -6245,8 +6255,7 @@ public class WorldHandler {
         if (!chr.hasSkill(skillId)) {
             return;
         }
-        Skill skill = chr.getSkill(skillId);
-        chr.getField().broadcastPacket(UserRemote.skillPrepare(chr, skillId, (byte) skill.getCurrentLevel()), chr);
+        chr.getJobHandler().handleSkillPrepare(chr, skillId);
     }
 
     public static void handleBroadcastEffectToSplit(Char chr, InPacket inPacket) {
@@ -6571,25 +6580,30 @@ public class WorldHandler {
     public static void handleUnityPortalRequest(Char chr, InPacket inPacket) {
         inPacket.decodeInt();// tick
         DimensionalMirror unityPortal = DimensionalMirror.getByID(inPacket.decodeInt());
-        if (unityPortal != null) {
-            if (unityPortal.getReqLevel() > chr.getLevel()) {
-                chr.write(UserLocal.noticeMsg(String.format("You must be at least Lv. %d to access this content.", unityPortal.getReqLevel()), true));
-                chr.write(CField.transferChannelReqIgnored(0));
+        if (unityPortal == null) {
+            chr.sendNoticeMsg(String.format("Unity portal not found."));
+            return;
+        }
+        ScriptManagerImpl scriptManager = chr.getScriptManager();
+        if (unityPortal.getReqLevel() > chr.getLevel()) {
+            chr.sendNoticeMsg(String.format("You must be at least Lv. %d to access this content.", unityPortal.getReqLevel()));
+            return;
+        }
+        int reqQuest = unityPortal.getReqQuest();
+        if (reqQuest != 0) {
+            if (!scriptManager.hasQuestCompleted(reqQuest)) {
+                chr.sendNoticeMsg("You must first complete the prerequisite quest.");
+                return;
+            }
+        }
+            if (unityPortal.getMapId() <= 0) {
+                chr.sendNoticeMsg(String.format("Unhandled unity portal [%s]", unityPortal.name()));
                 return;
             }
             if (unityPortal.getQuestToSave() != 0) {
                 chr.getScriptManager().createQuestWithQRValue(unityPortal.getQuestToSave(), Integer.toString(chr.getFieldID()));
             }
-            switch (unityPortal) {
-                case MUSHROOM_SHRINE:
-                    chr.getScriptManager().warp(800000000, 3);
-                    break;
-                    default:
-                        chr.write(UserLocal.noticeMsg(String.format("Unhandled unity portal [%s]", unityPortal.name()), true));
-                        chr.write(CField.transferChannelReqIgnored(0));
-                        break;
-            }
-        }
+            chr.getScriptManager().warp(unityPortal.getMapId(), unityPortal.getPortal());
     }
 
     public static void handleTransferFreeMarketRequest(Char chr, InPacket inPacket) {

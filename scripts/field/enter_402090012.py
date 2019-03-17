@@ -27,27 +27,21 @@ sm.sendDelay(1000)
 sm.sayMonologue("My memory keeps getting clearer.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/D/Male/1")
 
-
 sm.sayMonologue("And as it does, all of my old feelings come rushing back.", False)
-
-
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/D/Male/2")
+
 sm.sayMonologue("\r\nEverything I fought for was a lie.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/D/Male/3")
-
 
 sm.sayMonologue("Was the cruelty ever going to end?", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/D/Male/4")
 
-
 sm.sayMonologue("Nothing I did seemed to make any difference.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/D/Male/5")
 
-
 sm.sayMonologue("\r\n\r\n\r\nI had committed unforgiveable acts in the name of peace...", True)
-
-
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/D/Male/6")
+
 sm.blind(0, 0, 0, 0, 0, 1300, 0)
 sm.sendDelay(5000)
 

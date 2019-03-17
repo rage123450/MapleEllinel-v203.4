@@ -166,44 +166,37 @@ sm.sendDelay(3500)
 sm.sayMonologue("#fnArial##fs22#The more enemies I destroyed,", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/2")
 
-
 sm.sayMonologue("#fnArial##fs22#the more the darkness consumed me.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/3")
-
 
 sm.sayMonologue("#fnArial##fs22#\r\n\r\n\r\nIt hadn't always been a part of me... Had it?", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/4")
 
-
 sm.sayMonologue("#fnArial##fs22#\r\nIt was such a strange feeling...", True)
-
-
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/5")
+
 sm.sayMonologue("#fnArial##fs22#It was taking full control of my body.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/6")
 
-
 sm.sayMonologue("#fnArial##fs22#\r\nIt was terrifying. Yet...", False)
-
-
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/7")
+
 sm.sayMonologue("#fnArial##fs22#I couldn't resist such intoxicating power.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/8")
 
 
 sm.sayMonologue("#fnArial##fs22#\r\n\r\nI was torn between a desire to protect the innocent and a thirst for carnage.", False)
-
-
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/9")
+
 sm.sayMonologue("#fnArial##fs22#As the two warred within me, all I could do was cry out.", True)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/10")
 
 
 # Unhandled Stat Changed [MP] Packet: 00 00 00 10 00 00 00 00 00 00 7E 00 00 00 FF 00 00 00 00
 sm.OnOffLayer_On(500, "999", 0, -5, 0, "Effect/Direction17.img/effect/ark/ArkGaugeCooltime/800", 4, 1, -1, 0)
-sm.sendDelay(6350)
-sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/11")
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs65#Aaaahhh#fn바탕##fn나눔고딕 ExtraBold#!!", 50, 5850, 4, 0, 0, 0, 4, 300, 3, 300)
+sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/B/Male/11")
+sm.sendDelay(6350)
 
 
 # Update Quest Record EX | Quest ID: [34997] | Data: 27=h0;28=h1
@@ -261,9 +254,8 @@ sm.blind(0, 0, 0, 0, 0, 1000, 0)
 sm.sendDelay(1400)
 
 
-sm.sendDelay(1000)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs18#Several Days Later, Caravan Refuge", 100, 2200, 6, -50, -50, 1, 4, 0, 0, 0)
-
+sm.sendDelay(1000)
 
 sm.moveNpcByTemplateId(3001508, False, 1346, 220)
 sm.sendDelay(500)

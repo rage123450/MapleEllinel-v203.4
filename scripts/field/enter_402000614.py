@@ -128,37 +128,32 @@ sm.sendDelay(500)
 
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/1", 100)
-sm.sendDelay(3100)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Now they're sending rookies like us into the field...", 50, 2500, 7, 0, -50, 0, 4, 300, 3, 300)
+sm.sendDelay(3100)
 
 
-sm.sendDelay(3000)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#They must really be hurting on the front lines.", 50, 2600, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3000)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/2", 100)
-sm.sendDelay(4150)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#I guess you can't be picky about troops when you lose.", 50, 3650, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(4150)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/3", 100)
-sm.sendDelay(4760)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#But I'm not going to complain. It got us to an elite base that much faster!", 50, 4260, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(4760)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/4", 100)
-sm.sendDelay(7100)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Yeah, we're finally taking a big step forward.", 50, 6600, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(7100)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/5", 100)
-sm.sendDelay(5600)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Now we'll be able to make a difference.", 50, 5100, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(5600)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/6", 100)
-sm.sendDelay(5000)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Soldiers forever sworn to bring peace to Grandis.", 50, 4500, 7, 0, -50, 0, 4, 300, 3, 300)
+sm.sendDelay(5000)
 
 
 sm.sendDelay(500)
@@ -169,31 +164,26 @@ sm.sendDelay(500)
 
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/7", 100)
-sm.sendDelay(3500)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#We're ready. Let's get moving.", 50, 3000, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3500)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/8", 100)
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/8", 100)
-sm.sendDelay(1900)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Yes, Brigadier General, sir!", 50, 1400, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(1900)
 
 # Unhandled Stat Changed [HP] Packet: 00 00 00 04 00 00 00 00 00 00 8C 01 00 00 FF 00 00 00 00
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/12", 100)
-sm.sendDelay(2500)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#See you at the base.", 50, 2000, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(2500)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/11", 100)
-sm.sendDelay(2400)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Any advice, sir?", 50, 1900, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(2400)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/10", 100)
-sm.sendDelay(3700)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#You're good soldiers. I'm sure you'll be fine.", 50, 3200, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3700)
 
 sm.OnOffLayer_Off(500, "d2", 0)
 sm.OnOffLayer_Off(500, "d1", 0)
@@ -203,14 +193,12 @@ sm.sendDelay(500)
 
 sm.playSound("Sound/Voice4.img/GLAddVoice/Back/B/1", 100)
 sm.playSound("Sound/Voice4.img/GLAdd/Back/B/1", 100)
-sm.sendDelay(2500)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs55#For victory!", 50, 2000, 4, 0, 0, 0, 4, 300, 3, 300)
-
+sm.sendDelay(2500)
 
 sm.playSound("Sound/Voice4.img/GLAdd/Back/B/2", 100)
-sm.sendDelay(3350)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs55#Glory to the Flora!", 50, 2850, 4, 0, 0, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3350)
 
 sm.OnOffLayer_On(500, "d5", 0, -80, -1, "Effect/Direction17.img/effect/ark/illust/1/0", 4, 1, -1, 0)
 sm.OnOffLayer_On(500, "d6", 0, -80, -1, "Effect/Direction17.img/effect/ark/illust/1/1", 4, 1, -1, 0)
@@ -218,48 +206,41 @@ sm.sendDelay(1000)
 
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/14", 100)
-sm.sendDelay(4300)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Brigadier General Limbo... He's done so much good.", 50, 3800, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(4300)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/15", 100)
-sm.sendDelay(3600)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#That could be me one day.", 50, 3100, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3600)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/16", 100)
-sm.sendDelay(5700)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Ha! Sucking up to the boss already, huh?", 50, 4200, 7, 0, -50, 0, 4, 300, 3, 300)
+sm.sendDelay(5700)
 
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/17", 100)
-sm.sendDelay(3600)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#What!? I'm serious! Don't you want to be that great too?", 50, 1600, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3600)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/B/18", 100)
-sm.sendDelay(3500)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#One step at a time. We're going to be late. Let's go.", 50, 3000, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3500)
 
 sm.OnOffLayer_Off(500, "d6", 0)
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/19", 100)
-sm.sendDelay(3500)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Albaire!", 50, 3000, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3500)
 
 sm.sendDelay(1500)
 
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/22", 100)
-sm.sendDelay(2400)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#I guess it's really time for us to go.", 50, 1900, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(2400)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/B/Male/23", 100)
-sm.sendDelay(5000)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#I can't believe we've already been assigned to such an important base.", 50, 4500, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(5000)
 
 sm.sendDelay(1500)
 
@@ -363,36 +344,29 @@ sm.sendDelay(500)
 
 sm.sendDelay(1000)
 
-
+sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/1")
 sm.sayMonologue("#fs22##fnArial#I returned there several times after that.", False)
 
-
-sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/1")
-sm.sayMonologue("#fs22##fnArial#But I recalled nothing more from my past.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/2")
+sm.sayMonologue("#fs22##fnArial#But I recalled nothing more from my past.", False)
 
-
-sm.sayMonologue("#fs22##fnArial#\r\nI'm sure of one thing though.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/3")
+sm.sayMonologue("#fs22##fnArial#\r\nI'm sure of one thing though.", False)
 
 
-# Unhandled Stat Changed [MP] Packet: 00 00 00 10 00 00 00 00 00 00 01 01 00 00 FF 00 00 00 00
-sm.sayMonologue("#fs22##fnArial#There's still hope for us.", False)
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/4")
-
-
-sm.sayMonologue("#fs22##fnArial#A way to escape this planet.", False)
-
+sm.sayMonologue("#fs22##fnArial#There's still hope for us.", False)
 
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/5")
-sm.sayMonologue("#fs22##fnArial#\r\n\r\nThe power that broken crystal contains is our best chance. #fn바탕#", False)
+sm.sayMonologue("#fs22##fnArial#A way to escape this planet.", False)
+
 sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/6")
+sm.sayMonologue("#fs22##fnArial#\r\n\r\nThe power that broken crystal contains is our best chance. #fn바탕#", False)
 
-
+sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/7")
 sm.sayMonologue("#fs22##fnArial#All we have to do is find the rest of it.", True)
 
 
-sm.playExclSoundWithDownBGM("Voice4.img/Ark/Mono/C/Male/7")
 sm.sendDelay(1000)
 
 

@@ -1,2 +1,2 @@
-sm.chat("(Reactor) Not coded. Poke Sjonnie/Asura/Ergoth on discord. ID: " + str(parentID))
+sm.chat("Unhandled reactor script, Please update us in MapleEllinel forums. ID: " + str(parentID))
 sm.dispose()

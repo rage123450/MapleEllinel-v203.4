@@ -6,11 +6,11 @@ fields = {
 # 120000101 : [100000205, 2],
 }
 
-currentMap = sm.getFieldID()
-if currentMap == 120000101:# Pirates
-    sm.chatBlue("[WIP] no MapID for Hall of Pirates")
-elif currentMap in fields:
-    sm.warp(fields[currentMap][0], fields[currentMap][1])
-else:
-    sm.chat("This script (rankRoom.py) has not been coded for the given map (" + str(currentMap) + ")")
-sm.dispose()
+#currentMap = sm.getFieldID()
+#if currentMap == 120000101:# Pirates
+#    sm.chatBlue("[WIP] no MapID for Hall of Pirates")
+#elif currentMap in fields:
+#    sm.warp(fields[currentMap][0], fields[currentMap][1])
+#else:
+#    sm.chat("This script (rankRoom.py) has not been coded for the given map (" + str(currentMap) + ")")
+sm.systemMessage("This map has been closed temporarily. Please visit later.")

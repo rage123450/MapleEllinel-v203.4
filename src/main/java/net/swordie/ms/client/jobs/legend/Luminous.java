@@ -3,7 +3,6 @@ package net.swordie.ms.client.jobs.legend;
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.info.HitInfo;
-import net.swordie.ms.client.character.skills.LarknessManager;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
@@ -12,12 +11,15 @@ import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.packet.Effect;
 import net.swordie.ms.connection.packet.User;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.connection.packet.UserRemote;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.constants.SkillConstants;
 import net.swordie.ms.enums.ChatType;
+import net.swordie.ms.enums.LarknessSkillType;
 import net.swordie.ms.enums.Stat;
 import net.swordie.ms.handlers.EventManager;
 import net.swordie.ms.life.mob.Mob;
@@ -32,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 import static net.swordie.ms.client.character.skills.SkillStat.*;
 import static net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat.*;
+import static net.swordie.ms.enums.LarknessSkillType.DARK;
+import static net.swordie.ms.enums.LarknessSkillType.LIGHT;
 
 /**
  * Created on 12/14/2017.
@@ -47,6 +51,7 @@ public class Luminous extends Job {
 
     public static final int MAGIC_BOOSTER = 27101004; //Buff
     public static final int BLACK_BLESSING = 27100003;
+    public static final int PRESSURE_VOID = 27101202;
 
     public static final int SHADOW_SHELL = 27111004; //Buff
     public static final int RAY_OF_REDEMPTION = 27111101; // Attack + heals party members
@@ -65,6 +70,10 @@ public class Luminous extends Job {
     public static final int EQUALIZE = 27121054;
     public static final int HEROIC_MEMORIES_LUMI = 27121053;
     public static final int ARMAGEDDON = 27121052; //Stun debuff
+
+    // Constants
+    private static final int MAX_GAUGE = 10000;
+    private static final int MIN_GAUGE = -1;
 
     private int[] addedSkills = new int[] {
             EQUILIBRIUM,
@@ -87,6 +96,8 @@ public class Luminous extends Job {
 
     private long darkCrescendoTimer;
     private ScheduledFuture equilibriumTimer;
+    private int larkness = 5000;
+    private LarknessSkillType larknessDiraction = LarknessSkillType.MIX;
 
     public Luminous(Char chr) {
         super(chr);
@@ -98,10 +109,6 @@ public class Luminous extends Job {
                     chr.addSkill(skill);
                 }
             }
-
-            if (chr.getTemporaryStatManager().getLarknessManager() == null) {
-                chr.getTemporaryStatManager().setLarknessManager(new LarknessManager(chr));
-            }
         }
     }
 
@@ -110,7 +117,81 @@ public class Luminous extends Job {
         return JobConstants.isLuminous(id);
     }
 
+    public void updateLarknessGague(int skillID) {
+        if (chr.getJob() / 10 == 271) {
+            TemporaryStatManager tsm = c.getChr().getTemporaryStatManager();
+            boolean isLightSkill = SkillConstants.isLarknessLightSkill(skillID);
+            boolean isDarkSkill = SkillConstants.isLarknessDarkSkill(skillID);
+            if (larknessDiraction == LarknessSkillType.MIX) {
+                int reason = 0;
+                if (isLightSkill) {
+                    larkness = 1;
+                    larknessDiraction = LIGHT;
+                    sendLarkness(tsm, ECLIPSE);
+                } else if (isDarkSkill) {
+                    larkness = 9999;
+                    larknessDiraction = LarknessSkillType.DARK;
+                    sendLarkness(tsm, SUNFIRE);
+                }
+                if (reason != 0) sendLarkness(tsm, reason);
+            }
 
+            if (isLightSkill && larknessDiraction == LarknessSkillType.DARK) {
+                larkness -= getIncGague(skillID);
+                if (larkness <= 1) {
+                    larkness = 1;
+                    larknessDiraction = LIGHT;
+                    sendLarkness(tsm, ECLIPSE);
+                }
+            } else if (isDarkSkill && larknessDiraction == LIGHT) {
+                larkness += getIncGague(skillID);
+                if (larkness >= 9999) {
+                    larkness = 9999;
+                    larknessDiraction = LarknessSkillType.DARK;
+                    sendLarkness(tsm, SUNFIRE);
+                }
+            }
+            if(!tsm.hasStat(Larkness)) {
+                switch (larknessDiraction) {
+                    case LIGHT:
+                        sendLarkness(tsm, SUNFIRE);
+                        break;
+                    case DARK:
+                        sendLarkness(tsm, ECLIPSE);
+                        break;
+                }
+            }
+            sendIncLarknessResult();
+        }
+    }
+
+    public void sendLarkness(TemporaryStatManager tsm, int reasonID) {
+        Option o = new Option();
+        o.nOption = 1;
+        o.rOption = reasonID;
+        tsm.putCharacterStatValue(Larkness, o);
+        tsm.sendSetStatPacket();
+    }
+
+    public int getIncGague(int skillID) {
+        // TODO: handle bonus inc in hyper skills/ vskills
+        SkillInfo si = SkillData.getSkillInfoById(skillID);
+        return si.getValue(gauge, chr.getSkillLevel(skillID));
+    }
+
+    public void encodeLarkness(OutPacket outPacket) {
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        outPacket.encodeInt(tsm.getOption(Larkness).rOption);
+        outPacket.encodeInt(200000000);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(MAX_GAUGE);
+        outPacket.encodeInt(MIN_GAUGE);
+    }
+
+    public void sendIncLarknessResult() {
+        chr.write(UserLocal.incLarknessReponse(larkness, larknessDiraction));
+    }
 
     // Buff related methods --------------------------------------------------------------------------------------------
 
@@ -174,8 +255,8 @@ public class Luminous extends Job {
                 tsm.putCharacterStatValue(IndieStatR, o1);
                 break;
             case EQUALIZE:
-                LarknessManager lm = tsm.getLarknessManager();
-                lm.changeMode();
+                larknessDiraction = larknessDiraction == DARK ? LIGHT : DARK;
+                sendIncLarknessResult();
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 tsm.putCharacterStatValue(Larkness, o1);
@@ -201,16 +282,6 @@ public class Luminous extends Job {
 
     public boolean isBuff(int skillID) {
         return super.isBuff(skillID) || Arrays.stream(buffs).anyMatch(b -> b == skillID);
-    }
-
-    private void changeLarknessState(int skillId) {
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        LarknessManager lm = tsm.getLarknessManager();
-        if(SkillConstants.isLarknessLightSkill(skillId)) {
-            lm.addGauge(2500, false);
-        } else if(SkillConstants.isLarknessDarkSkill(skillId)) {
-            lm.addGauge(2500, true);
-        }
     }
 
     private void giveLunarTideBuff() {
@@ -309,10 +380,13 @@ public class Luminous extends Job {
 
     public void changeMode() {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        LarknessManager lm = tsm.getLarknessManager();
         Option o = new Option();
         o.nOption = 1;
-        o.rOption = lm.isDark() ? ECLIPSE : SUNFIRE;
+        if (larknessDiraction == LarknessSkillType.DARK) {
+            o.rOption = ECLIPSE;
+        } else if (larknessDiraction == LIGHT) {
+            o.rOption = SUNFIRE;
+        }
         tsm.putCharacterStatValue(Larkness, o);
         tsm.sendSetStatPacket();
     }
@@ -345,19 +419,9 @@ public class Luminous extends Job {
             slv = (byte) skill.getCurrentLevel();
             skillID = skill.getSkillId();
         }
-        if(chr.getJob() != 2004) { // Beginner Luminous
-            changeLarknessState(skillID);
-        }
         int crescendoProp = getCrescendoProp();
         if (hasHitMobs) {
-            if(!tsm.hasStat(Larkness)) {
-                LarknessManager lm = tsm.getLarknessManager();
-                Option o = new Option();
-                o.nOption = 1;
-                o.rOption = lm.isDark() ? ECLIPSE : SUNFIRE;
-                tsm.putCharacterStatValue(Larkness, o);
-                tsm.sendSetStatPacket();
-            }
+            updateLarknessGague(skillID);
             // Dark Crescendo
             if (tsm.hasStat(StackBuff)) {
                 if (skill != null && Util.succeedProp(crescendoProp)) {
@@ -445,7 +509,6 @@ public class Luminous extends Job {
         Skill skill = chr.getSkill(skillID);
         SkillInfo si = null;
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        LarknessManager lm = tsm.getLarknessManager();
         if(skill != null) {
             si = SkillData.getSkillInfoById(skillID);
         }
@@ -460,8 +523,8 @@ public class Luminous extends Job {
                 case ECLIPSE:
                 case SUNFIRE:
                 case CHANGE_LIGHT_DARK:
-
-                    lm.changeMode();
+                    larknessDiraction = larknessDiraction == DARK ? LIGHT : DARK;
+                    sendIncLarknessResult();
                     o1.nOption = 1;
                     o1.rOption = EQUILIBRIUM;
 //                    o1.tOption = SkillData.getSkillInfoById(EQUILIBRIUM).getValue(time, 1);
@@ -549,6 +612,28 @@ public class Luminous extends Job {
             }
             chr.write(User.effect(Effect.skillSpecial(skill.getSkillId())));
             chr.getField().broadcastPacket(UserRemote.effect(chr.getId(), Effect.skillSpecial(skill.getSkillId())));
+        }
+    }
+
+    @Override
+    public void handleSkillPrepare(Char chr, int skillID) {
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        Skill skill = chr.getSkill(skillID);
+        SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+        Option o = new Option();
+
+        byte slv = (byte) skill.getCurrentLevel();
+        switch (skillID) {
+            case PRESSURE_VOID:
+                o.nOption = si.getValue(x, slv);
+                o.rOption = skill.getSkillId();
+                tsm.putCharacterStatValue(KeyDownAreaMoving, o);
+                tsm.sendSetStatPacket();
+                break;
+            default:
+                super.handleSkillPrepare(chr, skillID);
+                chr.chatMessage("Unhandled skill prepare for luminous " + skillID);
+                break;
         }
     }
 

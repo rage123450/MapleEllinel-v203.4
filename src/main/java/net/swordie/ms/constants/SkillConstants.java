@@ -562,22 +562,6 @@ public class SkillConstants {
         return isZeroSkill(skillID) && skillID % 1000 / 100 == 1;
     }
 
-    public static boolean isLightmageSkill(int skillID) {
-        int prefix = skillID / 10000;
-        if(prefix == 8000) {
-            prefix = skillID / 100;
-        }
-        return prefix / 100 == 27 || prefix == 2004;
-    }
-
-    public static boolean isLarknessDarkSkill(int skillID) {
-        return skillID != 20041222 && isLightmageSkill(skillID) && skillID / 100 % 10 == 2;
-    }
-
-    public static boolean isLarknessLightSkill(int skillID) {
-        return skillID != 20041222 && isLightmageSkill(skillID) && skillID / 100 % 10 == 1;
-    }
-
     public static boolean isEquilibriumSkill(int skillID) {
         return skillID >= 20040219 && skillID <= 20040220;
     }
@@ -1519,5 +1503,18 @@ public class SkillConstants {
         short beginJob = JobConstants.JobEnum.getJobById(job).getBeginnerJobId();
         // xxxx0073, where xxxx is the "0th" job
         return beginJob * 10000 + 73;
+    }
+
+    public static boolean isLightMageSkill(int skillID) {
+        int skillRoot = getSkillRootFromSkill(skillID);
+        return skillRoot / 100 == 27 || skillRoot == 2004;
+    }
+
+    public static boolean isLarknessDarkSkill(int skillID) {
+        return skillID != 20041222 && isLightMageSkill(skillID) && skillID / 100 % 10 == 2;
+    }
+
+    public static boolean isLarknessLightSkill(int skillID) {
+        return skillID != 20041226 && isLightMageSkill(skillID) && skillID / 100 % 10 == 1;
     }
 }

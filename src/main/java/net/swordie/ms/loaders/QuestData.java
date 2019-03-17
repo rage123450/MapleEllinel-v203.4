@@ -18,7 +18,9 @@ import net.swordie.ms.util.Util;
 import net.swordie.ms.util.XMLApi;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,8 +31,30 @@ public class QuestData {
     private static Set<QuestInfo> baseQuests = new HashSet<>();
     private static final org.apache.log4j.Logger log = LogManager.getRootLogger();
     private static final boolean LOG_UNKS = false;
+    private static Map<Integer, String> questName = new HashMap<>();
+
+    public static void loadQuestNamesFromWZ() {
+        String wzDir = String.format("%s/Quest.wz/", ServerConstants.WZ_DIR);
+        String infoDir = wzDir + "QuestInfo.img.xml";
+        File file = new File(infoDir);
+        Node root = XMLApi.getRoot(file);
+        Node mainNode = XMLApi.getAllChildren(root).get(0);
+        for (Node questIDNode : XMLApi.getAllChildren(mainNode)) {
+            int questID = Integer.parseInt(XMLApi.getNamedAttribute(questIDNode, "name"));
+            for (Node infoNode : XMLApi.getAllChildren(questIDNode)) {
+                String name = XMLApi.getNamedAttribute(infoNode, "name");
+                String value = XMLApi.getNamedAttribute(infoNode, "value");
+                switch (name) {
+                    case "name":
+                        questName.put(questID, value);
+                        break;
+                }
+            }
+        }
+    }
 
     public static void loadQuestsFromWZ() {
+
         String wzDir = String.format("%s/Quest.wz/", ServerConstants.WZ_DIR);
         String checkDir = wzDir + "Check.img.xml";
         File file = new File(checkDir);
@@ -570,6 +594,19 @@ public class QuestData {
         log.info(String.format("Completed generating quest data in %dms.", System.currentTimeMillis() - start));
     }
 
+    public static void saveAllQuestNames() {
+        Util.makeDirIfAbsent(String.format("%s/quests", ServerConstants.DAT_DIR));
+        File file = new File(String.format("%s/quests/%s.dat", ServerConstants.DAT_DIR, "QuestNames"));
+        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(file))) {
+            dos.writeInt(questName.size());
+            for (Map.Entry<Integer, String> quest : questName.entrySet()) {
+                dos.writeInt(quest.getKey());
+                dos.writeUTF(quest.getValue());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private static void saveAllQuestInfos(String dir) {
         Util.makeDirIfAbsent(dir);
         for (QuestInfo qi : getBaseQuests()) {

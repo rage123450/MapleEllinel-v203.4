@@ -76,6 +76,9 @@ public class Party implements Encodable {
         for(PartyMember pm : partyMembers) {
             outPacket.encodeInt(pm != null && pm.isOnline() ? 1 : 0);
         }
+        for(PartyMember pm : partyMembers) {
+            outPacket.encodeInt(0);// is private ?
+        }
         outPacket.encodeInt(getPartyLeaderID());
         // end PARTYMEMBER struct
         for(PartyMember pm : partyMembers) {
@@ -87,10 +90,16 @@ public class Party implements Encodable {
             } else {
                 new TownPortal().encode(outPacket);
             }
+            // TownPortal == 16 bytes
+            outPacket.encodeByte(0);
+            outPacket.encodeByte(0);
+            outPacket.encodeByte(0);
+            outPacket.encodeByte(0);
         }
         outPacket.encodeByte(isAppliable() && !isFull());
+        outPacket.encodeByte(0);
         outPacket.encodeString(getName());
-        outPacket.encodeArr(new byte[50]);
+        outPacket.encodeArr(new byte[10]);
     }
 
     public int getPartyLeaderID() {

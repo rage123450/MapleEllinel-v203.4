@@ -111,9 +111,9 @@ public class Ark extends Job {
     private long lastEnergyUpdate = 0L;
 
     private int[] addedSkills = new int[] {
-            SPECTER_STATE,
-            SPECTRA_FARIGUE,
-            MASTER_CORRUPTION
+           // SPECTER_STATE,
+          //  SPECTRA_FARIGUE,
+          //  MASTER_CORRUPTION
     };
 
     public enum SpellChargeType {
@@ -727,6 +727,6 @@ public class Ark extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         chr.getAvatarData().getAvatarLook().setDrawElfEar(true);
-        chr.getAvatarData().getCharacterStat().setPosMap(100000000);
+        chr.getAvatarData().getCharacterStat().setPosMap(402090000);
     }
 }

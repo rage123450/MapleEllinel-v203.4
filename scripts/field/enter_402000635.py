@@ -295,9 +295,8 @@ sm.sendDelay(1000)
 
 
 sm.playSound("Sound/Voice4.img/Ark/Back/C/Male/1", 100)
-sm.sendDelay(5150)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#They're no match for us at all.", 50, 4650, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(5150)
 
 sm.sendDelay(1000)
 
@@ -308,56 +307,46 @@ sm.sendDelay(1000)
 
 
 sm.playSound("Sound/Voice4.img/Ark/Back/C/Male/2", 100)
-sm.sendDelay(5150)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#They call this a war for peace?", 50, 4650, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(5150)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/C/Male/3", 100)
-sm.sendDelay(5600)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#This is no war... It's a massacre.", 50, 5100, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(5600)
 
 sm.OnOffLayer_Off(500, "d1", 0)
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/C/4", 100)
-sm.sendDelay(4100)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs65#Ark! What are you doing?", 50, 3600, 4, 0, 0, 0, 4, 300, 3, 300)
-
+sm.sendDelay(4100)
 
 sm.OnOffLayer_On(1000, "d2", 0, -80, -1, "Effect/Direction17.img/effect/ark/illust/2/2", 4, 1, -1, 0)
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/C/5", 100)
-sm.sendDelay(4400)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Are you out of your mind?!", 50, 3900, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(4400)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/C/Male/6", 100)
-sm.sendDelay(5600)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Albaire, I can't do this any more.", 50, 5100, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(5600)
 
 sm.playSound("Sound/Voice4.img/Ark/Back/C/Male/7", 100)
-sm.sendDelay(6200)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#It's not right. It's not right at all.", 50, 5700, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(6200)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/C/8", 100)
-sm.sendDelay(3200)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Don't be so naive.", 50, 2700, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(3200)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/C/9", 100)
-sm.sendDelay(6950)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Nothing this great comes without sacrifice.", 50, 6450, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(6950)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/C/10", 100)
-sm.sendDelay(5750)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#And no one said it would be pretty.", 50, 5250, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(5750)
 
 sm.playSound("Sound/Voice4.img/ArkNpc/Back/C/11", 100)
-sm.sendDelay(8000)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs35#Now get it together. This is for the greater good.", 50, 7500, 7, 0, -50, 0, 4, 300, 3, 300)
-
+sm.sendDelay(8000)
 
 sm.OnOffLayer_Off(500, "d2", 0)
 sm.sendDelay(500)

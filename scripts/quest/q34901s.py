@@ -1,6 +1,6 @@
 # Created by MechAviv
 # Quest ID :: 34901
-# Not coded yet
+# Creeping Abyss
 
 from net.swordie.ms.enums import UIType
 
@@ -39,7 +39,7 @@ sm.setJob(15500)
 # Unhandled Stat Changed [MHP] Packet: 00 00 00 08 00 00 00 00 00 00 C2 00 00 00 FF 00 00 00 00
 # Unhandled Stat Changed [MP] Packet: 00 00 00 10 00 00 00 00 00 00 71 00 00 00 FF 00 00 00 00
 # Unhandled Stat Changed [MMP] Packet: 00 00 00 20 00 00 00 00 00 00 71 00 00 00 FF 00 00 00 00
-sm.addSp(2, True)
+sm.addSP(2, True)
 # Unhandled Stat Changed [MHP] Packet: 00 00 00 08 00 00 00 00 00 00 58 01 00 00 FF 00 00 00 00
 # Unhandled Stat Changed [MMP] Packet: 00 00 00 20 00 00 00 00 00 00 A3 00 00 00 FF 00 00 00 00
 sm.giveSkill(155001100, 1, 20)
@@ -152,4 +152,6 @@ sm.setColor(1)
 sm.sendSay("#face0#Once I'm ready, I can talk to Zippy and head to town. This place seems pretty rough, so I hope I get there in one piece.")
 
 sm.setQuestEx(51236, "StageKey", "0")
+sm.startQuest(34915)
+sm.warp(402090011, 0)
 # Update Quest Record EX | Quest ID: [51236] | Data: StageKey=0

@@ -747,7 +747,7 @@ public class JobConstants {
         PHANTOM(7, JobFlag.DISABLED, JobEnum.PHANTOM),
         DUAL_BLADE(8, JobFlag.DISABLED, JobEnum.BEGINNER),
         MIHILE(9, JobFlag.DISABLED, JobEnum.NAMELESS_WARDEN),
-        LUMINOUS(10, JobFlag.DISABLED, JobEnum.LUMINOUS),
+        LUMINOUS(10, JobFlag.ENABLED, JobEnum.LUMINOUS),
         KAISER(11, JobFlag.ENABLED, JobEnum.KAISER),
         ANGELIC(12, JobFlag.ENABLED, JobEnum.ANGELIC_BUSTER),
         CANNONER(13, JobFlag.DISABLED, JobEnum.BEGINNER),

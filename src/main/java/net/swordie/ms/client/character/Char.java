@@ -1,6 +1,7 @@
 package net.swordie.ms.client.character;
 
 import net.swordie.ms.client.character.quest.QuestEx;
+import net.swordie.ms.client.jobs.legend.Luminous;
 import net.swordie.ms.constants.*;
 import net.swordie.ms.life.*;
 import net.swordie.ms.life.npc.Npc;
@@ -2657,6 +2658,9 @@ public class Char {
 		if (getDeathCount() > 0) {
 			write(UserLocal.deathCountInfo(getDeathCount()));
 		}
+		if (getJob() / 10 == 271) {
+			((Luminous) getJobHandler()).sendIncLarknessResult();
+		}
 		if (field.getEliteState() == EliteState.EliteBoss) {
 			write(CField.eliteState(EliteState.EliteBoss, true, GameConstants.ELITE_BOSS_BGM, null, null));
 		}
@@ -4938,5 +4942,10 @@ public class Char {
 		setQuestEx(18271, "CP", "0");
 		setQuestEx(18271, "BQ", "0");
 		setQuestEx(18271, "CQ", "0");
+	}
+
+	public void sendNoticeMsg(String message) {
+		write(UserLocal.noticeMsg(message, true));
+		write(CField.transferChannelReqIgnored(0));
 	}
 }

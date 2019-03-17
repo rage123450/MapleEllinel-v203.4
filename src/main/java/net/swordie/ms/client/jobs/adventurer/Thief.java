@@ -1100,7 +1100,7 @@ public class Thief extends Beginner {
                     }
                 }
                 if (dropInfoSet.size() > 0) {
-                    field.drop(dropInfoSet, mob.getPosition(), chr.getId());
+                    field.drop(dropInfoSet, mob.getPosition(), chr.getId(), false);
                 }
             }
         }

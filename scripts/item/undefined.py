@@ -1,2 +1,2 @@
-sm.sendSayOkay("(Item) Not coded. Poke Sjonnie/Asura/Ergoth on discord. ID: " + str(parentID))
+sm.sendSayOkay("Unhandled item script, Please update us in MapleEllinel forums. ID: " + str(parentID))
 sm.dispose()

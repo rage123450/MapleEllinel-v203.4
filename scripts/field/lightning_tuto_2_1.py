@@ -1,4 +1,6 @@
-# Hidden Street : Temple of Time Corridor (927020010) | Luminous Intro
+# Created by MechAviv
+# ID :: [927020010]
+# Hidden Street : Temple of Time Corridor
 VOID_PRIEST = 9300529
 VOID_PRIEST_2 = 9300530
 
@@ -38,12 +40,13 @@ sm.sendDelay(2000)
 sm.showEffect("Effect/Direction8.img/effect/tuto/BalloonMsg0/4", 0, 0, -120, -2, -2, False, 0)
 sm.sendDelay(2000)
 
-sm.giveSkill(20041226)
+sm.giveSkill(20041226, 1, 1)
 
 for coord in coordinates:
     sm.spawnMob(VOID_PRIEST, coord[0], coord[1], False)
 for coord in coordinates2:
     sm.spawnMob(VOID_PRIEST_2, coord[0], coord[1], False)
 
-sm.lockInGameUI(False)
-sm.showFieldEffect("lightning/screenMsg/0")
+sm.setTemporarySkillSet(0)
+sm.setInGameDirectionMode(False, True, False, False)
+sm.showFieldEffect("lightning/screenMsg/0", 0)

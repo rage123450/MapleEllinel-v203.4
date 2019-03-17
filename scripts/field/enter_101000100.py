@@ -1,13 +1,15 @@
-from net.swordie.ms.util import Position
-from net.swordie.ms.connection.packet import Effect
-from net.swordie.ms.connection.packet import User
-from net.swordie.ms.enums import TextEffectType
+sm.curNodeEventEnd(True)
+sm.setTemporarySkillSet(0)
+sm.setInGameDirectionMode(True, False, False, False)
+sm.sendDelay(7200)
+sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs20#- Several months passed. The forest and house were barely restored... -", 100, 2500, 4, 0, 0, 1, 4, 0, 0, 0)
 
-sm.lockInGameUI(True)
+sm.progressMessageFont(3, 20, 20, 0, "Click light bulb to start quest. Quest Status Hotkey [Q] / Secondary Key [J]")
+sm.sendDelay(1500)
 
-effect = Effect.createFieldTextEffect("#fs20#- After the forest and house have recovered in a couple of months -", 50, 2000, 4,
-                                      Position(0, 0), 1, 4 , TextEffectType.BlackFadedBrush, 0, 0)
-sm.getChr().getField().broadcastPacket(User.effect(effect));
-sm.sendDelay(4000)
+sm.avatarOriented("UI/tutorial.img/34")
+sm.sendDelay(1200)
 
-sm.lockInGameUI(False)
+
+sm.setTemporarySkillSet(0)
+sm.setInGameDirectionMode(False, True, False, False)

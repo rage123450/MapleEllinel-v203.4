@@ -27,9 +27,8 @@ sm.blind(0, 0, 0, 0, 0, 1000, 0)
 sm.sendDelay(1400)
 
 
-sm.sendDelay(500)
 sm.createFieldTextEffect("#fn나눔고딕 ExtraBold##fs18#A While Later, Far from the Caravan Refuge", 100, 1000, 6, -50, -50, 1, 4, 0, 0, 0)
-
+sm.sendDelay(500)
 
 sm.zoomCamera(4000, 1000, 4000, -1500, 250)
 

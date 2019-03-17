@@ -1,24 +1,11 @@
-# Arwen the Fairy (1032100) | Ellinia
+# Created by MechAviv
+# [Arwen the Fairy]  |  [1032100]
+# Ellinia : Ellinia
 
-squishyLiquid = 4000004 # goes for 14meso per item in Shops
-squishyLiquidQ = 100
+sm.setSpeakerID(1032100)
+sm.sendNext("Yeah... I am the master alchemist of the fairies. But the fairies are not supposed to be in contact with a human being for a long period of time... a strong person like you will be fine, though. If you get me the materials, I'll make you a special item.")
 
-slimeid = 100006
-mesoReward = 5000
+sm.setSpeakerID(1032100)
+selection = sm.sendNext("What do you want to make?\r\n#b#L0##t4011007##l\r\n#L1##t4021009##l\r\n#L2##t4031042##l")
 
-if sm.getQuantityOfItem(squishyLiquid) >= 100:
-    if sm.sendAskYesNo("Hey, I see you got "+ str(squishyLiquidQ) +" pieces of #b#z"+ str(squishyLiquid) +"##k!\r\nDo you want to trade them for a reward?"):
-        if sm.getQuantityOfItem(squishyLiquid) >= 100:
-            sm.sendSayOkay("There you go!\r\n"+ str(mesoReward) +" mesos, for your hard work.\r\n\r\nIf you want to make more money, talk to me again at anytime!")
-            sm.giveMesos(mesoReward)
-            sm.consumeItem(squishyLiquid, squishyLiquidQ)
-
-else:
-    if sm.sendAskYesNo("Hey you!\r\nAre you willing to help me?"):
-        sm.sendNext("Ellinia used to be a peaceful time, but lately it has turned into chaos. Ellinia has been surrounded by #r#o"+ str(slimeid) +"##k. "
-                      "You may believe this is a bad thing, but for me, however.. it's not bad at all. "
-                      "I am researching how these slimes come to life.\r\n"
-                      "If you could bring me "+ str(squishyLiquidQ) +" #b#z"+ str(squishyLiquid) +"##k. "
-                      "It would allow me to do a lot of research, I will certainly reward you!")
-    else:
-        sm.sendSayOkay("Alright, let me know if you change your mind!")
+sm.sendSayOkay("In building...")

@@ -2,7 +2,6 @@ package net.swordie.ms.connection.packet;
 
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.damage.DamageSkinType;
-import net.swordie.ms.client.character.skills.LarknessManager;
 import net.swordie.ms.client.character.skills.PsychicArea;
 import net.swordie.ms.client.character.skills.PsychicLockBall;
 import net.swordie.ms.client.character.skills.Skill;
@@ -97,11 +96,11 @@ public class UserLocal {
         return outPacket;
     }
 
-    public static OutPacket incLarknessReponse(LarknessManager larknessManager) {
+    public static OutPacket incLarknessReponse(int larkness, LarknessSkillType larknessDiraction) {
         OutPacket outPacket = new OutPacket(OutHeader.INC_LARKNESS_RESPONSE);
 
-        larknessManager.encode(outPacket);
-
+        outPacket.encodeInt(larkness);
+        outPacket.encodeByte(larknessDiraction.getType());
         return outPacket;
     }
 
@@ -449,6 +448,14 @@ public class UserLocal {
         OutPacket outPacket = new OutPacket(OutHeader.IN_GAME_DIRECTION_EVENT);
 
         outPacket.encode(igdr);
+
+        return outPacket;
+    }
+
+    public static OutPacket randomTeleportKey(int key) {
+        OutPacket outPacket = new OutPacket(OutHeader.RANDOM_TELEPORT_KEY);
+
+        outPacket.encodeByte(key);
 
         return outPacket;
     }

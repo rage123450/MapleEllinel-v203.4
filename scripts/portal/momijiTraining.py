@@ -4,4 +4,5 @@ if sm.hasQuest(57106):
 elif sm.hasQuest(57107):
     sm.warp(807030100, 0)
 else:
-    sm.warp(807030200, 0)
+    sm.systemMessage("There is nothing to see here.")
+    #sm.warp(807030200, 0)

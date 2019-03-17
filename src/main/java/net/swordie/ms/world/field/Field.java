@@ -941,8 +941,8 @@ public class Field {
      * @param position  The Position the initial Drop comes from.
      * @param ownerID   The owner's character ID.
      */
-    public void drop(Set<DropInfo> dropInfos, Position position, int ownerID) {
-        drop(dropInfos, findFootHoldBelow(position), position, ownerID, 0, 0);
+    public void drop(Set<DropInfo> dropInfos, Position position, int ownerID, boolean isElite) {
+        drop(dropInfos, findFootHoldBelow(position), position, ownerID, 0, 0, isElite);
     }
 
     public void drop(Drop drop, Position position) {
@@ -974,13 +974,14 @@ public class Field {
      * @param mesoRate  The added meso rate of the character.
      * @param dropRate  The added drop rate of the character.
      */
-    public void drop(Set<DropInfo> dropInfos, Foothold fh, Position position, int ownerID, int mesoRate, int dropRate) {
+    public void drop(Set<DropInfo> dropInfos, Foothold fh, Position position, int ownerID, int mesoRate, int dropRate, boolean isElite) {
         int x = position.getX();
         int minX = fh == null ? position.getX() : fh.getX1();
         int maxX = fh == null ? position.getX() : fh.getX2();
         int diff = 0;
         for (DropInfo dropInfo : dropInfos) {
             if (dropInfo.willDrop(dropRate)) {
+                if (!isElite && dropInfo.getItemID() / 10000 == 271) continue;
                 x = (x + diff) > maxX ? maxX - 10 : (x + diff) < minX ? minX + 10 : x + diff;
                 Position posTo;
                 if (fh == null) {

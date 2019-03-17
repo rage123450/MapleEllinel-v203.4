@@ -147,7 +147,7 @@ public class MobPool {
         MobTemporaryStat resetStats = mob.getTemporaryStat();
         int[] mask = resetStats.getRemovedMask();
         outPacket.encodeInt(mob.getObjectId());
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < mob.getTemporaryStat().getNewMask().length; i++) {
             outPacket.encodeInt(mask[i]);
         }
         if(resetStats.hasRemovedMobStat(MobStat.BurnedInfo)) {
