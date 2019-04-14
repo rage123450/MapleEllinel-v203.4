@@ -2134,6 +2134,14 @@ public class WorldHandler {
                 script = String.valueOf(npc.getTemplateId());
             }
         }
+        if (!npc.getDCRange().hasPositionInside(chr.getPosition())) {
+            switch (script) {
+                default:
+                    chr.getScriptManager().systemMessage("It's too far away to see clearly. I must get closer.");
+                    break;
+            }
+            return;
+        }
         chr.getScriptManager().startScript(npc.getTemplateId(), npcID, script, ScriptType.Npc);
     }
 
@@ -4839,6 +4847,111 @@ public class WorldHandler {
         chr.getField().broadcastPacket(UserRemote.destroyGrenade(chr.getId(), grenadeID), chr);
     }
 
+    private static void readAttackUnknown1(InPacket inPacket) {
+        // sub_BCE0C0 [v203.2]
+        inPacket.decodeByte();
+        inPacket.decodeShort();
+        inPacket.decodeInt();
+        inPacket.decodeByte();
+        inPacket.decodeByte();
+        inPacket.decodeByte();
+        int count = inPacket.decodeInt();
+        if (count > 0) log.info("[User Attack] Unknown 1 count > 0 packet:" + inPacket.toString());
+        for (int i = 0; i < count; i++) {
+            inPacket.decodeInt();
+        }
+    }
+
+    private static void readAttackUnknown2(InPacket inPacket) {
+        // sub_C05EA0 [v203.2]
+        inPacket.decodeInt();
+        if (inPacket.decodeByte() != 0) {
+            int type = 9999;
+            while (type > 0) {
+                type = inPacket.decodeInt();
+                switch (type) {
+                    case 1:
+                        if (inPacket.decodeByte() != 0) {
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                        }
+                        break;
+                    case 2:// Used by Endless Argony
+                        if (inPacket.decodeByte() != 0) {
+                            inPacket.decodeByte();// 0
+                            inPacket.decodeByte();// 1
+                            inPacket.decodeInt();// 155121341
+                            inPacket.decodeInt();// 3000
+                        }
+                        break;
+                    case 3:// Used by Ark charges
+                        if (inPacket.decodeByte() != 0) {
+                            inPacket.decodeByte();
+                            inPacket.decodeInt();
+                        }
+                        break;
+                    case 7:
+                        if (inPacket.decodeByte() != 0) {
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeByte();
+                        }
+                        break;
+                    case 8:// Used by Ark Unstoppable Impluse
+                        if (inPacket.decodeByte() != 0) {
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                        }
+                        break;
+                    case 9:
+                        if (inPacket.decodeByte() != 0) {
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                        }
+                        break;
+                    case 20:
+                        if (inPacket.decodeByte() != 0) {
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                            inPacket.decodeInt();
+                        }
+                        break;
+                    case 21:
+                        if (inPacket.decodeByte() != 0) {
+                            int count2 = inPacket.decodeInt();
+                            for (int j = 0; j < count2; j++) {
+                                inPacket.decodeInt();
+                                inPacket.decodeInt();
+                                inPacket.decodeInt();
+                            }
+                        }
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 19:
+                        inPacket.decodeByte();
+                        break;
+                }
+            }
+        }
+    }
+
     public static void handleAttack(Char chr, InPacket inPacket, InHeader header) {
         AttackInfo ai = new AttackInfo();
         switch (header) {
@@ -4874,27 +4987,9 @@ public class WorldHandler {
         }
         inPacket.decodeInt();// crc
         inPacket.decodeInt();// crc2 ?
-        // sub_BD0C10
-        inPacket.decodeByte();
-        inPacket.decodeShort();
-        inPacket.decodeInt();
-        inPacket.decodeByte();
-        inPacket.decodeByte();
-        inPacket.decodeByte();
-        inPacket.decodeInt();
-        if (header == InHeader.USER_MAGIC_ATTACK) {
-            // sub_C08C20
-            inPacket.decodeInt();
-            boolean unk = inPacket.decodeByte() != 0;
-            if (unk) {
-                // data
-            }
-            inPacket.decodeInt();
-        } else {
-            // sub_C27AE0
-            boolean unkBool = inPacket.decodeByte() != 0;
-            // end sub_C27AE0
-        }
+        inPacket.decodeInt();// unknown
+        readAttackUnknown1(inPacket);
+        readAttackUnknown2(inPacket);
         int skillID = ai.skillId;
         if (SkillConstants.isKeyDownSkill(skillID) || SkillConstants.isSuperNovaSkill(skillID)) {
             ai.keyDown = inPacket.decodeInt();
@@ -4931,20 +5026,6 @@ public class WorldHandler {
         ai.left = ((maskie >>> 15) & 1) != 0;
         ai.attackAction = (short) (maskie & 0x7FFF);
         ai.requestTime = inPacket.decodeInt();
-        if (JobConstants.isArk((short) (skillID / 10000))) {
-            inPacket.decodeInt();
-            inPacket.decodeInt();
-            inPacket.decodeShort();
-            int unk = inPacket.decodeInt();
-            if (unk >= 0) {
-                boolean read = inPacket.decodeByte() > 0;
-                if (read) {
-                    inPacket.decodeInt();
-                    inPacket.decodeInt();
-                    inPacket.decodeInt();
-                }
-            }
-        }
         ai.attackActionType = inPacket.decodeByte();
         if (SkillConstants.isEvanForceSkill(skillID)) {
             ai.idk0 = inPacket.decodeByte();
@@ -4963,9 +5044,6 @@ public class WorldHandler {
         // sub_26C1B00
         if (skillID == 80011561 || skillID == 80002463 || skillID == 80001762 || skillID == 80002212) {
             inPacket.decodeInt();
-        }
-        if (header != InHeader.USER_MAGIC_ATTACK) {
-            inPacket.decodeLong();// unk
         }
         inPacket.decodeInt();// unk
         if (header == InHeader.USER_MELEE_ATTACK) {
@@ -6642,14 +6720,19 @@ public class WorldHandler {
             case Ark.SPELL_BULLETS:
                 String value = chr.getQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID));
                 if (value == null || value.equals("0")) {
-                    chr.setQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID), "1");
+                    chr.getScriptManager().setQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID), "1");
                 } else if (value.equals("1")){
-                    chr.setQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID), "0");
+                    chr.getScriptManager().setQuestEx(QuestConstants.BEAST_FORM_WING_ON_OFF, Integer.toString(skillID), "0");
                 }
                 break;
             default:
                 chr.chatMessage("Unhandled auto on off skill " + skillID);
                 break;
         }
+    }
+
+    // USER_EX_ITEM_UPGRADE_ITEM_USE_REQUEST
+    public static void handleUserExItemUpgradeItemUseRequest(Char chr, InPacket inPacket) {
+
     }
 }

@@ -64,8 +64,8 @@ public class Summoned {
         outPacket.encodeInt(charID);
         outPacket.encodeInt(summon.getObjectId());
         outPacket.encodeInt(summon.getSkillID());
-        outPacket.encodeByte(summon.getCharLevel());
-        outPacket.encodeByte(summon.getSlv());
+        outPacket.encodeInt(summon.getCharLevel());
+        outPacket.encodeInt(summon.getSlv());
         // CSummoned::Init
         outPacket.encodePosition(summon.getPosition());
         outPacket.encodeByte(summon.getMoveAction());

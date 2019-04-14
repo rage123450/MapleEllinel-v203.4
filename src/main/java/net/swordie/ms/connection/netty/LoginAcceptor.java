@@ -46,14 +46,14 @@ public class LoginAcceptor implements Runnable{
                     Client c = new Client(ch, siv, riv);
                     // remove after debug stage
 //                    log.debug(String.format("Opened session with %s in LoginAcceptor", c.getIP()));
-                    c.write(Login.sendConnect(riv, siv));
+                    c.write(Login.sendConnect(riv, siv, c.getPort() == 8484));
 //                  c.write("hi".getBytes());
 
                     channelPool.put(c.getIP(), ch);
 
 
                     ch.attr(CLIENT_KEY).set(c);
-
+                    //c.write(Login.setOpcodes());
                     EventManager.addFixedRateEvent(c::sendPing, 0, 10000);
                 }
             });

@@ -1,6 +1,7 @@
-# Aran Introduction
+# Created by MechAviv
 sm.killMobs()
 if sm.getFieldID() == 914000200:
+    # Black Road : Burning Forest 1
     sm.spawnMob(9300379, 2099, 2, False, 30)
     sm.spawnMob(9300379, 1799, 2, False, 30)
     sm.spawnMob(9300379, 1515, 2, False, 30)

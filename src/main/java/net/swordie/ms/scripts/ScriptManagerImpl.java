@@ -865,6 +865,10 @@ public class ScriptManagerImpl implements ScriptManager {
 		return itemInfo.getSkillId();
 	}
 
+	public String getItemName(int itemID) {
+		return StringData.getItemStringById(itemID);
+	}
+
 	public boolean hasSkill(int skillId) {
 		return chr.hasSkill(skillId);
 	}
@@ -917,6 +921,10 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	public void setStandAloneMode(boolean enable) {
 
+	}
+
+	public void setDirectionMode(boolean show, int unk) {
+		chr.write(UserLocal.setDirectionMode(show, unk));
 	}
 
 	public void lockUI() {

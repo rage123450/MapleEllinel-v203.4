@@ -1499,7 +1499,7 @@ public class AdminCommands {
         }
     }
 
-    @Command(names = {"bypassskillcd", "ignoreskillcd", "bypasskillcd"}, requiredType = TESTER)
+    @Command(names = {"cd", "bypassskillcd", "ignoreskillcd", "bypasskillcd"}, requiredType = TESTER)
     public static class BypassSkillCD extends AdminCommand {
 
         public static void execute(Char chr, String[] args) {

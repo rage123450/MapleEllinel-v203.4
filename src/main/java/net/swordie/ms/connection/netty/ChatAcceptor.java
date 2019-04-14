@@ -45,7 +45,7 @@ public class ChatAcceptor implements Runnable{
                     Client c = new Client(ch, siv, riv);
                     // remove after debug stage
                     log.debug(String.format("[CHAT] Opened session with %s in ChatAcceptor", c.getIP()));
-                    c.write(Login.sendConnect(riv, siv));
+                    c.write(Login.sendConnect(riv, siv, c.getPort() == 8484));
 
                     channelPool.put(c.getIP(), ch);
 

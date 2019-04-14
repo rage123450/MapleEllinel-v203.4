@@ -65,8 +65,7 @@ public class CField {
         outPacket.encodeByte(aa.getMobOrigin());
         outPacket.encodeInt(aa.getCharID());
         outPacket.encodeInt(aa.getSkillID());
-        outPacket.encodeByte(aa.getSlv());
-        outPacket.encodeByte(0);
+        outPacket.encodeShort(aa.getSlv());
         outPacket.encodeShort(aa.getDelay());
         aa.getRect().encode(outPacket);
         outPacket.encodeInt(aa.getElemAttr());

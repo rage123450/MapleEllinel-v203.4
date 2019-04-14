@@ -1,4 +1,6 @@
-# 140010000
-if not "arr=o" in sm.getQRValue(21019):
+# Created by MechAviv
+# ID :: [140010000]
+# Snow Island : Dangerous Forest
+if not "o" in sm.getQuestEx(21019, "arr"):
     sm.avatarOriented("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3")
-    sm.addQRValue(21019, "arr=o")
+    sm.setQuestEx(21019, "arr", "o")

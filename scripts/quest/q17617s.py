@@ -1,38 +1,58 @@
+# Created by MechAviv
+# Quest ID :: 17617
 # [Commerci Republic] Missing Goods
 
-MAESTRA_FIAMETTA = 9390220
-
-sm.setSpeakerID(MAESTRA_FIAMETTA)
+# Unhandled Stat Changed [HP] Packet: 00 00 00 04 00 00 00 00 00 00 78 24 00 00 FF 00 00 00 00
+sm.setSpeakerID(9390220)
 sm.sendNext("The only odd thing about it was...")
 
 
+sm.setSpeakerID(9390220)
 sm.setPlayerAsSpeaker()
-response = sm.sendAskYesNo("#b(Aha! I knew there had to be something!)")
-
-if response:
+if sm.sendAskYesNo("(Aha! I knew there had to be something!)"):
+    sm.setSpeakerID(9390220)
     sm.setPlayerAsSpeaker()
     sm.sendNext("Yes?")
 
-    sm.setSpeakerID(MAESTRA_FIAMETTA)
-    sm.sendNext("The items Tepes deposited were obviously packed for sea, but Tepes brought a cart with him when he picked them up, "
-                "Usually the marchants move them straight to the ships...")
 
+    sm.setSpeakerID(9390220)
+    sm.sendSay("The items Tepes deposited were obviously packed for sea, but Tepes brought a cart with him when he picked them up. Usually, the merchants move them straight to the ships...")
+
+
+    sm.setSpeakerID(9390220)
     sm.setPlayerAsSpeaker()
-    sm.sendNext("Did you see which way he went?")
+    sm.sendSay("Did you see which way he went?")
 
-    sm.setSpeakerID(MAESTRA_FIAMETTA)
-    sm.sendNext("Listen, kid. I don't keep track of every sailor who walks by. But there was a fish cart accident between here and Berry, so the western path is blocked.")
 
-    sm.setSpeakerID(MAESTRA_FIAMETTA)
-    sm.sendNext("And if he didn't go west, he probably went east, towards the canals")
+    sm.setSpeakerID(9390220)
+    sm.sendSay("Listen, kid, I don't keep track of every sailor who walks by. But there was a fish cart accident between here and Berry, so the western path is blocked.")
 
+
+    sm.setSpeakerID(9390220)
+    sm.sendSay("And if he didn't go west, he probably went east, toward the canals.")
+
+
+    sm.setSpeakerID(9390220)
     sm.setPlayerAsSpeaker()
-    sm.sendNext("Alright, thank you so much for the information.")
+    sm.sendSay("Thank you. That was very helpful.")
 
-    sm.setSpeakerID(MAESTRA_FIAMETTA)
-    sm.sendNext("Whatever, kid. Just don't mess with my trading post.")
-    sm.startQuest(parentID)
-    #sm.completeQuest(parentID)
-    #sm.chatScript("Return the stolen goods to Tepes in San Commerci")
-    #sm.chatScript("You found the impostor at the eastern canals, when confronted, a Robed Lady appeared. But she fled.")
-    #sm.startQuest(17619) # [Commerci Republic] Come Back Here!
+
+    sm.setSpeakerID(9390220)
+    sm.sendSay("Whatever, kid. Just don't mess with my trading post.")
+
+
+    # Unhandled Message [INC_COMMITMENT_MESSAGE] Packet: 09 01 00 00 00 00
+    sm.startQuest(17617)
+    sm.completeQuest(17617)
+    # Unhandled Stat Changed [EXP] Packet: 00 00 00 00 01 00 00 00 00 00 21 33 8B 01 00 00 00 00 FF 00 00 00 00
+    sm.giveExp(530255)
+    # Unhandled Stat Changed [HP] Packet: 00 00 00 04 00 00 00 00 00 00 82 24 00 00 FF 00 00 00 00
+    # [GUILD_RESULT] [74 F9 DA 01 00 88 02 00 00 03 00 00 00 BA 00 00 00 ]
+    # [GUILD_RESULT] [6D F9 DA 01 00 1E 4F 85 00 88 02 00 00 13 00 00 00 B2 01 00 00 A0 19 4A D3 37 ED D4 01 ]
+    # Update Quest Record EX | Quest ID: [18418] | Data: B=1341
+else:
+    sm.setSpeakerID(9390220)
+    sm.setPlayerAsSpeaker()
+    sm.sendSayOkay("Talk to me in a bit, okay?")
+
+

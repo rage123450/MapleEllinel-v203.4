@@ -1,2 +1,4 @@
-# 140000000
-sm.warp(140010000, 2)
+# Created by MechAviv
+# ID :: [140000000]
+# Snow Island : Rien
+sm.warp(140000000, 7)

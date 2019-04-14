@@ -7,6 +7,7 @@ import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.ServerConstants;
 import net.swordie.ms.enums.LoginType;
 import net.swordie.ms.ServerStatus;
+import net.swordie.ms.handlers.header.InHeader;
 import net.swordie.ms.handlers.header.OutHeader;
 import net.swordie.ms.util.Position;
 import net.swordie.ms.util.container.Tuple;
@@ -25,16 +26,22 @@ import java.util.Set;
  */
 public class Login {
 
-    public static OutPacket sendConnect(int siv, int riv) {
+    public static OutPacket sendConnect(int siv, int riv, boolean login) {
         OutPacket oPacket = new OutPacket();
-        int length = 14 + ServerConstants.MINOR_VERSION.length();
+        int length = 2 + (2 + ServerConstants.MINOR_VERSION.length()) + 4 + 4 + 1 + (login ? 4 : 1);
+        //int length = 14 + ServerConstants.MINOR_VERSION.length();
         oPacket.encodeShort((short) length);
         oPacket.encodeShort(ServerConstants.VERSION);
         oPacket.encodeString(ServerConstants.MINOR_VERSION);
         oPacket.encodeInt(siv);
         oPacket.encodeInt(riv);
         oPacket.encodeByte(ServerConstants.LOCALE);
-        oPacket.encodeByte(false);// bLoadSingleThread
+        // 13
+        if (login) {
+            oPacket.encodeInt(0);
+        } else {
+            oPacket.encodeByte(false);// bLoadSingleThread
+        }
         return oPacket;
     }
 
@@ -354,4 +361,28 @@ public class Login {
         outPacket.encodeArr(aBuffer);
         return outPacket;
     }
+
+    public static OutPacket setOpcodes() {
+        OutPacket outPacket = new OutPacket(OutHeader.SET_OPS);
+
+        // Out Packets headers
+        outPacket.encodeShort(OutHeader.CHECK_PASSWORD_RESULT.getValue());
+        outPacket.encodeShort(OutHeader.MIGRATE_COMMAND.getValue());
+        outPacket.encodeShort(OutHeader.SELECT_CHARACTER_RESULT.getValue());
+        outPacket.encodeShort(OutHeader.REQUEST_WZ.getValue());
+        outPacket.encodeShort(OutHeader.OPEN_WEBSITE.getValue());
+        outPacket.encodeShort(OutHeader.CHECK_CLIENT.getValue());
+        outPacket.encodeShort(0);// 30581
+        //outPacket.encodeShort(OutHeader.INIT_OPCODE_ENCRYPTION.getValue());
+        // In Packets headers
+        outPacket.encodeShort(InHeader.MIGRATE_IN.getValue());
+        outPacket.encodeShort(InHeader.CLIENT_ERROR.getValue());
+        outPacket.encodeShort(InHeader.CUSTOM_ERROR.getValue());
+        outPacket.encodeShort(InHeader.WZ_CHECK_RESPONSE.getValue());
+        outPacket.encodeShort(InHeader.SHOW_CLIENT.getValue());
+        outPacket.encodeShort(InHeader.CLIENT_REQUEST.getValue());
+        outPacket.encodeShort(InHeader.SELECT_WORLD.getValue());
+        return outPacket;
+    }
+
 }

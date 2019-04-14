@@ -181,7 +181,7 @@ public class SkillConstants {
                skillID == 60011216 || skillID == 64001000 || skillID == 64001007 || skillID == 64001008 || skillID == 64121002 || skillID == 65121003 || skillID == 80001392 || skillID == 80001587 ||
                skillID == 80001629 || skillID == 80001836 || skillID == 80001887 || skillID == 80002458 || skillID == 80011051 || skillID == 80011362 || skillID == 80011366 || skillID == 80011371 ||
                skillID == 80011381 || skillID == 80011382 || skillID == 80011387 || skillID == 95001001 || skillID == 101110101 || skillID == 101110102 || skillID == 112001008 || skillID == 112110003 ||
-               skillID == 112111016 || skillID == 131001004 || skillID == 131001008 || skillID == 131001020 || skillID == 142111010;
+               skillID == 112111016 || skillID == 131001004 || skillID == 131001008 || skillID == 131001020 || skillID == 142111010 || skillID == 155121341;
     }
 
     // updated to v202
@@ -251,8 +251,20 @@ public class SkillConstants {
         return prefix == 10000 || prefix == 10100 || prefix == 10110 || prefix == 10111 || prefix == 10112;
     }
 
+    // Updated to v203.2
     public static boolean isUsercloneSummonedAbleSkill(int skillID) {
         switch (skillID) {
+            case 11101120:
+            case 11101121:
+            case 11101220:
+            case 11101221:
+            case 11111120:
+            case 11111121:
+            case 11111220:
+            case 11111221:
+            case 11121101:
+            case 11121102:
+            case 11121103:
             case 14001020:
             case 14101020:
             case 14101021:
@@ -263,6 +275,46 @@ public class SkillConstants {
             case 14121001:
             case 14121002:
             case 14120045:
+            case 23001000:
+            case 23100004:
+            case 23101000:
+            case 23101001:
+            case 23101007:
+            case 23110006:
+            case 23111000:
+            case 23111001:
+            case 23111002:
+            case 23111003:
+            case 23121000:
+            case 23121002:
+            case 23121003:
+            case 23120013:
+            case 23121052:
+            case 131001000:
+            case 131001001:
+            case 131001002:
+            case 131001003:
+            case 131001004:
+            case 131001005:
+            case 131001008:
+            case 131001010:
+            case 131001011:
+            case 131001012:
+            case 131001013:
+            case 131001101:
+            case 131001102:
+            case 131001103:
+            case 131001104:
+            case 131001108:
+            case 131001113:
+            case 131001201:
+            case 131001202:
+            case 131001203:
+            case 131001208:
+            case 131001213:
+            case 131001313:
+            case 131002010:
+            case 400031024:
                 return true;
         }
         return false;
@@ -324,7 +376,9 @@ public class SkillConstants {
 
     public static boolean isFlipAffectAreaSkill(int skillID) {
         return skillID == 33111013 || skillID == 33121016 || skillID == 33121012 || skillID == 131001207 ||
-                skillID == 131001107 || skillID == 4121015 || skillID == 51120057;
+                skillID == 131001107 || skillID == 4121015 || skillID == 51120057 || skillID == 400001017 ||
+                skillID == 400021039 || skillID == 400041041 || skillID == 152121041|| skillID == 400020046 ||
+                skillID == 400020051 || skillID == 35121052 ;
     }
 
     public static boolean isShootSkillNotConsumingBullets(int skillID) {

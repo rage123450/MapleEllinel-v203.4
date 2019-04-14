@@ -1,5 +1,6 @@
-# Kyrin (1090000) | Navigation Room
-if sm.getChr().getJob() == 0:
-    sm.sendSayOkay("Speak to me if you want to become a Pirate.")
-else:
-    sm.sendSayOkay("You seem to have made a choice already,\r\nThe wrong choice..")
+# Created by MechAviv
+# [Kyrin]  |  [1090000]
+# Nautilus : Navigation Room
+
+sm.setSpeakerID(1090000)
+sm.sendSayOkay("Welcome aboard the Nautilus. The ship isn't headed anywhere for a while. How about going out to the deck?")

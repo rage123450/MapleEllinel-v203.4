@@ -1,5 +1,5 @@
-# Zombie Damage Skin
-success = sm.addDamageSkin(2432749)
-if success:
-    sm.chat("The Zombie Damage Skin has been added to your account's damage skin collection.")
-    # sm.consumeItem(2432749)
+# Created by MechAviv
+# Zombie Damage Skin | (2434534)
+if sm.addDamageSkin(2434534):
+    sm.chat("'Zombie Damage Skin'  Damage Skin has been added to your account's damage skin collection.")
+    sm.consumeItem()

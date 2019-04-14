@@ -1,103 +1,124 @@
+# Created by MechAviv
+# Quest ID :: 17612
 # [Commerci Republic] The Problem with Presumptions
 
-MAYOR_BERRY = 9390201
-
-sm.setPlayerAsSpeaker()
-sm.sendNext("Excuse me, Mayor? A-are you busy?")
-
-sm.setSpeakerID(MAYOR_BERRY)
-sm.sendNext("You stopped by at just the right time, kiddo. "
-            "It'd been a fishful day, and that's the best kinda day, if you ask me.")
-
-sm.setPlayerAsSpeaker()
-sm.sendNext("Oh, great! That's... I need to tell you something.")
-
-sm.setSpeakerID(MAYOR_BERRY)
-selection = sm.sendNext("Well, go on and spit it out!\r\n"
-            "\r\n"
-            "#L0##b(I should rethink this.)#l\r\n"
-            "#L1##b(I've got to tell him the truth.)#l")
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendNext("Excuse me, Mayor? D-do you have a moment?")
 
 
-sm.setPlayerAsSpeaker()
-if selection == 0:
-    sm.sendNext("Oh, I just wanted to tell you what a beautiful day it is")
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("Oh, ye. It truly is a gorgeous day, today")
-elif selection == 1:
-    sm.sendNext("The truth is... I lied to you. The sea didn't bring me here...")
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("Well you done stopped by at a mighty fine time! Ain't it a lovely day? It's been a fish-full day, I tell you what, and that's the best kind there is, far as I's concerned!")
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("Well, unless you've got a set of wings curled up somewhere, "
-                "how'd you get here? And what do you mean you lied?")
 
-    sm.setPlayerAsSpeaker()
-    sm.sendNext("I came across the northern barrier.")
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendSay("Uh... great! There's something I need to tell you.")
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("What kinda hogwash is that? Nobody's been across the northern barrier in a hound's age. "
-                "Ain't nothin' but demons and evil up there anyway. "
-                "You sayin' you're some kinda demon?!")
 
-    sm.setPlayerAsSpeaker()
-    sm.sendNext("No, no... the demons are... Look, I'm from a place called Maple World, and I guess technically you are too. "
-                "I traveled to Dawnveil from a different continent, far away.")
+sm.setIntroBoxChat(9390201)
+selection = sm.sendNext("Well, go on an' spit it out!\r\n#b\r\n#L0# (I should rethink this.)#l\r\n#L1# (There's no better time to tell him the truth.)#l")
+# if selection == 1: todo: selection 0
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("Well that's just plum silly. Another continent? "
-                "I was sure this sea just went on forever... "
-                "If this is all true, how'd you get across that barrier?")
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendNext("I uhh, lied about being a tourist. I'm really here as a representative of Empress Cygnus to extend a formal offer of friendship.")
 
-    sm.setPlayerAsSpeaker()
-    sm.sendNext("The barrier is breaking down... Where I came from, no one had even heard of Dawnveil, "
-                "and our leaders feared it might be a danger to the rest of Maple World.")
 
-    sm.sendNext("I was sent here to explore, investigate and to see if our two peoples could have a peace.")
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("Say what now? You ain't no tourist... but a representative o' that fancy Syggus lady?")
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("Well, I'll be a toad on a hot plate. I don't much care for bein' on the other end of a lie, "
-                "but I can tell you wasn't tryin' to cause no trouble.")
 
-    sm.setPlayerAsSpeaker()
-    sm.sendNext("Thanks... I'm really sorry.")
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendSay("Uh... Sure, close enough... I was worried you might mistrust me if I told you my real mission on our first meeting. But after you treated me so kindly after I was shipwrecked, I knew I couldn't keep it from you any longer.")
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("Let's let bygones go on down bygone way. Can I help you with your plan?")
 
-    sm.setPlayerAsSpeaker()
-    sm.sendNext("Maybe you can... Your people really seem to be about the same as ours, "
-                "but I think the fear of what's beyond the barrier could stir up trouble. "
-                "They might perceive me as a threat...")
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("Well, that's all well an' good, and I'm tickled that you'd say that... But why is you troublin' youself with ol' Mayor Berry? After all, I's just a Mayor of this lil' village.")
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("Well, people ain't always kind to the ones that come from afar, "
-                "and changing minds one by one will get you nowhere fast. I've got me another plan.")
 
-    sm.setPlayerAsSpeaker()
-    sm.sendNext("Yes?")
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendSay("But aren't you... in charge? I was told to speak with the highest official in Commerci.")
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("Go on down to the docks. "
-                "There's a ship there that belongs to the Prime Minister of #bSan Commerci#k, a fella named #e#bGilberto Daniella#k#n. "
-                "His boy, #e#bLeon#k#n, is the captain of the ship. "
-                "They're good folk, and they hold a lot of sway.")
 
-    sm.sendNext("You show those Daniellas you're worth trustin', and you might just have yourself a strong supporter in the richest nation of Dawnveil.")
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("Uh-hehehe! Well ain't you as confused as a toad in a bird's nest! I think you's havin' a bit of a misunderstandin'.")
 
-    sm.setPlayerAsSpeaker()
-    sm.sendNext("You're a lot smarter than I took you for. I'm sorry for underestimating you. "
-                "I don't know how I can thank you...")
 
-    sm.setSpeakerID(MAYOR_BERRY)
-    sm.sendNext("You've done right by me and mine. You just do what's best for all our people, "
-                "and I'll call that thanks enough. Now go on, get, before I have to get my broom and shoo you off! "
-                "Find #e#bLeon Daniella#k#n in the guest house on the east end of town.")
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendSay("Uh... what do you mean?")
 
-    sm.sendNext("And take this! It ain't much, but think of it as a souvenir!")
 
-    sm.sendNext("Don't get shy, just take it!")
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("Sure, I's the most officialest person in this here village, but are you under the impreshin' that Berry is the only place in the whole o' Commerci? This right here is just one small fishin' village. Why, you oughtta head down to #e#bSan Commerci#n#k, the #ecapital#n of the Republic, and talk to them folks!")
 
-    sm.startQuest(parentID)
-    sm.giveItem(1003984) # Commerci Hat
-    sm.completeQuest(parentID)
-    sm.dispose()
+
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendSay("San... Commerci?")
+
+
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("That's right! The fella you's lookin to see goes by the name o' #bGilberto Daniella#k. He's the Prime Minister of the whole darn Commerci Republic. That's the one you wanna deliver Ms. Syggus' message to.")
+
+
+sm.setSpeakerID(9390201)
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.setBoxChat()
+sm.setColor(1)
+sm.sendSay("So... San Commerci is the biggest village in Commerci, then?")
+
+
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("A village? Youngster, I think that storm might've bumped your noggin' somethin' fierce. San Commerci is a city! A downright bustlin' metropolis, even! Now everybody knows that San Commerci is the capital of the Commerci Republic! It's the place all roads lead to.")
+
+
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("I can't understand how folks stand to live cooped up like sardines... They oughtta come here. Berry Village is the happiest place in Commerci!")
+
+
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("Hmm. You may want to have a word with the Prime Minister's boy. He's servin' as captain for one of them big ships what the #bDaniella Merchant Union#k gots docked in the city. He just so happens to be staying right here in Berry!")
+
+
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("I'd like you to have this. I know you ain't really no tourist, but consider it a souvenir of your time in Berry Village!")
+
+
+sm.setNpcOverrideBoxChat(9390201)
+sm.sendSay("Consider it a gift from ol' Berry. I'll be cheerin' for you youngster!")
+
+
+sm.giveItem(1003984) # Commerci Hat
+# Unhandled Message [INC_COMMITMENT_MESSAGE] Packet: 09 01 00 00 00 00
+sm.startQuest(17612)
+sm.completeQuest(17612)
+sm.giveExp(630724)
+# [GUILD_RESULT] [74 F9 DA 01 00 82 02 00 00 03 00 00 00 BA 00 00 00 ]
+# [GUILD_RESULT] [6D F9 DA 01 00 1E 4F 85 00 82 02 00 00 0D 00 00 00 B2 01 00 00 00 AD D5 22 37 ED D4 01 ]
+# Update Quest Record EX | Quest ID: [18418] | Data: B=1335

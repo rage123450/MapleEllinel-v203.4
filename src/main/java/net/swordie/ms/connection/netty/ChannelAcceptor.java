@@ -44,7 +44,7 @@ public class ChannelAcceptor implements Runnable {
                     Client c = new Client(ch, siv, riv);
                     // remove after debug stage
 //                    log.debug(String.format("Opened session with %s on channel %d", c.getIP(), channel.getChannelId()));
-                    c.write(Login.sendConnect(riv, siv));
+                    c.write(Login.sendConnect(riv, siv, c.getPort() == 8484));
 
                     channelPool.put(c.getIP(), ch);
 

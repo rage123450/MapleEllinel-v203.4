@@ -738,8 +738,8 @@ public class JobConstants {
 
     public enum LoginJob {
         RESISTANCE(0, JobFlag.DISABLED, JobEnum.CITIZEN),
-        EXPLORER(1, JobFlag.DISABLED, JobEnum.BEGINNER),
-        CYGNUS(2, JobFlag.DISABLED, JobEnum.NOBLESSE),
+        EXPLORER(1, JobFlag.ENABLED, JobEnum.BEGINNER),
+        CYGNUS(2, JobFlag.ENABLED, JobEnum.NOBLESSE),
         ARAN(3, JobFlag.DISABLED, JobEnum.LEGEND),
         EVAN(4, JobFlag.DISABLED, JobEnum.EVAN_NOOB),
         MERCEDES(5, JobFlag.DISABLED, JobEnum.MERCEDES),

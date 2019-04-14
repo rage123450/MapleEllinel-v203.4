@@ -129,7 +129,8 @@ public class User {
         outPacket.encodeInt(charID);
         outPacket.encodeByte(success);
         outPacket.encodeInt(itemID);
-
+        outPacket.encodeInt(0);
+        outPacket.encodeInt(0);
         return outPacket;
     }
 

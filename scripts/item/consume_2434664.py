@@ -1,5 +1,5 @@
-# Soft-ServeDamage Skin
-success = sm.addDamageSkin(2434664)
-if success:
-    sm.chat("The Soft-Serve Damage Skin has been added to your account's damage skin collection.")
-    # sm.consumeItem(2434664)
+# Created by MechAviv
+# Soft Serve Damage Skin | (2434664)
+if sm.addDamageSkin(2434664):
+    sm.chat("'Soft Serve Damage Skin'  Damage Skin has been added to your account's damage skin collection.")
+    sm.consumeItem()

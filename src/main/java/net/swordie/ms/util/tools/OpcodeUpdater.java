@@ -1,4 +1,4 @@
-package net.swordie.ms.util;
+package net.swordie.ms.util.tools;
 
 import net.swordie.ms.ServerConstants;
 import net.swordie.ms.handlers.header.OutHeader;

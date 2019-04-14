@@ -1,4 +1,4 @@
 # 140090500
-if not "miss=o" in sm.getQRValue(21019) or sm.hasTutor():
+if not "o" in sm.getQuestEx(21019, "miss") or sm.hasTutor():
     sm.hireTutor(False)
-    sm.addQRValue(21019, "miss=o")
+    sm.setQuestEx(21019, "miss", "o")

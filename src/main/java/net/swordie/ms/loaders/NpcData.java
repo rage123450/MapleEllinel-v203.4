@@ -2,6 +2,7 @@ package net.swordie.ms.loaders;
 
 import net.swordie.ms.connection.db.DatabaseManager;
 import net.swordie.ms.life.npc.Npc;
+import net.swordie.ms.util.Rect;
 import net.swordie.ms.world.shop.NpcShopDlg;
 import net.swordie.ms.world.shop.NpcShopItem;
 import net.swordie.ms.ServerConstants;
@@ -69,6 +70,18 @@ public class NpcData {
 					case "trunkPut":
 						npc.setTrunkPut(Integer.parseInt(value));
 						break;
+					case "dcLeft":
+						npc.getDCRange().setLeft(Integer.parseInt(value));
+						break;
+					case "dcRight":
+						npc.getDCRange().setRight(Integer.parseInt(value));
+						break;
+					case "dcTop":
+						npc.getDCRange().setTop(Integer.parseInt(value));
+						break;
+					case "dcBottom":
+						npc.getDCRange().setBottom(Integer.parseInt(value));
+						break;
 				}
 			}
 			getBaseNpcs().add(npc);
@@ -84,6 +97,10 @@ public class NpcData {
 				das.writeBoolean(npc.isMove());
 				das.writeInt(npc.getTrunkGet());
 				das.writeInt(npc.getTrunkPut());
+				das.writeInt(npc.getDCRange().getLeft());
+				das.writeInt(npc.getDCRange().getTop());
+				das.writeInt(npc.getDCRange().getRight());
+				das.writeInt(npc.getDCRange().getBottom());
 				das.writeShort(npc.getScripts().size());
 				npc.getScripts().forEach((key, val) -> {
 					try {
@@ -121,6 +138,7 @@ public class NpcData {
 			npc.setMove(dis.readBoolean());
 			npc.setTrunkGet(dis.readInt());
 			npc.setTrunkPut(dis.readInt());
+			npc.setDCRange(new Rect(dis.readInt(), dis.readInt(), dis.readInt(), dis.readInt()));
 			short size = dis.readShort();
 			for (int i = 0; i < size; i++) {
 				int id = dis.readInt();

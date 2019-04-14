@@ -1,6 +1,7 @@
 package net.swordie.ms.life.npc;
 
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.util.Rect;
 import net.swordie.ms.world.field.Field;
 import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.packet.NpcPool;
@@ -26,7 +27,7 @@ public class Npc extends Life {
     private boolean move;
     private int trunkGet;
     private int trunkPut;
-
+    private Rect npcRect = new Rect();
 
     public Npc(int templateId) {
         super(templateId);
@@ -156,6 +157,7 @@ public class Npc extends Life {
         copy.setMobAliveReq(getMobAliveReq());
         copy.setTrunkGet(getTrunkGet());
         copy.setTrunkPut(getTrunkPut());
+        copy.setDCRange(getDCRange());
         copy.getScripts().putAll(getScripts());
         return copy;
     }
@@ -217,5 +219,13 @@ public class Npc extends Life {
 
     public int getTrunkPut() {
         return trunkPut;
+    }
+
+    public Rect getDCRange() {
+        return npcRect;
+    }
+
+    public void setDCRange(Rect npcRect) {
+        this.npcRect = npcRect;
     }
 }

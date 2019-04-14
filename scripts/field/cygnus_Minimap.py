@@ -1,2 +1,3 @@
-sm.showEffect("Effect/OnUserEff.img/guideEffect/cygnusTutorial/0", 0, 0)
-sm.invokeAfterDelay(5000, "showEffect", "Effect/OnUserEff.img/guideEffect/cygnusTutorial/1", 0, 0)
+# Created by MechAviv
+# ID :: [130030000]
+# Empress's Road : Forest of Beginning 1

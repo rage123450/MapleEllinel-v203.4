@@ -15,7 +15,7 @@ public class MapLoadable {
         OutPacket outPacket = new OutPacket(OutHeader.SET_MAP_TAGGED_OBJECT_VISISBLE);
 
         outPacket.encodeByte(0);// probably count lel
-        outPacket.encodeString(Server.getInstance().getBackground());// tag
+        outPacket.encodeString("2018mapleTree");//(Server.getInstance().getBackground());// tag (Temporary static)
         outPacket.encodeByte(1);// visible
         outPacket.encodeInt(0);// manual
         outPacket.encodeInt(0);// delay

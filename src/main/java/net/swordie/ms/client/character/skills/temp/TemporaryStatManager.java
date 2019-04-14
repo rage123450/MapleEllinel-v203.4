@@ -533,8 +533,8 @@ public class TemporaryStatManager {
         if (hasNewStat(PickPocket)) {
             outPacket.encodeInt(getOption(PickPocket).xOption);
         }
-        if (hasNewStat(Unk422)) {
-            outPacket.encodeShort(getOption(Unk422).xOption);
+        if (hasNewStat(DivineEcho)) {
+            outPacket.encodeShort(getOption(DivineEcho).xOption);
         }
         if (hasNewStat(Unk423)) {
             outPacket.encodeShort(getOption(Unk423).xOption);
@@ -751,8 +751,8 @@ public class TemporaryStatManager {
         if (ctsSet.contains(Stigma)) {
             outPacket.encodeInt(collection.get(Stigma).get(0).bOption);
         }
-        if (ctsSet.contains(Unk422)) {
-            outPacket.encodeShort(collection.get(Unk422).get(0).xOption);
+        if (ctsSet.contains(DivineEcho)) {
+            outPacket.encodeShort(collection.get(DivineEcho).get(0).xOption);
         }
         if (ctsSet.contains(Unk423)) {
             outPacket.encodeShort(collection.get(Unk423).get(0).xOption);
@@ -805,6 +805,7 @@ public class TemporaryStatManager {
         if (ctsSet.contains(Unk556)) {
             outPacket.encodeInt(collection.get(Unk556).get(0).xOption);
         }
+        outPacket.encodeInt(0);
     }
 
     private void encodeIndieTempStat(OutPacket outPacket) {

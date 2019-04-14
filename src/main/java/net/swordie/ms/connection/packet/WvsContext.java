@@ -259,11 +259,10 @@ public class WvsContext {
         boolean hasMovingAffectingStat = tsm.hasNewMovingEffectingStat(); // encoding flushes new stats
         tsm.encodeForLocal(outPacket);
 
-        outPacket.encodeInt(0); // can't find this is IDA, but crashes without. Not sure what it stands for
         outPacket.encodeShort(0);
         outPacket.encodeByte(0);
         outPacket.encodeByte(0);
-        outPacket.encodeByte(0);
+        outPacket.encodeByte(1);
         outPacket.encodeInt(0);
         if (hasMovingAffectingStat) {
             outPacket.encodeByte(0);

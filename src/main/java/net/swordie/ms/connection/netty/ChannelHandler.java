@@ -6,6 +6,7 @@ import net.swordie.ms.client.Account;
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.Login;
 import net.swordie.ms.handlers.AdminHandler;
 import net.swordie.ms.handlers.ChatHandler;
 import net.swordie.ms.handlers.LoginHandler;
@@ -82,6 +83,8 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 break;
             case GUILD_CHAT:
                 ChatHandler.handleGuildChat(c, inPacket);
+                break;
+            case LOGIN_BASIC_INFO:
                 break;
             case PERMISSION_REQUEST:
                 LoginHandler.handlePermissionRequest(c, inPacket);
@@ -503,6 +506,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             case SUMMONED_SKILL:
                 WorldHandler.handleSummonedSkill(c, inPacket);
                 break;
+            case REACTOR_HIT:
             case REACTOR_CLICK:
                 WorldHandler.handleReactorClick(c, inPacket);
                 break;
@@ -615,7 +619,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 WorldHandler.handleAndroidMove(chr, inPacket);
                 break;
             case USER_CONTENTS_MAP_REQUEST:
-                WorldHandler.handleUserContentsMapRequest(chr, inPacket);
+                //WorldHandler.handleUserContentsMapRequest(chr, inPacket);
                 break;
             case USER_RUN_SCRIPT:
                 WorldHandler.handleUserRunScript(chr, inPacket);

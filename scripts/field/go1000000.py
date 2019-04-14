@@ -1,3 +1,5 @@
-# Amherst (1000000)
-sm.showEffect("Map/Effect.img/maplemap/enter/1000000")
-sm.dispose()
+# Created by MechAviv
+# ID :: [4000020]
+# Rainbow Street : Amherst
+
+sm.showFieldEffect("maplemap/enter/1000000", 0)

@@ -427,6 +427,13 @@ public class UserLocal {
         return outPacket;
     }
 
+    public static OutPacket setDirectionMode(boolean show, int unk) {
+        OutPacket outPacket = new OutPacket(OutHeader.SET_DIRECTION_MODE);
+        outPacket.encodeByte(show);
+        outPacket.encodeInt(unk);
+        return outPacket;
+    }
+
     public static OutPacket setInGameDirectionMode(boolean lockUI, boolean blackFrame, boolean forceMouseOver) {
         return setInGameDirectionMode(lockUI, blackFrame, forceMouseOver, !lockUI);
     }

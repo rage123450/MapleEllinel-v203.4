@@ -1,4 +1,4 @@
 # 914000300
-if not "fin=o" in sm.getQRValue(21002):
+if not "o" in sm.getQuestEx(21002, "fin"):
     sm.reservedEffect("Effect/Direction1.img/aranTutorial/ClickChild")
-    sm.addQRValue(21002, "fin=o")
+    sm.setQuestEx(21002, "fin", "o")

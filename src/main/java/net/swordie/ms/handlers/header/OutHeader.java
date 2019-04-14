@@ -7,7 +7,14 @@ import java.util.List;
  * Created on 2/18/2017.
  */
 public enum OutHeader {
-    SET_OPS(30583),
+    // Redirector Headers
+    UNKNOWN(0x7775),
+    CHECK_CLIENT(0x7776),
+    SET_OPS(0x7777),
+    REQUEST_WZ(0x7778),
+    OPEN_WEBSITE(0x7779),
+
+    // GMS Headers
     CHAT_LOGIN_RESULT(-1),
     CHAT_LOGOUT_RESULT(-1),
     CHAT_ALIVE_REQ(-1),
@@ -507,7 +514,7 @@ public enum OutHeader {
     MACRO_SYS_DATA_INIT(508),
     SET_FIELD(509),
     SET_FARM_FIELD(510),
-    SET_AUCTION_FIELD(511),
+    SET_AUCTION_FIELD(511),// v203.2
     UNK512(512),
     SET_CASH_SHOP(513),
     TRANSFER_FIELD_REQ_IGNORED(514),
@@ -966,7 +973,7 @@ public enum OutHeader {
     UNK988(988),
     USER_BURNING_RESULT(989),
     UNK990(990),
-    UNK991(991),
+    SPEAR_OF_DARKNESS(991),
     LIGHTNING_UNION_SUB_ATTACK_REQUEST(992),
     SHADOW_SPEAR(993),
     UNK994(994),

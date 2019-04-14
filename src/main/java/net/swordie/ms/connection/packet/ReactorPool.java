@@ -72,6 +72,7 @@ public class ReactorPool {
         OutPacket outPacket = new OutPacket(OutHeader.REACTOR_LEAVE_FIELD);
 
         outPacket.encodeInt(reactor.getObjectId());
+        outPacket.encodeByte(false);// some bool
         outPacket.encodeByte(reactor.getState());
         outPacket.encodePosition(reactor.getPosition());
 

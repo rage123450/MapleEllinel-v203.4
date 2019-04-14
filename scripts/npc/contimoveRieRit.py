@@ -1,4 +1,6 @@
-# Puro (1200003) | Snow Island : Penguin Port
+# Created by MechAviv
+# [Puro]  |  [1200003]
+# Snow Island : Rien
 
 victoriaIslandPrice = 800
 

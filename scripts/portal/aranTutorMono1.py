@@ -1,5 +1,5 @@
 # 914000000
-if not "mo2=o" in sm.getQRValue(21002):
+if not "o" in sm.getQuestEx(21002, "mo2"):
     sm.playSound("Aran/balloon")
     sm.avatarOriented("Effect/OnUserEff.img/guideEffect/aranTutorial/legendBalloon2")
-    sm.addQRValue(21002, "mo2=o")
+    sm.setQuestEx(21002, "mo2", "o")

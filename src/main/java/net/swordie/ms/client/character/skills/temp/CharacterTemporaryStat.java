@@ -311,8 +311,8 @@ public enum CharacterTemporaryStat implements Comparator<CharacterTemporaryStat>
     Unk255(255),// v202.3
     Unk256(256),// v202.3
     Unk257(257),// v202.3
-    Unk258(258),// v202.3
-    Unk259(259),
+    TideOfBattle(258),// v202.3
+    GrandGuardian(259),// v203.2 Paladin VSkills
     DropPer(260),// v202.3 [Used for 2023145]
     VampDeath(261),// v202.3
     BlessingArmorIncPAD(262),// v202.3
@@ -494,7 +494,7 @@ public enum CharacterTemporaryStat implements Comparator<CharacterTemporaryStat>
     WizardIgnite(419),// v202.3
     FireBarrier(420),// v202.3
     ChangeFoxMan(421),// v202.3
-    Unk422(422),
+    DivineEcho(422),// v203.2 (Paladin V Buff).
     Unk423(423),
     Unk424(424),
     Unk425(425),
@@ -596,7 +596,7 @@ public enum CharacterTemporaryStat implements Comparator<CharacterTemporaryStat>
     Spotlight(516),// angelic buster v skill
     Unk517(517),// v202.3
     Unk518(518),
-    Unk519(519),
+    CrystallineWings(519),// v203.2
     Unk520(520),
     Unk521(521),
     Overdrive(522),// v202.3 or attack power
@@ -785,10 +785,10 @@ public enum CharacterTemporaryStat implements Comparator<CharacterTemporaryStat>
             FixCoolTime, IncMobRateDummy, AdrenalinBoost, AranSmashSwing, AranDrain, AranBoostEndHunt, HiddenHyperLinkMaximization,
             RWCylinder, RWCombination, Unk476, RWMagnumBlow, RWBarrier, RWBarrierHeal, RWMaximizeCannon, RWOverHeat,
             RWMovingEvar, Stigma, Unk485, Unk486, Unk487, Unk488, Unk489, Unk490, Unk491, Unk492,
-            LightningCascade, BulletBarrage, AuraScythe, Unk497, Unk498, Unk499, Unk500, Unk422,
+            LightningCascade, BulletBarrage, AuraScythe, Unk497, Unk498, Unk499, Unk500, DivineEcho,
             Unk501, ManaOverload, Unk503, Unk504, SpreadThrow,
             MassDestructionRockets, ShadowAssault, Unk509, Unk510, Unk511, BlitzShield, Unk513, FreudWisdom, CoreOverload, Unk425,
-            Unk519, Unk520, RIFT_OF_DAMNATION,
+            CrystallineWings, Unk520, RIFT_OF_DAMNATION,
             Unk517, Spotlight, Unk162, Unk518,
             Unk521, Overdrive, EtherealForm, LastResort, Unk525, Unk526, Unk527, Unk528, Unk529, Unk163,
             Unk530, Unk531, Unk532, Unk534, Unk535, Unk536, Unk537, Unk538, Unk539, Unk540, Unk541,
@@ -825,10 +825,10 @@ public enum CharacterTemporaryStat implements Comparator<CharacterTemporaryStat>
             ZeroAuraStr, ZeroAuraSpd, ImmuneBarrier, FullSoulMP, AntiMagicShellBool, Dance, Unk379, Unk425, ComboTempest, HalfstatByDebuff,
             ComplusionSlant, JaguarSummoned, BMageAura, BombTime, Unk491, Unk492, LightningCascade, BulletBarrage, Unk495, AuraScythe,
             Unk497, DarkLighting, AttackCountX, FireBarrier, KeyDownMoving, MichaelSoulLink, KinesisPsychicEnergeShield, BladeStance,
-            IgnisRore, AdrenalinBoost, RWBarrier, Unk476, RWMagnumBlow, Unk253, Unk254, Unk255, Unk256, Unk257, Stigma, Unk422, Unk503,
+            IgnisRore, AdrenalinBoost, RWBarrier, Unk476, RWMagnumBlow, Unk253, Unk254, Unk255, Unk256, Unk257, Stigma, DivineEcho, Unk503,
             Unk504, Unk485, ManaOverload, CursorSniping, Unk517, Spotlight, CoreOverload, FreudWisdom, ComboCounter, Overdrive, EtherealForm,
             LastResort, Unk525, Unk526, Unk527, Unk528, Unk529, Unk520, Unk530, Unk531, Unk532, Unk533,
-            SpecterState, ImpendingDeath, Unk556, Unk531, Unk565, Unk259, HayatoStanceBonus, BeastMode, TeamRoar, Unk586,
+            SpecterState, ImpendingDeath, Unk556, Unk531, Unk565, GrandGuardian, HayatoStanceBonus, BeastMode, TeamRoar, Unk586,
             HayatoBooster, Unk587, HayatoPAD, HayatoHPR, HayatoMPR, HayatoCr, HayatoBoss, Stance, BattoujutsuAdvance, Unk603,
             BlackHeartedCurse, EyeForEye, Unk608, Unk612, Unk613, Unk614, Unk616, Unk617, Unk618, Unk585, Unk513
     );
@@ -871,7 +871,7 @@ public enum CharacterTemporaryStat implements Comparator<CharacterTemporaryStat>
             case IncMaxDamage:
             case Unk612:
             case MagnetArea:
-            case Unk422:
+            case DivineEcho:
             case Unk306:
             case VampDeath:
             case BlitzShield:
@@ -973,7 +973,7 @@ public enum CharacterTemporaryStat implements Comparator<CharacterTemporaryStat>
             case RWBarrier:// v202.3
             case Unk476:// v202.3
             case RWMagnumBlow:// v202.3
-            case Unk422:// v202.3
+            case DivineEcho:// v202.3
             case Unk503:// v202.3
             case Unk531:// v202.3
             case Unk612:// v202.3

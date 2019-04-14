@@ -1,23 +1,37 @@
+# Created by MechAviv
+# Quest ID :: 17610
 # [Commerci Republic] Berry Concerned 1
 
-sm.setSpeakerID(9390201) # Mayor Berry
-sm.sendNext("Hm...")
+sm.setSpeakerID(9390201)
+sm.sendNext("Hm... ")
 
-sm.setPlayerAsSpeaker() # Has to be Player Avatar
-sm.sendNext("Mayor Berry, are you all right?")
 
-sm.setSpeakerID(9390201) # Mayor Berry
-sm.sendNext("I'm worried about my fish... There are these monsters that were stealing my fish the other day..")
+sm.setSpeakerID(9390201)
+sm.setPlayerAsSpeaker()
+sm.sendSay("Mayor Berry, are you all right?")
 
-sm.setPlayerAsSpeaker() # Has to be Player Avatar
-sm.sendNext("I'll take care of those monster for you, Mayor.")
 
-sm.setSpeakerID(9390201) # Mayor Berry
-response = sm.sendAskYesNo("Will you really?")
+sm.setSpeakerID(9390201)
+sm.sendSay("Ah... you feelin' good? Don't mind me, I'm just dealin' with a pest...")
 
-if response == 1:
-    sm.sendNext("If you could eliminate 100 #r#o9390807##k, I would be very grateful.")
-    sm.startQuest(parentID)
+
+sm.setSpeakerID(9390201)
+sm.setPlayerAsSpeaker()
+sm.sendSay("What's wrong? I'll help you out if I can.")
+
+
+sm.setSpeakerID(9390201)
+if sm.sendAskYesNo("Really? You'd take the time to help an old fisherman?"):
+    sm.setSpeakerID(9390201)
+    sm.sendNext("Well, if you really wanna help, I've got me a cat problem.")
+
+    sm.setSpeakerID(9390201)
+    sm.sendSay("There's a group of them, wanderin' around, stealin' fish and gold and whatever else they can get their mangy paws on.")
+
+    sm.setSpeakerID(9390201)
+    sm.sendSay("I wanna see those #b#o9390807#s#k get a whippin'! Could ya get 100 of them rounded up for me?")
+
+    sm.startQuest(17610)
 else:
-    sm.sendSayOkay("Oh, alright.. that's too bad.")
-sm.dispose()
+    sm.setSpeakerID(9390201)
+    sm.sendSayOkay("Oh, I know you young folk've got lots to do. I'll just wait around here until all my livelihood's been stolen.")
