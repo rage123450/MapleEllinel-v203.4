@@ -3095,4 +3095,23 @@ public class ScriptManagerImpl implements ScriptManager {
 	public void sendLuminousChangedJob() {
 		chr.write(UserLocal.incLarknessReponse(-1, LarknessSkillType.NON_LARKNESS_SKILL));
 	}
+	
+	public int getPatternInputCount() {
+		return patternInputCount;
+	}
+
+	public void setPatternInputCount(int patternInputCount) {
+		this.patternInputCount = Math.max(patternInputCount, 0);
+	}
+
+	public boolean patternInputRequest(String pattern, int act, int requestCount, int time) {
+		getNpcScriptInfo().setMessageType(NpcMessageType.AskIngameDirection);
+		chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.patternInputRequest(pattern, act, requestCount, time)));
+		setPatternInputCount(getPatternInputCount() + 1);
+		Object response = getScriptInfoByType(getLastActiveScriptType()).awaitResponse();
+		if (response == null) {
+			throw new NullPointerException(INTENDED_NPE_MSG);
+		}
+		return ((int) response) != 0;
+	}
 }
