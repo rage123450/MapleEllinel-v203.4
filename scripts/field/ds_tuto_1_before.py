@@ -2,6 +2,11 @@
 # ID :: [927000080]
 # Hidden Street : Scene Change 1
 
+sm.curNodeEventEnd(True)
+sm.setTemporarySkillSet(0)
+sm.setInGameDirectionMode(True, True, False, False)
+sm.setStandAloneMode(True)
+
 sm.forcedInput(1)
 sm.sendDelay(30)
 

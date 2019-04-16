@@ -157,7 +157,7 @@ public class Npc extends Life {
         copy.setMobAliveReq(getMobAliveReq());
         copy.setTrunkGet(getTrunkGet());
         copy.setTrunkPut(getTrunkPut());
-        copy.setDCRange(getDCRange());
+        copy.setDC(getDC());
         copy.getScripts().putAll(getScripts());
         return copy;
     }
@@ -222,10 +222,14 @@ public class Npc extends Life {
     }
 
     public Rect getDCRange() {
-        return npcRect;
+        int x = getPosition().getX();
+        int y = getPosition().getY();
+        return new Rect((x + npcRect.getLeft()), (y + npcRect.getTop()), (x + npcRect.getRight()), (y + npcRect.getBottom()));
     }
 
-    public void setDCRange(Rect npcRect) {
+    public Rect getDC() { return npcRect; }
+
+    public void setDC(Rect npcRect) {
         this.npcRect = npcRect;
     }
 }

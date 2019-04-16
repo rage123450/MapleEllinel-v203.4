@@ -6,8 +6,6 @@ import net.swordie.ms.util.Rect;
 import net.swordie.ms.world.shop.NpcShopDlg;
 import net.swordie.ms.world.shop.NpcShopItem;
 import net.swordie.ms.ServerConstants;
-import net.swordie.ms.util.dsl.SWEntity;
-import net.swordie.ms.util.dsl.SWParser;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
 import net.swordie.ms.util.Util;
@@ -138,7 +136,7 @@ public class NpcData {
 			npc.setMove(dis.readBoolean());
 			npc.setTrunkGet(dis.readInt());
 			npc.setTrunkPut(dis.readInt());
-			npc.setDCRange(new Rect(dis.readInt(), dis.readInt(), dis.readInt(), dis.readInt()));
+			npc.setDC(new Rect(dis.readInt(), dis.readInt(), dis.readInt(), dis.readInt()));
 			short size = dis.readShort();
 			for (int i = 0; i < size; i++) {
 				int id = dis.readInt();

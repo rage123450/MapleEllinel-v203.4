@@ -1,9 +1,11 @@
 # Created by MechAviv
 # ID :: [924020000]
 # Hidden Street : Demon Slayer's Childhood Home
-
-if not sm.hasQuest(23200) and not sm.hasQuestCompleted(23200):
+STEP =  sm.getQuestEx(23200, "step")
+if "0" not in STEP and "1" not in STEP:
     sm.startQuest(23200)
+    sm.setQuestEx(23200, "step", "0")
     sm.avatarOriented("Effect/OnUserEff.img/normalEffect/demonSlayer/chatBalloon1")
-elif sm.hasQuest(23200) and not sm.hasQuestCompleted(23200):
+elif "0" in STEP and "1" not in STEP:
+    sm.setQuestEx(23200, "step", "1")
     sm.avatarOriented("Effect/OnUserEff.img/normalEffect/demonSlayer/chatBalloon0")

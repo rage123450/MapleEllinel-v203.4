@@ -2136,11 +2136,10 @@ public class WorldHandler {
         }
         if (!npc.getDCRange().hasPositionInside(chr.getPosition())) {
             switch (script) {
-                default:
+                case "ds_tuto_ClickObj":// Demon Slayer tutorial
                     chr.getScriptManager().systemMessage("It's too far away to see clearly. I must get closer.");
-                    break;
+                    return;
             }
-            return;
         }
         chr.getScriptManager().startScript(npc.getTemplateId(), npcID, script, ScriptType.Npc);
     }
@@ -2170,8 +2169,13 @@ public class WorldHandler {
                 if (answerType == InGameDirectionAsk.CAMERA_MOVE_TIME && success) {
                     answerVal = inPacket.decodeInt();
                 }
-                chr.getScriptManager().setAnswerVal(answerVal);
-                chr.getScriptManager().handleAction(nmt, (byte) 1, answerType.getVal());
+                if (answerType == InGameDirectionAsk.PATTERN_INPUT_REQUEST) {
+                    if (success) chr.getScriptManager().setPatternInputCount(0);
+                    chr.getScriptManager().handleAction(nmt, (byte) (success ? 1 : 0), answerType.getVal());
+                } else {
+                    chr.getScriptManager().setAnswerVal(answerVal);
+                    chr.getScriptManager().handleAction(nmt, (byte) 1, answerType.getVal());
+                }
                 return;
             }
             if (nmt == NpcMessageType.AskText && action == 1) {

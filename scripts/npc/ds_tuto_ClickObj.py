@@ -10,16 +10,15 @@ if sm.hasQuest(23200) and not sm.hasQuestCompleted(23200):
 
     sm.startQuest(23201)
     sm.completeQuest(23200)
-elif sm.hasQuest(23201) and sm.hasQuestCompleted(23200):
+elif sm.hasQuest(23201) and not sm.hasQuestCompleted(23201):
     sm.setSpeakerID(0)
     sm.flipDialoguePlayerAsSpeaker()
     sm.setSpeakerType(3)
     sm.sendNext("#bDamien! Answer me!#k")
 
-
     sm.startQuest(23202)
     sm.completeQuest(23201)
-elif sm.hasQuest(23202) and sm.hasQuestCompleted(23201):
+elif sm.hasQuest(23202) and not sm.hasQuestCompleted(23202):
     sm.completeQuest(23202)
     sm.curNodeEventEnd(True)
     sm.setTemporarySkillSet(0)
